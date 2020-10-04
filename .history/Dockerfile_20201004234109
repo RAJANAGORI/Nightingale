@@ -1,0 +1,42 @@
+# Pulling the base image
+FROM kalilinux/kali:latest
+
+# Installing Dependencies for kali linux environment
+RUN apt-get -y update && \
+    apt-get -y upgrade && \
+    apt-get install -y python3-pip python3-dev &&\
+    cd /usr/local/bin &&\
+    ln -s /usr/bin/python3 python &&\
+    pip3 install --upgrade pip
+    
+RUN apt-get install -y git \
+    ruby \
+    ruby-dev \
+    libcurl4-openssl-dev \
+    make 
+#Install postgresql 
+RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 &&\
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+
+#Working Directory of tools
+RUN cd /home/$USER &&\
+    mkdir tool-for-pentester \
+    cd tool-for-pentester
+
+# Installing WP-Scan 
+RUN git clone https://github.com/wpscanteam/wpscan.git &&\
+    cd wpscan &&\
+    gem install bundler && \
+    bundle install --without test
+
+
+# Installing SqlMap
+RUN git clone https://github.com/sqlmapproject/sqlmap.git &&\
+    cd sqlmap
+
+# Installing Dirbuster
+RUN apt-get install -y dirbuster
+
+#Installing Nmap
+RUN apt-get install -y nmap
+
