@@ -15,7 +15,6 @@ RUN apt-get install -y git \
     libcurl4-openssl-dev \
     make \
     software-properties-common \
-    python-software-properties \
     curl \
     ca-certificates \
     gnupg
