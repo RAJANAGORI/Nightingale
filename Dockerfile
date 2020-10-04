@@ -14,16 +14,17 @@ RUN apt-get install -y git \
     ruby-dev \
     libcurl4-openssl-dev \
     make \
-    software-properties-common
+    software-properties-common \
+    python-software-properties \
+    curl \
+    ca-certificates \
+    gnupg
 
-
-# Installing postgresql
+# Installing postgresql 
 RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 &&\
     echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list &&\
     apt-get install -y  \
-    postgresql-13 \
-    postgresql-client-13 \
-    postgresql-contrib-13
+    postgresql-11
 
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3``
 USER postgres
