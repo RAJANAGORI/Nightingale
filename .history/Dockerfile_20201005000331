@@ -18,7 +18,7 @@ RUN apt-get install -y git \
 # Installing postgresql
 RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 &&\
     echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list &&\
-    apt-get install -y \
+    apt-get install -y python-software-properties \
     software-properties-common \
     postgresql-9.3 \
     postgresql-client-9.3 \
@@ -27,7 +27,7 @@ RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3``
 USER postgres
 
-# Start the PostgreSQL service 
+# Create a PostgreSQL role named ``docker`` with ``docker`` as the password with ``docker`` database. 
 RUN /etc/init.d/postgresql start
 
 # Adjust PostgreSQL configuration so that remote connections to the
