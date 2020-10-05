@@ -1,6 +1,7 @@
 # Pulling the base image
 FROM debian:latest
-FROM postgres:latest
+
+MAINTAINER Raja Nagori <rajanagori19@gmail.com>
 
 # Installing Dependencies for kali linux environment
 RUN apt-get -y update && \
@@ -10,7 +11,8 @@ RUN apt-get -y update && \
     ln -s /usr/bin/python3 python &&\
     pip3 install --upgrade pip
     
-RUN apt-get install -y git \
+RUN apt-get install -y --no-install-recommends \
+    git \
     ruby \
     ruby-dev \
     libcurl4-openssl-dev \
@@ -21,7 +23,21 @@ RUN apt-get install -y git \
     gnupg \
     libz-dev \
     libiconv-hook1 \
-    libiconv-hook-dev
+    libiconv-hook-dev \  
+    build-essential \
+    patch \
+    ruby-bundler \
+    zlib1g-dev \
+    liblzma-dev \
+    autoconf \
+    libpcap-dev \
+    libpq-dev \
+    libsqlite3-dev \
+    postgresql \
+    postgresql-contrib \
+    postgresql-client \
+    dialog apt-utils \
+    nasm
 
 RUN gem install nokogiri 
 
@@ -30,12 +46,14 @@ RUN cd /home/$USER &&\
     mkdir tool-for-pentester &&\
     cd tool-for-pentester
 
+WORKDIR /home/tool-for-pentester/
+
 # Installing WP-Scan 
 RUN git clone https://github.com/wpscanteam/wpscan.git &&\
     cd wpscan &&\
     gem install bundler && \
-    bundle install --without test
-
+    bundle install --without test &&\
+    gem install wpscan
 
 # Installing SqlMap
 RUN git clone https://github.com/sqlmapproject/sqlmap.git &&\
@@ -48,7 +66,36 @@ RUN apt-get install -y dirb
 RUN apt-get install -y nmap
 
 # Installing Metasploit-framework
-RUN git clone https://github.com/rapid7/metasploit-framework.git
+## PosgreSQL DB
+COPY ./configuration/msf-configuration/scripts/db.sql /tmp/
+
+## Startup script
+COPY ./configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
+
+## Installation
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
+  && git clone https://github.com/rapid7/metasploit-framework.git \
+  && cd metasploit-framework \
+  && git fetch --tags \
+  && latestTag=$(git describe --tags `git rev-list --tags --max-count=1`) \
+  && git checkout $latestTag \
+  && bundle install \
+  && /etc/init.d/postgresql start && su postgres -c "psql -f /tmp/db.sql" \
+  && apt-get -y remove --purge build-essential patch ruby-dev zlib1g-dev liblzma-dev git autoconf build-essential libpcap-dev libpq-dev libsqlite3-dev \
+  dialog apt-utils \
+  && apt-get -y autoremove \
+  && apt-get -y clean \
+  && rm -rf /var/lib/apt/lists/*
+ 
+## DB config
+COPY ./configuration/msf-configuration/conf/database.yml /home/tool-for-pentester/metasploit-framework/config/ 
+
+## Configuration and sharing folders
+VOLUME ~/.msf4: /root/.msf4/
+VOLUME /tmp/msf: /tmp/data/
+
+CMD "./configuration/msf-configuration/scripts/init.sh"
 
 # Expose the service ports
 EXPOSE 5432
+EXPOSE 9990-9999
