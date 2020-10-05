@@ -83,8 +83,6 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
   && /etc/init.d/postgresql start && su postgres -c "psql -f /tmp/db.sql" \
   && apt-get -y remove --purge build-essential patch ruby-dev zlib1g-dev liblzma-dev git autoconf build-essential libpcap-dev libpq-dev libsqlite3-dev \
   dialog apt-utils \
-  && apt-get -y autoremove \
-  && apt-get -y clean \
   && rm -rf /var/lib/apt/lists/*
  
 ## DB config
@@ -99,3 +97,8 @@ CMD "./configuration/msf-configuration/scripts/init.sh"
 # Expose the service ports
 EXPOSE 5432
 EXPOSE 9990-9999
+
+
+# Cleaning Unwanted libraries 
+RUN apt-get -y autoremove &&\
+    apt-get -y clean
