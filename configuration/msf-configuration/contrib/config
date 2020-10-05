@@ -1,0 +1,10 @@
+[framework/core]
+SessionLogging=True
+PROMPT=%grn%T %red%L %yel[S:%red%S%yel,J:%red%J%yel]%whi
+LogLevel=5
+TimestampOutput=true
+ConsoleLogging=true
+ExitOnSession=False
+PromptTimeFormat=%H:%M:%S
+
+[framework/ui/console]
