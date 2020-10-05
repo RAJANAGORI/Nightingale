@@ -94,6 +94,13 @@ VOLUME /tmp/msf: /tmp/data/
 
 CMD "./configuration/msf-configuration/scripts/init.sh"
 
+# Installing Impact toolkit for Red-Team 
+RUN git clone https://github.com/SecureAuthCorp/impacket.git &&\
+    cd impacket &&\
+    pip3 install -r requirements.txt &&\
+    python3 setup.py build &&\
+    python3 setup.py install
+
 # Expose the service ports
 EXPOSE 5432
 EXPOSE 9990-9999
