@@ -18,11 +18,16 @@ RUN apt-get install -y git \
     software-properties-common \
     curl \
     ca-certificates \
-    gnupg
+    gnupg \
+    libz-dev \
+    libiconv-hook1 \
+    libiconv-hook-dev
+
+RUN gem install nokogiri 
 
 #Working Directory of tools
 RUN cd /home/$USER &&\
-    mkdir tool-for-pentester \
+    mkdir tool-for-pentester &&\
     cd tool-for-pentester
 
 # Installing WP-Scan 
