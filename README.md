@@ -13,7 +13,6 @@ This Docker image contain some usefull tools that are highly required for penetr
 - nmap
 - Metasploit Framework
 - Impacket Toolkit for Red Teamers
-- Sherlock - :mag_right: Hunt down social media accounts by username across social networks 
 - more to go.....
 
 ## Docker Image build and Run 
