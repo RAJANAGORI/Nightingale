@@ -1,5 +1,6 @@
 # Pulling the base image
-FROM kalilinux/kali:latest
+FROM debian:latest
+FROM postgres:latest
 
 # Installing Dependencies for kali linux environment
 RUN apt-get -y update && \
@@ -18,31 +19,6 @@ RUN apt-get install -y git \
     curl \
     ca-certificates \
     gnupg
-
-# Installing postgresql 
-RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 &&\
-    echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list &&\
-    apt-get install -y  \
-    postgresql-11
-
-# Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3``
-USER postgres
-
-# Start the PostgreSQL service 
-RUN /etc/init.d/postgresql start
-
-# Adjust PostgreSQL configuration so that remote connections to the
-# database are possible.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf
-
-# And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
-
-# Add VOLUMEs to allow backup of config, logs and databases
-VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
-
-# Set the default command to run when starting the container
-CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
 
 #Working Directory of tools
 RUN cd /home/$USER &&\
