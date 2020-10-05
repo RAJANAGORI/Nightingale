@@ -101,6 +101,18 @@ RUN git clone https://github.com/SecureAuthCorp/impacket.git &&\
     python3 setup.py build &&\
     python3 setup.py install
 
+# Installing HawkScan 
+RUN git clone https://github.com/c0dejump/HawkScan.git &&\
+    cd HawkScan &&\
+    python3 setup.py &&\
+    pip3 install -r requirements.txt
+
+# Clone Seclist
+RUN git clone https://github.com/danielmiessler/SecLists.git
+
+# Installing automation tool for ofensive security expert
+RUN git clone https://github.com/1N3/Sn1per.git &&\
+
 # Expose the service ports
 EXPOSE 5432
 EXPOSE 9990-9999
