@@ -42,15 +42,13 @@ RUN git clone https://github.com/sqlmapproject/sqlmap.git &&\
     cd sqlmap
 
 # Installing Dirbuster
-RUN apt-get install -y dirbuster
+RUN apt-get install -y dirb
 
 #Installing Nmap
 RUN apt-get install -y nmap
 
 # Installing Metasploit-framework
-RUN git clone https://github.com/rapid7/metasploit-framework.git &&\
-    cd metasploit-framework &&\
-    msfdb init
+RUN git clone https://github.com/rapid7/metasploit-framework.git
 
 # Expose the service ports
 EXPOSE 5432
