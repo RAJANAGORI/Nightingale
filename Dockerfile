@@ -65,6 +65,25 @@ RUN apt-get install -y dirb
 #Installing Nmap
 RUN apt-get install -y nmap
 
+# Installing Impact toolkit for Red-Team 
+RUN git clone https://github.com/SecureAuthCorp/impacket.git &&\
+    cd impacket &&\
+    pip3 install -r requirements.txt &&\
+    python3 setup.py build &&\
+    python3 setup.py install
+
+# Installing HawkScan 
+RUN git clone https://github.com/c0dejump/HawkScan.git &&\
+    cd HawkScan &&\
+    python3 setup.py &&\
+    pip3 install -r requirements.txt
+
+# Clone Seclist
+RUN git clone https://github.com/danielmiessler/SecLists.git
+
+# Installing automation tool for ofensive security expert
+RUN git clone https://github.com/1N3/Sn1per.git
+
 # Installing Metasploit-framework
 ## PosgreSQL DB
 COPY ./configuration/msf-configuration/scripts/db.sql /tmp/
@@ -94,30 +113,11 @@ VOLUME /tmp/msf: /tmp/data/
 
 CMD "./configuration/msf-configuration/scripts/init.sh"
 
-# Installing Impact toolkit for Red-Team 
-RUN git clone https://github.com/SecureAuthCorp/impacket.git &&\
-    cd impacket &&\
-    pip3 install -r requirements.txt &&\
-    python3 setup.py build &&\
-    python3 setup.py install
-
-# Installing HawkScan 
-RUN git clone https://github.com/c0dejump/HawkScan.git &&\
-    cd HawkScan &&\
-    python3 setup.py &&\
-    pip3 install -r requirements.txt
-
-# Clone Seclist
-RUN git clone https://github.com/danielmiessler/SecLists.git
-
-# Installing automation tool for ofensive security expert
-RUN git clone https://github.com/1N3/Sn1per.git
-
 # Expose the service ports
 EXPOSE 5432
 EXPOSE 9990-9999
 
-
 # Cleaning Unwanted libraries 
 RUN apt-get -y autoremove &&\
     apt-get -y clean
+
