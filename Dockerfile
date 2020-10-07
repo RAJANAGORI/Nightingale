@@ -111,7 +111,7 @@ RUN git clone https://github.com/c0dejump/HawkScan.git &&\
 RUN git clone https://github.com/danielmiessler/SecLists.git
 
 # Installing automation tool for ofensive security expert
-RUN git clone https://github.com/1N3/Sn1per.git &&\
+RUN git clone https://github.com/1N3/Sn1per.git
 
 # Expose the service ports
 EXPOSE 5432
