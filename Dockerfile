@@ -113,6 +113,9 @@ VOLUME /tmp/msf: /tmp/data/
 
 CMD "./configuration/msf-configuration/scripts/init.sh"
 
+#Installing Tor
+RUN apt-get install tor
+
 # Expose the service ports
 EXPOSE 5432
 EXPOSE 9990-9999
