@@ -69,14 +69,14 @@ RUN apt-get install -y nmap
 RUN git clone https://github.com/SecureAuthCorp/impacket.git &&\
     cd impacket &&\
     pip3 install -r requirements.txt &&\
-    python3 setup.py build &&\
-    python3 setup.py install
+    python setup.py build &&\
+    python setup.py install
 
 # Installing HawkScan 
 RUN git clone https://github.com/c0dejump/HawkScan.git &&\
     cd HawkScan &&\
-    python3 setup.py &&\
-    pip3 install $(grep -ivE "urllib" requirements.txt)
+    pip3 install $(grep -ivE "urllib" requirements.txt) &&\
+    python3 setup.py
 
 # Clone Seclist
 RUN git clone https://github.com/danielmiessler/SecLists.git
