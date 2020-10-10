@@ -76,7 +76,7 @@ RUN git clone https://github.com/SecureAuthCorp/impacket.git &&\
 RUN git clone https://github.com/c0dejump/HawkScan.git &&\
     cd HawkScan &&\
     python3 setup.py &&\
-    pip3 install -r requirements.txt
+    pip3 install $(grep -ivE "urllib" requirements.txt)
 
 # Clone Seclist
 RUN git clone https://github.com/danielmiessler/SecLists.git
