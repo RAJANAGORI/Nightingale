@@ -8,7 +8,9 @@ USER root
 # Installing Dependencies for kali linux environment
 RUN apt-get -y update && \
     apt-get -y upgrade && \
-    apt-get install -y python3-pip python3-dev &&\
+    apt-get install -y \
+    python3-pip \
+    python3-dev &&\
     cd /usr/local/bin &&\
     ln -s /usr/bin/python3 python &&\
     pip3 install --upgrade pip
