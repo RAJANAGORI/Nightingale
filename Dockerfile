@@ -3,6 +3,8 @@ FROM debian:latest
 
 MAINTAINER Raja Nagori <rajanagori19@gmail.com>
 
+USER root
+
 # Installing Dependencies for kali linux environment
 RUN apt-get -y update && \
     apt-get -y upgrade && \
@@ -41,48 +43,71 @@ RUN apt-get install -y --no-install-recommends \
 
 RUN gem install nokogiri 
 
+RUN \
+    curl -O https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz &&\
+    tar xzf go${GO_VERSION}.linux-amd64.tar.gz &&\
+    chown -R root:root ./go &&\
+    mv go /usr/local &&\
+    rm -rf  go${GO_VERSION}.linux-amd64.tar.gz go/
+
+RUN \
+    echo "GOROOT=$HOME/go" >> ~/.profile &&\
+    echo "GOPATH=$HOME/work" >> ~/.profile &&\
+    echo "PATH=$PATH:$GOROOT/bin:$GOPATH/bin" >> ~/.profile &&\
+    source ~/.profile
+
 #Working Directory of tools
-RUN cd /home/$USER &&\
+RUN \
+    cd /home/$USER &&\
     mkdir tool-for-pentester &&\
     cd tool-for-pentester
 
 WORKDIR /home/tool-for-pentester/
 
-# Installing WP-Scan 
-RUN git clone https://github.com/wpscanteam/wpscan.git &&\
-    cd wpscan &&\
-    gem install bundler && \
-    bundle install --without test &&\
-    gem install wpscan
+#git clonning 
+RUN \
+    # Git clone of SqlMap
+    git clone https://github.com/sqlmapproject/sqlmap.git &&\
+    # Git clone of HawkScan
+    git clone https://github.com/c0dejump/HawkScan.git &&\
+    # Clone Seclist
+    git clone https://github.com/danielmiessler/SecLists.git &&\
+    #Git clone of impacket toolkit
+    git clone https://github.com/SecureAuthCorp/impacket.git &&\
+    # Git clone of Seclist
+    git clone https://github.com/danielmiessler/SecLists.git &&\
+    #git clonning of automation tool for ofensive security expert
+    git clone https://github.com/1N3/Sn1per.git &&\
+    #Git clone Assetfinder
+    go get -u github.com/tomnomnom/assetfinder &&\
+    #git clonning wpscan
+    git clone https://github.com/wpscanteam/wpscan.git
 
-# Installing SqlMap
-RUN git clone https://github.com/sqlmapproject/sqlmap.git &&\
-    cd sqlmap
-
-# Installing Dirbuster
-RUN apt-get install -y dirb
-
-#Installing Nmap
-RUN apt-get install -y nmap
+# Installing .Dirb .Nmap .Tor
+RUN apt-get install -y \
+    dirb \
+    nmap \ 
+    tor
 
 # Installing Impact toolkit for Red-Team 
-RUN git clone https://github.com/SecureAuthCorp/impacket.git &&\
+RUN \
     cd impacket &&\
     pip3 install -r requirements.txt &&\
     python setup.py build &&\
     python setup.py install
 
 # Installing HawkScan 
-RUN git clone https://github.com/c0dejump/HawkScan.git &&\
+RUN \
     cd HawkScan &&\
     pip3 install $(grep -ivE "urllib" requirements.txt) &&\
     python3 setup.py
 
-# Clone Seclist
-RUN git clone https://github.com/danielmiessler/SecLists.git
-
-# Installing automation tool for ofensive security expert
-RUN git clone https://github.com/1N3/Sn1per.git
+# Installing WP-Scan 
+RUN \
+    cd wpscan &&\
+    gem install bundler && \
+    bundle install --without test &&\
+    gem install wpscan
 
 # Installing Metasploit-framework
 ## PosgreSQL DB
@@ -112,9 +137,6 @@ VOLUME ~/.msf4: /root/.msf4/
 VOLUME /tmp/msf: /tmp/data/
 
 CMD "./configuration/msf-configuration/scripts/init.sh"
-
-#Installing Tor
-RUN apt-get install tor
 
 # Expose the service ports
 EXPOSE 5432
