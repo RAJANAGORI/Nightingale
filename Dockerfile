@@ -45,6 +45,8 @@ RUN apt-get install -y --no-install-recommends \
 
 RUN gem install nokogiri 
 
+ENV GO_VERSION=1.12.7
+
 RUN \
     curl -O https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz &&\
     tar xzf go${GO_VERSION}.linux-amd64.tar.gz &&\
@@ -76,12 +78,10 @@ RUN \
     git clone https://github.com/danielmiessler/SecLists.git &&\
     #Git clone of impacket toolkit
     git clone https://github.com/SecureAuthCorp/impacket.git &&\
-    # Git clone of Seclist
-    git clone https://github.com/danielmiessler/SecLists.git &&\
     #git clonning of automation tool for ofensive security expert
     git clone https://github.com/1N3/Sn1per.git &&\
     #Git clone Assetfinder
-    go get -u github.com/tomnomnom/assetfinder &&\
+    git clone https://github.com/tomnomnom/assetfinder.git &&\
     #git clonning wpscan
     git clone https://github.com/wpscanteam/wpscan.git
 
