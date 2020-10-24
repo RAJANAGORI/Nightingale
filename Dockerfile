@@ -52,13 +52,12 @@ RUN \
     tar xzf go${GO_VERSION}.linux-amd64.tar.gz &&\
     chown -R root:root ./go &&\
     mv go /usr/local &&\
-    rm -rf  go${GO_VERSION}.linux-amd64.tar.gz go/
+    rm -rf  go${GO_VERSION}.linux-amd64.tar.gz
 
 RUN \
     echo "GOROOT=$HOME/go" >> ~/.profile &&\
     echo "GOPATH=$HOME/work" >> ~/.profile &&\
-    echo "PATH=$PATH:$GOROOT/bin:$GOPATH/bin" >> ~/.profile &&\
-    source ~/.profile
+    echo "PATH=$PATH:$GOROOT/bin:$GOPATH/bin" >> ~/.profile
 
 #Working Directory of tools
 RUN \
