@@ -27,6 +27,10 @@ The Reason behind creating this Docker file to make a platform independent penet
 
 - Tor : For Anonymous 
 
+- Asseset Finder : Find domains and subdomains potentially related to a given domain.
+
+- Xsstrike : Most advanced XSS scanner.
+
 - more to add
 
 ## Docker Image build and Run 
@@ -51,6 +55,7 @@ docker run -ti nightingale /bin/bash
 - https://github.com/c0dejump/HawkScan.git
 - https://github.com/1N3/Sn1per.git
 - https://github.com/tomnomnom
+- https://github.com/s0md3v/XSStrike
 
 
 
