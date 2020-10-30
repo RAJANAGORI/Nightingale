@@ -82,7 +82,9 @@ RUN \
     #Git clone Assetfinder
     git clone https://github.com/tomnomnom/assetfinder.git &&\
     #git clonning wpscan
-    git clone https://github.com/wpscanteam/wpscan.git
+    git clone https://github.com/wpscanteam/wpscan.git &&\
+    #git clone of xsstrike
+    git clone https://github.com/s0md3v/XSStrike.git
 
 # Installing .Dirb .Nmap .Tor
 RUN apt-get install -y \
@@ -109,6 +111,11 @@ RUN \
     gem install bundler && \
     bundle install --without test &&\
     gem install wpscan
+
+# Installing dependencies for xsstrike
+RUN \
+    cd xsstrike &&\
+    pip3 -m install requirements.txt
 
 # Installing Metasploit-framework
 ## PosgreSQL DB
