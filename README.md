@@ -50,6 +50,22 @@ docker build -t nightingale .
 ```
 docker run -ti nightingale /bin/bash
 ```
+
+## To start, Restart and Stop the Postgresql database 
+- To start the service
+```
+service postgresql start
+```
+- To Restart the service
+```
+service postgresql restart
+```
+- To Stop the service
+```
+service postgresql stop
+```
+
+Note: Use of Postgresql is for msfConsole.
 ## Refrence 
 - https://github.com/phocean/dockerfile-msf.git
 - https://github.com/c0dejump/HawkScan.git
