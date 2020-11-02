@@ -86,6 +86,14 @@ RUN \
     #git clone of xsstrike
     git clone https://github.com/s0md3v/XSStrike.git
 
+# Installing Shodan
+RUN \
+    pip3 install shodan
+
+# Installing John the ripper 
+RUN \
+    apt-get install john -y
+
 # Installing .Dirb .Nmap .Tor
 RUN apt-get install -y \
     dirb \
@@ -114,8 +122,8 @@ RUN \
 
 # Installing dependencies for xsstrike
 RUN \
-    cd xsstrike &&\
-    pip3 -m install requirements.txt
+    cd XSStrike &&\
+    pip3 install -r requirements.txt
 
 # Installing Metasploit-framework
 ## PosgreSQL DB
