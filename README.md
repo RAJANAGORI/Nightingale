@@ -33,6 +33,8 @@ The Reason behind creating this Docker file to make a platform independent penet
 
 - Shodan : Shodan is a search engine that lets the user find specific types of computers connected to the internet using a variety of filters.
 
+- John the Ripper : It's a Free Password Cracking tool. 
+
 - more to add
 
 ## Docker Image build and Run 
