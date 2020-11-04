@@ -41,7 +41,8 @@ RUN apt-get install -y --no-install-recommends \
     postgresql-contrib \
     postgresql-client \
     dialog apt-utils \
-    nasm
+    nasm \
+    wget
 
 RUN gem install nokogiri 
 
