@@ -160,5 +160,6 @@ EXPOSE 9990-9999
 
 # Cleaning Unwanted libraries 
 RUN apt-get -y autoremove &&\
-    apt-get -y clean
+    apt-get -y clean &&\
+    rm -rf /tmp/* 
 
