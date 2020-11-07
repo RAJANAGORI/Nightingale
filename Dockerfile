@@ -1,11 +1,12 @@
 # Pulling the base image
 FROM debian:latest
 
-MAINTAINER Raja Nagori <rajanagori19@gmail.com>
+LABEL maintainer="Raja Nagori" \
+      email="rajanagori19@gmail.com"
 
 USER root
 
-# Installing Dependencies for kali linux environment
+# Installing Dependencies and tools for kali linux environment 
 RUN apt-get -y update && \
     apt-get -y upgrade && \
     apt-get install -y \
@@ -16,9 +17,22 @@ RUN apt-get -y update && \
     pip3 install --upgrade pip
     
 RUN apt-get install -y --no-install-recommends \
+    htop \
+    unzip \
+    locate \
+    p7zip-full \
+    vim \
+    ftp \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libwww-perl \
+    chromium-browser \
+    dos2unix \
+    openjdk-8-jdk \
+    ssh \
     git \
     ruby \
-    ruby-dev \
+    ruby-full \
     libcurl4-openssl-dev \
     make \
     software-properties-common \
@@ -42,7 +56,25 @@ RUN apt-get install -y --no-install-recommends \
     postgresql-client \
     dialog apt-utils \
     nasm \
-    wget
+    wget \
+    smbclient \
+    dirb \
+    nmap \ 
+    tor \
+    john \
+    wpscan \
+    openvpn \
+    cewl \
+    hydra \
+    medusa \
+    traceroute \
+    telnet \
+    dnsutils \
+    net-tools \
+    tcpdump \
+    whois \
+    host \
+    dig
 
 RUN gem install nokogiri 
 
@@ -82,24 +114,13 @@ RUN \
     git clone https://github.com/1N3/Sn1per.git &&\
     #Git clone Assetfinder
     git clone https://github.com/tomnomnom/assetfinder.git &&\
-    #git clonning wpscan
-    git clone https://github.com/wpscanteam/wpscan.git &&\
     #git clone of xsstrike
     git clone https://github.com/s0md3v/XSStrike.git
+
 
 # Installing Shodan
 RUN \
     pip3 install shodan
-
-# Installing John the ripper 
-RUN \
-    apt-get install john -y
-
-# Installing .Dirb .Nmap .Tor
-RUN apt-get install -y \
-    dirb \
-    nmap \ 
-    tor
 
 # Installing Impact toolkit for Red-Team 
 RUN \
@@ -107,19 +128,6 @@ RUN \
     pip3 install -r requirements.txt &&\
     python setup.py build &&\
     python setup.py install
-
-# Installing HawkScan 
-RUN \
-    cd HawkScan &&\
-    pip3 install $(grep -ivE "urllib" requirements.txt) &&\
-    python3 setup.py
-
-# Installing WP-Scan 
-RUN \
-    cd wpscan &&\
-    gem install bundler && \
-    bundle install --without test &&\
-    gem install wpscan
 
 # Installing dependencies for xsstrike
 RUN \
