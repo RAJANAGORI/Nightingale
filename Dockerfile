@@ -92,6 +92,12 @@ RUN \
     echo "GOPATH=$HOME/work" >> ~/.profile &&\
     echo "PATH=$PATH:$GOROOT/bin:$GOPATH/bin" >> ~/.profile
 
+# Installing Python dependencies
+COPY requirements.txt /tmp
+
+RUN \
+    pip3 install -r /tmp/requirements.txt
+
 #Working Directory of tools
 RUN \
     cd /home/$USER &&\
@@ -106,8 +112,6 @@ RUN \
     git clone https://github.com/sqlmapproject/sqlmap.git &&\
     # Git clone of HawkScan
     git clone https://github.com/c0dejump/HawkScan.git &&\
-    # Clone Seclist
-    git clone https://github.com/danielmiessler/SecLists.git &&\
     #Git clone of impacket toolkit
     git clone https://github.com/SecureAuthCorp/impacket.git &&\
     #git clonning of automation tool for ofensive security expert
@@ -115,8 +119,28 @@ RUN \
     #Git clone Assetfinder
     git clone https://github.com/tomnomnom/assetfinder.git &&\
     #git clone of xsstrike
-    git clone https://github.com/s0md3v/XSStrike.git
+    git clone https://github.com/s0md3v/XSStrike.git &&\
+    #git clone of subfinder
+    git clone https://github.com/projectdiscovery/subfinder.git
 
+#git cloning of the wordlist
+RUN \
+    mkdir wordlists &&\
+    cd wordlists &&\
+    git clone --depth 1 https://github.com/xmendez/wfuzz.git && \
+    git clone --depth 1 https://github.com/danielmiessler/SecLists.git && \
+    git clone --depth 1 https://github.com/fuzzdb-project/fuzzdb.git && \
+    git clone --depth 1 https://github.com/daviddias/node-dirbuster.git && \
+    git clone --depth 1 https://github.com/v0re/dirb.git && \
+    curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
+    curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
+    curl -L -o fuzz.txt https://raw.githubusercontent.com/Bo0oM/fuzz.txt/master/fuzz.txt
+
+# Installing subfinder
+RUN \
+    cd subfinder/v2/cmd/subfinder && \
+    go build . && \
+    mv subfinder /usr/local/bin/ 
 
 # Installing Shodan
 RUN \
@@ -125,14 +149,8 @@ RUN \
 # Installing Impact toolkit for Red-Team 
 RUN \
     cd impacket &&\
-    pip3 install -r requirements.txt &&\
     python setup.py build &&\
     python setup.py install
-
-# Installing dependencies for xsstrike
-RUN \
-    cd XSStrike &&\
-    pip3 install -r requirements.txt
 
 # Installing Metasploit-framework
 ## PosgreSQL DB
