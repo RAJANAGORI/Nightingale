@@ -133,8 +133,6 @@ RUN \
     git clone https://github.com/tomnomnom/assetfinder.git &&\
     #git clone of xsstrike
     git clone https://github.com/s0md3v/XSStrike.git &&\
-    #git clone of subfinder
-    git clone https://github.com/projectdiscovery/subfinder.git &&\
     #git clone whatweb
     git clone https://github.com/urbanadventurer/WhatWeb.git && \
     #git clone dirsearch
@@ -162,10 +160,11 @@ RUN \
 
 # Installing subfinder
 RUN \
-    cd subfinder/v2/cmd/subfinder && \
-    go build . && \
-    mv subfinder /usr/local/bin/ &&\
-    rm -rf ../subfinder
+    wget --quiet https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_amd64.tar.gz -O subfinder.tar.gz && \
+    tar -xzf subfinder.tar.gz && \
+    ln -s /tools/recon/findomain/findomain /usr/bin/findomain && \
+    rm subfinder.tar.gz
+
 # Installing Shodan
 RUN \
     pip3 install shodan
