@@ -52,7 +52,7 @@ docker build -t nightingale .
 ```
 - After Creating the Docker Image, Login into the image and Happy Hacking.... ;-)
 ```
-docker run -ti nightingale /bin/bash
+ docker run -ti --hostname nightingale  nightingale /bin/bash
 ```
 
 ## To start, Restart and Stop the Postgresql database 
