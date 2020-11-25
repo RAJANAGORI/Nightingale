@@ -26,12 +26,16 @@ RUN apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libssl-dev \
     libwww-perl \
-    chromium-browser \
-    dos2unix \
-    openjdk-8-jdk \
+    dos2unix\
     ssh \
     git \
     ruby \
+    ruby-dev \
+    bundler \
+    bison \
+    flex \
+    autoconf \
+    automake \
     ruby-full \
     libcurl4-openssl-dev \
     make \
@@ -62,7 +66,6 @@ RUN apt-get install -y --no-install-recommends \
     nmap \ 
     tor \
     john \
-    wpscan \
     openvpn \
     cewl \
     hydra \
@@ -73,24 +76,21 @@ RUN apt-get install -y --no-install-recommends \
     net-tools \
     tcpdump \
     whois \
-    host \
-    dig
+    host
 
 RUN gem install nokogiri 
 
-ENV GO_VERSION=1.12.7
-
+# Install go
+WORKDIR /tmp
 RUN \
-    curl -O https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz &&\
-    tar xzf go${GO_VERSION}.linux-amd64.tar.gz &&\
-    chown -R root:root ./go &&\
-    mv go /usr/local &&\
-    rm -rf  go${GO_VERSION}.linux-amd64.tar.gz
-
-RUN \
-    echo "GOROOT=$HOME/go" >> ~/.profile &&\
-    echo "GOPATH=$HOME/work" >> ~/.profile &&\
-    echo "PATH=$PATH:$GOROOT/bin:$GOPATH/bin" >> ~/.profile
+    wget -q https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O go.tar.gz && \
+    tar -C /usr/local -xzf go.tar.gz && \
+# Install node
+    curl -sL https://deb.nodesource.com/setup_14.x | bash && \
+    apt install -y nodejs
+ENV GOROOT "/usr/local/go"
+ENV GOPATH "/root/go"
+ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
 
 # Installing Python dependencies
 COPY requirements.txt /tmp
@@ -160,17 +160,10 @@ COPY ./configuration/msf-configuration/scripts/db.sql /tmp/
 COPY ./configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 
 ## Installation
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
-  && git clone https://github.com/rapid7/metasploit-framework.git \
-  && cd metasploit-framework \
-  && git fetch --tags \
-  && latestTag=$(git describe --tags `git rev-list --tags --max-count=1`) \
-  && git checkout $latestTag \
-  && bundle install \
-  && /etc/init.d/postgresql start && su postgres -c "psql -f /tmp/db.sql" \
-  && apt-get -y remove --purge build-essential patch ruby-dev zlib1g-dev liblzma-dev git autoconf build-essential libpcap-dev libpq-dev libsqlite3-dev \
-  dialog apt-utils \
-  && rm -rf /var/lib/apt/lists/*
+RUN \
+    curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+    chmod 755 msfinstall && \
+    ./msfinstall
  
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml /home/tool-for-pentester/metasploit-framework/config/ 
