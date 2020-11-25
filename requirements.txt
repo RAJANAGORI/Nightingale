@@ -10,3 +10,7 @@ pyreadline;sys_platform == 'win32'
 tld
 fuzzywuzzy
 requests
+bs4
+fake_useragent
+wafw00f
+whois
