@@ -76,6 +76,7 @@ Note: Use of Postgresql is for msfConsole.
 - https://github.com/1N3/Sn1per.git
 - https://github.com/tomnomnom
 - https://github.com/s0md3v/XSStrike
+- https://github.com/tomnomnom/httprobe.git
 
 
 

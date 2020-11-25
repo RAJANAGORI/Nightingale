@@ -106,6 +106,19 @@ RUN \
 
 WORKDIR /home/tool-for-pentester/
 
+#git cloning of the wordlist
+RUN \
+    mkdir wordlists &&\
+    cd wordlists &&\
+    git clone --depth 1 https://github.com/xmendez/wfuzz.git && \
+    git clone --depth 1 https://github.com/danielmiessler/SecLists.git && \
+    git clone --depth 1 https://github.com/fuzzdb-project/fuzzdb.git && \
+    git clone --depth 1 https://github.com/daviddias/node-dirbuster.git && \
+    git clone --depth 1 https://github.com/v0re/dirb.git && \
+    curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
+    curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
+    curl -L -o fuzz.txt https://raw.githubusercontent.com/Bo0oM/fuzz.txt/master/fuzz.txt
+
 #git clonning 
 RUN \
     # Git clone of SqlMap
@@ -121,27 +134,38 @@ RUN \
     #git clone of xsstrike
     git clone https://github.com/s0md3v/XSStrike.git &&\
     #git clone of subfinder
-    git clone https://github.com/projectdiscovery/subfinder.git
+    git clone https://github.com/projectdiscovery/subfinder.git &&\
+    #git clone whatweb
+    git clone https://github.com/urbanadventurer/WhatWeb.git && \
+    #git clone dirsearch
+    git clone --depth 1 https://github.com/maurosoria/dirsearch.git && \
+    #git clone arjun
+    git clone --depth 1 https://github.com/s0md3v/Arjun.git 
 
-#git cloning of the wordlist
+# Installing tools
 RUN \
-    mkdir wordlists &&\
-    cd wordlists &&\
-    git clone --depth 1 https://github.com/xmendez/wfuzz.git && \
-    git clone --depth 1 https://github.com/danielmiessler/SecLists.git && \
-    git clone --depth 1 https://github.com/fuzzdb-project/fuzzdb.git && \
-    git clone --depth 1 https://github.com/daviddias/node-dirbuster.git && \
-    git clone --depth 1 https://github.com/v0re/dirb.git && \
-    curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
-    curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
-    curl -L -o fuzz.txt https://raw.githubusercontent.com/Bo0oM/fuzz.txt/master/fuzz.txt
+     ln -s WhatWeb/whatweb /usr/bin/whatweb &&\
+     go get -u github.com/tomnomnom/httprobe
+
+# Download findomain
+RUN \
+    mkdir findomain &&\
+    cd findomain && \
+    wget --quiet https://github.com/Edu4rdSHL/findomain/releases/download/2.1.1/findomain-linux -O findomain && \
+    chmod +x findomain
+
+
+# Installing snipers
+RUN \
+    cd Sn1per &&\
+    ./install.sh 
 
 # Installing subfinder
 RUN \
     cd subfinder/v2/cmd/subfinder && \
     go build . && \
-    mv subfinder /usr/local/bin/ 
-
+    mv subfinder /usr/local/bin/ &&\
+    rm -rf ../subfinder
 # Installing Shodan
 RUN \
     pip3 install shodan
@@ -167,10 +191,6 @@ RUN \
  
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml /home/tool-for-pentester/metasploit-framework/config/ 
-
-## Configuration and sharing folders
-VOLUME ~/.msf4: /root/.msf4/
-VOLUME /tmp/msf: /tmp/data/
 
 CMD "./configuration/msf-configuration/scripts/init.sh"
 
