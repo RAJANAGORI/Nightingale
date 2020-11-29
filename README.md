@@ -54,11 +54,3 @@ Note: Use of Postgresql is for msfConsole.
 
 Please free to contribute 
 
-
-<!-- ## :coffee: Donations
-
-Thanks for your donations, are always appreciated.
-
-While I drink the coffee I check more tools to add in the docker image.
-
-[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/rajanagori) -->
