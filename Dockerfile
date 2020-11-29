@@ -152,7 +152,6 @@ RUN \
     wget --quiet https://github.com/Edu4rdSHL/findomain/releases/download/2.1.1/findomain-linux -O findomain && \
     chmod +x findomain
 
-
 # Installing snipers
 RUN \
     cd Sn1per &&\
