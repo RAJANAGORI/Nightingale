@@ -15,7 +15,13 @@ RUN apt-get -y update && \
     cd /usr/local/bin &&\
     ln -s /usr/bin/python3 python &&\
     pip3 install --upgrade pip
-    
+
+# Installing Python dependencies
+COPY requirements.txt /tmp
+
+RUN \
+    pip3 install -r /tmp/requirements.txt
+
 RUN apt-get install -y --no-install-recommends \
     htop \
     unzip \
@@ -88,15 +94,10 @@ RUN \
 # Install node
     curl -sL https://deb.nodesource.com/setup_14.x | bash && \
     apt install -y nodejs
+# Install Perl 
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
-
-# Installing Python dependencies
-COPY requirements.txt /tmp
-
-RUN \
-    pip3 install -r /tmp/requirements.txt
 
 #Working Directory of tools
 RUN \
@@ -110,11 +111,11 @@ WORKDIR /home/tool-for-pentester/
 RUN \
     mkdir wordlists &&\
     cd wordlists &&\
-    git clone --depth 1 https://github.com/xmendez/wfuzz.git && \
-    git clone --depth 1 https://github.com/danielmiessler/SecLists.git && \
-    git clone --depth 1 https://github.com/fuzzdb-project/fuzzdb.git && \
-    git clone --depth 1 https://github.com/daviddias/node-dirbuster.git && \
-    git clone --depth 1 https://github.com/v0re/dirb.git && \
+    git clone  https://github.com/xmendez/wfuzz.git && \
+    git clone  https://github.com/danielmiessler/SecLists.git && \
+    git clone  https://github.com/fuzzdb-project/fuzzdb.git && \
+    git clone  https://github.com/daviddias/node-dirbuster.git && \
+    git clone  https://github.com/v0re/dirb.git && \
     curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
     curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
     curl -L -o fuzz.txt https://raw.githubusercontent.com/Bo0oM/fuzz.txt/master/fuzz.txt
@@ -136,9 +137,22 @@ RUN \
     #git clone whatweb
     git clone https://github.com/urbanadventurer/WhatWeb.git && \
     #git clone dirsearch
-    git clone --depth 1 https://github.com/maurosoria/dirsearch.git && \
+    git clone  https://github.com/maurosoria/dirsearch.git && \
     #git clone arjun
-    git clone --depth 1 https://github.com/s0md3v/Arjun.git 
+    git clone  https://github.com/s0md3v/Arjun.git && \
+    #git clone joomscan
+     git clone  https://github.com/rezasp/joomscan.git && \
+    # git clone massdns
+    git clone https://github.com/blechschmidt/massdns.git && \
+    # git clone strike
+    git clone https://github.com/s0md3v/Striker.git && \
+    # git clone LinkFinder
+    git clone https://github.com/GerbenJavado/LinkFinder.git
+
+# Installing LinkFinder
+RUN \
+    cd LinkFinder &&\
+    python setup.py install
 
 # Installing tools
 RUN \
