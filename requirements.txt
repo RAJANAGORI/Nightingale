@@ -14,3 +14,4 @@ bs4
 fake_useragent
 wafw00f
 whois
+jsbeautifier
