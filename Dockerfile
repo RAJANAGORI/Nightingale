@@ -22,7 +22,7 @@ COPY requirements.txt /tmp
 RUN \
     pip3 install -r /tmp/requirements.txt
 
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get -f install -y --no-install-recommends \
     htop \
     unzip \
     locate \
@@ -82,9 +82,15 @@ RUN apt-get install -y --no-install-recommends \
     net-tools \
     tcpdump \
     whois \
-    host
+    host \
+    figlet 
 
 RUN gem install nokogiri 
+
+# Banner shell and run shell file
+COPY banner.sh /tmp/banner.sh
+RUN \
+    cat /tmp/banner.sh >> /root/.bashrc
 
 # Install go
 WORKDIR /tmp
@@ -128,8 +134,8 @@ RUN \
     git clone https://github.com/c0dejump/HawkScan.git &&\
     #Git clone of impacket toolkit
     git clone https://github.com/SecureAuthCorp/impacket.git &&\
-    #git clonning of automation tool for ofensive security expert
-    git clone https://github.com/1N3/Sn1per.git &&\
+    # #git clonning of automation tool for ofensive security expert
+    # git clone https://github.com/1N3/Sn1per.git &&\
     #Git clone Assetfinder
     git clone https://github.com/tomnomnom/assetfinder.git &&\
     #git clone of xsstrike
@@ -166,10 +172,10 @@ RUN \
     wget --quiet https://github.com/Edu4rdSHL/findomain/releases/download/2.1.1/findomain-linux -O findomain && \
     chmod +x findomain
 
-# Installing snipers
-RUN \
-    cd Sn1per &&\
-    ./install.sh 
+# # Installing snipers
+# RUN \
+#     cd Sn1per &&\
+#     ./install.sh 
 
 # Installing subfinder
 RUN \
