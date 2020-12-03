@@ -4,7 +4,7 @@ FROM debian:latest
 LABEL maintainer="Raja Nagori" \
       email="rajanagori19@gmail.com"
 
-USER root
+USER docker
 
 # Installing Dependencies and tools for kali linux environment 
 RUN apt-get -y update && \
@@ -85,10 +85,12 @@ RUN apt-get -f install -y --no-install-recommends \
     host \
     figlet 
 
-RUN gem install nokogiri 
+RUN \
+    gem install nokogiri 
 
 # Banner shell and run shell file
-COPY banner.sh /tmp/banner.sh
+COPY \
+    banner.sh /tmp/banner.sh
 RUN \
     cat /tmp/banner.sh >> /root/.bashrc
 
@@ -111,7 +113,8 @@ RUN \
     mkdir tool-for-pentester &&\
     cd tool-for-pentester
 
-WORKDIR /home/tool-for-pentester/
+WORKDIR \
+    /home/tool-for-pentester/
 
 #git cloning of the wordlist
 RUN \
@@ -201,7 +204,7 @@ COPY ./configuration/msf-configuration/scripts/db.sql /tmp/
 ## Startup script
 COPY ./configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 
-## Installation
+## Installation of msf framework
 RUN \
     curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
     chmod 755 msfinstall && \
@@ -221,3 +224,4 @@ RUN apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* 
 
+WORKDIR /
