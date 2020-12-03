@@ -52,5 +52,5 @@ Note: Use of Postgresql is for msfConsole.
 
 
 
-Please free to contribute 
+Please feel free to contribute
 
