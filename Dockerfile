@@ -4,7 +4,7 @@ FROM debian:latest
 LABEL maintainer="Raja Nagori" \
       email="rajanagori19@gmail.com"
 
-USER docker
+USER root
 
 # Installing Dependencies and tools for kali linux environment 
 RUN apt-get -y update && \
