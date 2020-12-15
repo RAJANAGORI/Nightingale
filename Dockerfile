@@ -6,22 +6,6 @@ LABEL maintainer="Raja Nagori" \
 
 USER root
 
-# Installing Dependencies and tools for kali linux environment 
-RUN apt-get -y update && \
-    apt-get -y upgrade && \
-    apt-get install -y \
-    python3-pip \
-    python3-dev &&\
-    cd /usr/local/bin &&\
-    ln -s /usr/bin/python3 python &&\
-    pip3 install --upgrade pip
-
-# Installing Python dependencies
-COPY requirements.txt /tmp
-
-RUN \
-    pip3 install -r /tmp/requirements.txt
-
 RUN apt-get -f install -y --no-install-recommends \
     htop \
     unzip \
@@ -93,6 +77,22 @@ COPY \
     banner.sh /tmp/banner.sh
 RUN \
     cat /tmp/banner.sh >> /root/.bashrc
+
+# Installing Dependencies and tools for kali linux environment 
+RUN apt-get -y update && \
+    apt-get -y upgrade && \
+    apt-get install -y \
+    python3-pip \
+    python3-dev &&\
+    cd /usr/local/bin &&\
+    ln -s /usr/bin/python3 python &&\
+    pip3 install --upgrade pip
+
+# Installing Python dependencies
+COPY requirements.txt /tmp
+
+RUN \
+    pip3 install -r /tmp/requirements.txt
 
 # Install go
 WORKDIR /tmp
