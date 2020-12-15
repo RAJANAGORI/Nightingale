@@ -6,7 +6,10 @@ LABEL maintainer="Raja Nagori" \
 
 USER root
 
-RUN apt-get -f install -y --no-install-recommends \
+RUN \
+    apt-get -y update && \
+    apt-get -y upgrade && \
+    apt-get -f install -y --no-install-recommends \
     htop \
     unzip \
     locate \
@@ -79,8 +82,7 @@ RUN \
     cat /tmp/banner.sh >> /root/.bashrc
 
 # Installing Dependencies and tools for kali linux environment 
-RUN apt-get -y update && \
-    apt-get -y upgrade && \
+RUN \
     apt-get install -y \
     python3-pip \
     python3-dev &&\
