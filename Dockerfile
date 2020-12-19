@@ -6,6 +6,7 @@ LABEL maintainer="Raja Nagori" \
 
 USER root
 
+# Installing os tools and other dependencies.
 RUN \
     apt-get -y update && \
     apt-get -y upgrade && \
@@ -59,17 +60,9 @@ RUN \
     nmap \ 
     tor \
     john \
-    openvpn \
     cewl \
     hydra \
     medusa \
-    traceroute \
-    telnet \
-    dnsutils \
-    net-tools \
-    tcpdump \
-    whois \
-    host \
     figlet 
 
 RUN \
@@ -77,7 +70,7 @@ RUN \
 
 # Banner shell and run shell file
 COPY \
-    banner.sh /tmp/banner.sh
+    shells/banner.sh /tmp/banner.sh
 RUN \
     cat /tmp/banner.sh >> /root/.bashrc
 
@@ -139,8 +132,6 @@ RUN \
     git clone https://github.com/c0dejump/HawkScan.git &&\
     #Git clone of impacket toolkit
     git clone https://github.com/SecureAuthCorp/impacket.git &&\
-    # #git clonning of automation tool for ofensive security expert
-    # git clone https://github.com/1N3/Sn1per.git &&\
     #Git clone Assetfinder
     git clone https://github.com/tomnomnom/assetfinder.git &&\
     #git clone of xsstrike
@@ -152,7 +143,7 @@ RUN \
     #git clone arjun
     git clone  https://github.com/s0md3v/Arjun.git && \
     #git clone joomscan
-     git clone  https://github.com/rezasp/joomscan.git && \
+    git clone  https://github.com/rezasp/joomscan.git && \
     # git clone massdns
     git clone https://github.com/blechschmidt/massdns.git && \
     # git clone strike
@@ -177,11 +168,6 @@ RUN \
     wget --quiet https://github.com/Edu4rdSHL/findomain/releases/download/2.1.1/findomain-linux -O findomain && \
     chmod +x findomain
 
-# # Installing snipers
-# RUN \
-#     cd Sn1per &&\
-#     ./install.sh 
-
 # Installing subfinder
 RUN \
     wget --quiet https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_amd64.tar.gz -O subfinder.tar.gz && \
@@ -198,6 +184,26 @@ RUN \
     cd impacket &&\
     python setup.py build &&\
     python setup.py install
+
+# Installing forensic tools
+RUN \
+    apt-get install -y \
+    exiftool \
+    steghide \
+    binwalk \
+    foremost 
+
+# Installing Network tools
+RUN \
+    apt-get -f install -y --no-install-recommends \
+    traceroute \
+    telnet \
+    net-tools \
+    iputils-ping \
+    tcpdump \
+    openvpn \
+    whois \
+    host 
 
 # Installing Metasploit-framework
 ## PosgreSQL DB
