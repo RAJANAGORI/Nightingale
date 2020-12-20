@@ -225,6 +225,7 @@ CMD "./configuration/msf-configuration/scripts/init.sh"
 
 # Expose the service ports
 EXPOSE 5432
+EXPOSE 9050
 EXPOSE 9990-9999
 
 # Cleaning Unwanted libraries 
