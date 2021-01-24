@@ -63,7 +63,8 @@ RUN \
     cewl \
     hydra \
     medusa \
-    figlet 
+    figlet \
+    sudo
 
 RUN \
     gem install nokogiri 
@@ -214,7 +215,7 @@ COPY ./configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 
 ## Installation of msf framework
 RUN \
-    curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+    wget -L https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb -O msfinstall && \
     chmod 755 msfinstall && \
     ./msfinstall
  
@@ -226,6 +227,7 @@ CMD "./configuration/msf-configuration/scripts/init.sh"
 # Expose the service ports
 EXPOSE 5432
 EXPOSE 9990-9999
+EXPOSE 8000-9000
 
 # Cleaning Unwanted libraries 
 RUN apt-get -y autoremove &&\
