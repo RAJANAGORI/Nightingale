@@ -43,7 +43,7 @@ service postgresql stop
 
 Note: Use of Postgresql is for msfConsole.
 ## Refrence 
-- https://github.com/phocean/dockerfile-msf.git
+- https://github.com/phocean/dockerfile-msf.gitY
 - https://github.com/c0dejump/HawkScan.git
 - https://github.com/1N3/Sn1per.git
 - https://github.com/tomnomnom
@@ -53,4 +53,8 @@ Note: Use of Postgresql is for msfConsole.
 
 
 Please feel free to contribute
+
+[<a href="https://www.buymeacoffee.com/rajanagori"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=rajanagori&button_colour=1b37c5&font_colour=ffffff&font_family=Lato&outline_colour=ffffff&coffee_colour=FFDD00"></a>](https://www.buymeacoffee.com/rajanagori)
+
+
 
