@@ -159,8 +159,10 @@ RUN \
 
 # Installing tools
 RUN \
-     ln -s WhatWeb/whatweb /usr/bin/whatweb &&\
-     go get -u github.com/tomnomnom/httprobe
+    mkdir recon-tools && \
+    git clone https://github.com/RAJANAGORI/tool-install-script.git . && \
+    chmod +x install.sh && \
+    ./install.sh
 
 # Download findomain
 RUN \
