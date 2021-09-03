@@ -1,5 +1,5 @@
 # Pulling the base image
-FROM debian:latest
+FROM debian:11
 
 LABEL maintainer="Raja Nagori" \
       email="rajanagori19@gmail.com"
