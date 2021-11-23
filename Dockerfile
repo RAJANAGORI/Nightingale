@@ -37,15 +37,11 @@ RUN \
     postgresql \
     postgresql-contrib \
     postgresql-client \
-    dialog apt-utils \
-    python-requests\
-    python-dnspython \
-    python-argparse \
+    dialog apt-utils\
 #################################################### Operating system dependecies end here
 #################################################### Operating System Tools start here 
     vim \
     zsh \
-    oh-my-zsh \
     locate \
     tree \
     htop \
