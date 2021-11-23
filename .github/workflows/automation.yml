@@ -9,7 +9,7 @@ on: push
 jobs:
   build-container:
     name: Build Docker image of Nightingale on Docker Hub
-    runs-on: [self-hosted, linux, x64, gpu]
+    runs-on: ubuntu-latest
     steps:
       - name: Publish to Docker hub
         uses: docker/build-push-action@v1
