@@ -86,9 +86,7 @@ RUN \
     sudo
 
 RUN \
-    gem install nokogiri \
-    systemctl enable --now snapd apparmor \
-    snap install core
+    gem install nokogiri 
 
 #################################################### Programming Language Support
 RUN \
@@ -106,8 +104,7 @@ RUN \
     wget -q https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     # Install node
-    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash \
-    cat env.txt >> /root/.bashrc
+    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
     
     # Install Perl 
 ENV GOROOT "/usr/local/go"
@@ -166,26 +163,19 @@ RUN \
     # git clone strike
     git clone https://github.com/s0md3v/Striker.git && \
     # git clone LinkFinder
-    git clone https://github.com/GerbenJavado/LinkFinder.git \
+    git clone https://github.com/GerbenJavado/LinkFinder.git &&  \
     # git clone massscan
-    git clone https://github.com/robertdavidgraham/masscan \
+    git clone https://github.com/robertdavidgraham/masscan && \
     #git clone Spiderfoot
-    git clone https://github.com/smicallef/spiderfoot.git \
+    git clone https://github.com/smicallef/spiderfoot.git && \
     #git clone sublister
-    https://github.com/aboul3la/Sublist3r.git
+    git clone https://github.com/aboul3la/Sublist3r.git
 
 #################################################### Installing Tools for the Sudomain findings start here
     ## Installing LinkFinder
 RUN \
     cd LinkFinder &&\
     python setup.py install
-
-    ## Installing recon-tools
-RUN \
-    mkdir recon-tools && \
-    git clone https://github.com/RAJANAGORI/tool-install-script.git . && \
-    chmod +x install.sh && \
-    ./install.sh
 
     ## Download findomain
 RUN \
@@ -206,9 +196,9 @@ RUN \
     apt-get install -y \
     dirb
 
-    ## Installing amass
-RUN \
-    snap install amass
+#     ## Installing amass
+# RUN \
+#     snap install amass
 #################################################### Installing Tools for the Sudomain findings end here
 #################################################### Installing Shodan
 RUN \
