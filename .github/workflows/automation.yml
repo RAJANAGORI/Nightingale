@@ -1,0 +1,20 @@
+# This workflow checks out code, builds an image, performs a container image
+# vulnerability scan with Anchore's Grype tool, and integrates the results with GitHub Advanced Security
+# code scanning feature.  For more information on the Anchore scan action usage
+# and parameters, see https://github.com/anchore/scan-action. For more
+# information on Anchore's container image scanning tool Grype, see
+# https://github.com/anchore/grype
+name: Docker Hub Image Nightingale
+on: push
+jobs:
+  build-container:
+    name: Build Docker image of Nightingale on Docker Hub
+    runs-on: debian-latest
+    steps:
+      - name: Publish to Docker hub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: rajanagori/nightingale
+          tags: latest, ${{ github.run_number }}
