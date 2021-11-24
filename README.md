@@ -54,7 +54,5 @@ Note: Use of Postgresql is for msfConsole.
 
 Please feel free to contribute
 
-[<a href="https://www.buymeacoffee.com/rajanagori"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=rajanagori&button_colour=1b37c5&font_colour=ffffff&font_family=Lato&outline_colour=ffffff&coffee_colour=FFDD00"></a>](https://www.buymeacoffee.com/rajanagori)
-
-
+<a href="https://www.buymeacoffee.com/rajanagori"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=🍵&slug=rajanagori&button_colour=5F7FFF&font_colour=ffffff&font_family=Arial&outline_colour=000000&coffee_colour=FFDD00"></a>
 
