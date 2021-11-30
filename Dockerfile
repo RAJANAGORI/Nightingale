@@ -14,8 +14,9 @@ USER root
 
 #### Installing os tools and other dependencies. ####
 RUN \
-    apt-get -y update && \
-    apt-get -y upgrade && \
+    # apt-get -y dist-upgrade && \
+    apt-get -y update --fix-missing && \
+    # apt-get -y upgrade && \
     apt-get -f install -y --no-install-recommends \
 #################################################### Operating system dependecies start
     libcurl4-openssl-dev \
@@ -38,6 +39,8 @@ RUN \
     postgresql-contrib \
     postgresql-client \
     dialog apt-utils\
+    libjson-c-dev \
+    libwebsockets-dev \
 #################################################### Operating system dependecies end here
 #################################################### Operating System Tools start here 
     vim \
@@ -65,6 +68,7 @@ RUN \
     automake \
     ruby-full \
     make \
+    cmake \
     curl \
     gnupg \
     patch \
@@ -93,16 +97,17 @@ RUN \
     ln -s /usr/bin/python3 python &&\
     pip3 install --upgrade pip
     
-    # Install go
+    # Install go and node
 WORKDIR /tmp
-COPY configuration/nodejs-env/env.txt /tmp/
 RUN \ 
     wget -q https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     # Install node
     wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-    
-    # Install Perl 
+
+RUN \
+    mkdir -p /root/go
+
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
@@ -114,7 +119,7 @@ RUN \
 
 #################################################### Working Directory of tools Start here
 RUN \
-    cd /home/$USER &&\
+    cd /home &&\
     mkdir tool-for-pentester &&\
     cd tool-for-pentester
 
@@ -166,6 +171,10 @@ RUN \
     git clone https://github.com/smicallef/spiderfoot.git && \
     #git clone sublister
     git clone https://github.com/aboul3la/Sublist3r.git
+#################################################### Working for interactive tool starts here
+COPY \
+    binary/ttyd /usr/bin/ttyd
+#################################################### Working for interactive tool starts here
 
 #################################################### Installing Tools for the Sudomain findings start here
     ## Installing LinkFinder
@@ -259,10 +268,11 @@ EXPOSE 5432
 EXPOSE 9990-9999
 EXPOSE 8000-9000
 EXPOSE 5001
+EXPOSE 7681
 
 # Cleaning Unwanted libraries 
 RUN apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* 
 #################################################### Working Directory of tools ends here
-WORKDIR /
+WORKDIR /home/tool-for-pentester
