@@ -15,8 +15,8 @@ USER root
 #### Installing os tools and other dependencies. ####
 RUN \
     # apt-get -y dist-upgrade && \
-    apt-get -y update --fix-missing && \
-    # apt-get -y upgrade && \
+    apt-get -y update && \
+    apt-get -y upgrade && \
     apt-get -f install -y --no-install-recommends \
 #################################################### Operating system dependecies start
     libcurl4-openssl-dev \
@@ -75,7 +75,6 @@ RUN \
     ruby-bundler \
     nasm \
     wget \
-    smbclient \
 #################################################### Dev Essentials end here
     tor \
     john \
@@ -172,8 +171,11 @@ RUN \
     #git clone sublister
     git clone https://github.com/aboul3la/Sublist3r.git
 #################################################### Working for interactive tool starts here
-COPY \
-    binary/ttyd /usr/bin/ttyd
+RUN \
+    mkdir binary && \
+    cd binary && \
+    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
+    chmod +x ttyd
 #################################################### Working for interactive tool starts here
 
 #################################################### Installing Tools for the Sudomain findings start here
