@@ -272,6 +272,17 @@ EXPOSE 8000-9000
 EXPOSE 5001
 EXPOSE 7681
 
+# Tor setting 
+RUN useradd tor
+COPY torrc /etc/tor/
+CMD ["/usr/bin/tor", "-f", "/etc/tor/torrc"]
+RUN chmod 777 /var/lib/tor
+HEALTHCHECK --interval=60s --timeout=15s --start-period=20s \
+            CMD curl -sx localhost:8118 'https://check.torproject.org/' | \
+            grep -qm1 Congratulations
+EXPOSE 9150/tcp
+
+
 # Cleaning Unwanted libraries 
 RUN apt-get -y autoremove &&\
     apt-get -y clean &&\
