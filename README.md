@@ -26,6 +26,12 @@ docker build -t rajanagori/nightingale .
 ```
  docker run -ti --hostname nightingale  rajanagori/nightingale /bin/bash
 ```
+- Now, you can directly access Nightingale interactive terminal using browser
+```
+docker run -it -p 0.0.0.0:8080:7681 -d rajanagori/nightingale /home/tool-for-pentester/binary/ttyd -p 7681 bash
+```
+- Now call your browser and hit 127.0.0.1:8080 and you will be prooo!!!!
+
 
 ## To start, Restart and Stop the Postgresql database 
 - To start the service
