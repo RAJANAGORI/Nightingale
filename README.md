@@ -12,26 +12,36 @@ The Reason behind creating this Docker file to make a platform independent penet
 ## Docker Image build and Run 
 - Take a clone of the repository
 ```
-git clone https://github.com/RAJANAGORI/Nightingale.git
+$ git clone https://github.com/RAJANAGORI/Nightingale.git
 ```
 - Change the Directory
 ```
-cd Nightingale
+$ cd Nightingale
 ```
 - Now build the Docker Image.
 ```
-docker build -t rajanagori/nightingale .
+$ docker build -t rajanagori/nightingale .
 ```
 - After Creating the Docker Image, Login into the image and Happy Hacking.... ;-)
 ```
- docker run -ti --hostname nightingale  rajanagori/nightingale /bin/bash
+$ docker run -ti --hostname nightingale  rajanagori/nightingale /bin/bash
 ```
 - Now, you can directly access Nightingale interactive terminal using browser
 ```
-docker run -it -p 0.0.0.0:8080:7681 -d rajanagori/nightingale /home/tool-for-pentester/binary/ttyd -p 7681 bash
+$ docker run -it -p 0.0.0.0:8080:7681 -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash
 ```
-- Now call your browser and hit 127.0.0.1:8080 and you will be prooo!!!!
-
+- If you want to run MobSF along with the nigtingale then I will give you a good new now you can do the same....!!
+#### part 1
+```
+$ docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash
+```
+#### part 2
+```
+cd /home/tools_mobile_vapt/Mobile-Security-Framework-MobSF/
+source venv/bin/activate
+./run 0.0.0.0:8081 &
+```
+- Call your browser and hit 127.0.0.1:8080 for nightingale terminal and 127.0.0.1:8081 for MobFs to become you will be prooo!!!!
 
 ## To start, Restart and Stop the Postgresql database 
 - To start the service
