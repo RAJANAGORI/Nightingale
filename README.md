@@ -18,7 +18,7 @@ $ git clone https://github.com/RAJANAGORI/Nightingale.git
 ```
 $ cd Nightingale
 ```
-- Now build the Docker Image.
+- Now build the Docker Image
 ```
 $ docker build -t rajanagori/nightingale .
 ```
