@@ -208,6 +208,10 @@ RUN \
 RUN \
     pip3 install shodan
 
+### Installing tools using SNAP
+RUN \
+    snap install amass
+    
 ### Installing Impact toolkit for Red-Team 
 WORKDIR ${TOOLS_RED_TEAMING}
 RUN \
