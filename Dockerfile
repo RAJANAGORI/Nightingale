@@ -208,10 +208,13 @@ RUN \
 RUN \
     pip3 install shodan
 
-### Installing tools using SNAP
+### Installing Amass 
 RUN \
-    snap install amass
-    
+    wget --quiet https://github.com/OWASP/Amass/releases/download/v3.16.0/amass_linux_amd64.zip -O amass.zip &&\
+    unzip amass.zip && \
+    cd amass && \
+    cp amass /usr/local/bin
+
 ### Installing Impact toolkit for Red-Team 
 WORKDIR ${TOOLS_RED_TEAMING}
 RUN \
