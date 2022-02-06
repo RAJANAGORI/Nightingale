@@ -145,33 +145,33 @@ WORKDIR ${TOOLS_WEB_VAPT}
 # git clonning of tools repository
 RUN \
     # Git clone of SqlMap
-    git clone https://github.com/sqlmapproject/sqlmap.git &&\
+    git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git &&\
     # Git clone of HawkScan
-    git clone https://github.com/c0dejump/HawkScan.git &&\
+    git clone --depth 1 https://github.com/c0dejump/HawkScan.git &&\
     #Git clone Assetfinder
-    git clone https://github.com/tomnomnom/assetfinder.git &&\
+    git clone --depth 1 https://github.com/tomnomnom/assetfinder.git &&\
     #git clone of xsstrike
-    git clone https://github.com/s0md3v/XSStrike.git &&\
+    git clone --depth 1 https://github.com/s0md3v/XSStrike.git &&\
     #git clone whatweb
-    git clone https://github.com/urbanadventurer/WhatWeb.git && \
+    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git && \
     #git clone dirsearch
-    git clone  https://github.com/maurosoria/dirsearch.git && \
+    git clone --depth 1  https://github.com/maurosoria/dirsearch.git && \
     #git clone arjun
-    git clone  https://github.com/s0md3v/Arjun.git && \
+    git clone --depth 1  https://github.com/s0md3v/Arjun.git && \
     #git clone joomscan
-    git clone  https://github.com/rezasp/joomscan.git && \
+    git clone --depth 1  https://github.com/rezasp/joomscan.git && \
     # git clone massdns
-    git clone https://github.com/blechschmidt/massdns.git && \
+    git clone --depth 1 https://github.com/blechschmidt/massdns.git && \
     # git clone strike
-    git clone https://github.com/s0md3v/Striker.git && \
+    git clone --depth 1 https://github.com/s0md3v/Striker.git && \
     # git clone LinkFinder
-    git clone https://github.com/GerbenJavado/LinkFinder.git &&  \
+    git clone --depth 1 https://github.com/GerbenJavado/LinkFinder.git &&  \
     # git clone massscan
-    git clone https://github.com/robertdavidgraham/masscan && \
+    git clone --depth 1 https://github.com/robertdavidgraham/masscan && \
     #git clone Spiderfoot
-    git clone https://github.com/smicallef/spiderfoot.git && \
+    git clone --depth 1 https://github.com/smicallef/spiderfoot.git && \
     #git clone sublister
-    git clone https://github.com/aboul3la/Sublist3r.git
+    git clone --depth 1 https://github.com/aboul3la/Sublist3r.git
 
 ### Installing Tools for the Sudomain findings start here
 ## Installing LinkFinder
@@ -212,14 +212,14 @@ RUN \
 RUN \
     wget --quiet https://github.com/OWASP/Amass/releases/download/v3.16.0/amass_linux_amd64.zip -O amass.zip &&\
     unzip amass.zip && \
-    cd amass && \
-    cp amass /usr/local/bin
+    cd amass_linux_amd64 && \
+    cp amass /usr/local/bin && cd .. && rm -rf amass_linux_amd64 amass.zip
 
 ### Installing Impact toolkit for Red-Team 
 WORKDIR ${TOOLS_RED_TEAMING}
 RUN \
     #Git clone of impacket toolkit
-    git clone https://github.com/SecureAuthCorp/impacket.git
+    git clone --depth 1 https://github.com/SecureAuthCorp/impacket.git
 
     #installing impact tool
 RUN \
@@ -231,11 +231,11 @@ RUN \
 WORKDIR ${WORDLIST}
 ## git cloning from repo
 RUN \
-    git clone  https://github.com/xmendez/wfuzz.git && \
-    git clone  https://github.com/danielmiessler/SecLists.git && \
-    git clone  https://github.com/fuzzdb-project/fuzzdb.git && \
-    git clone  https://github.com/daviddias/node-dirbuster.git && \
-    git clone  https://github.com/v0re/dirb.git && \
+    git clone --depth 1  https://github.com/xmendez/wfuzz.git && \
+    git clone --depth 1  https://github.com/danielmiessler/SecLists.git && \
+    git clone --depth 1  https://github.com/fuzzdb-project/fuzzdb.git && \
+    git clone --depth 1  https://github.com/daviddias/node-dirbuster.git && \
+    git clone --depth 1  https://github.com/v0re/dirb.git && \
     curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
     curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
     curl -L -o fuzz.txt https://raw.githubusercontent.com/Bo0oM/fuzz.txt/master/fuzz.txt
@@ -252,7 +252,7 @@ WORKDIR ${TOOLS_MOBILE_VAPT}
 
 RUN \
     # Git cloning of MobSf
-    git clone https://github.com/MobSF/Mobile-Security-Framework-MobSF.git
+    git clone --depth 1 https://github.com/MobSF/Mobile-Security-Framework-MobSF.git
 
 RUN \
     cd Mobile-Security-Framework-MobSF && \
