@@ -10,7 +10,17 @@ COPY \
 RUN \
     cat /tmp/banner.sh >> /root/.bashrc
 
-USER root
+#Providing docker container security here
+## My motto here is if you want to secure your container you can perform these best practices
+# 1. Create Group
+# 2. Create non root user 
+# 3. Disable root user
+# 4. or if you don't want to disable root user then do the this "RUN echo “root:your_passwrod” | chpasswd"
+
+RUN \
+    groupadd -r non-root-user &&\
+    useradd -r -g non-root-user non-root-user &&\
+    chsh -s /usr/sbin/nologin root
 
 #### Installing os tools and other dependencies.
 RUN \
