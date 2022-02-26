@@ -135,6 +135,7 @@ ENV TOOLS_OSINT=/home/tools_osint/
 ENV TOOLS_MOBILE_VAPT=/home/tools_mobile_vapt/
 ENV TOOLS_RED_TEAMING=/home/tools_red_teaming/
 ENV TOOLS_FORENSICS=/home/tools_forensics/
+ENV TOOLS_GIT_RECON=/home/tools_git_recon/
 ENV WORDLIST=/home/wordlist/
 ENV BINARIES=/home/binaries/
 ENV METASPLOIT_CONFIG=/home/metasploit_config/
@@ -171,17 +172,24 @@ RUN \
     #git clone Spiderfoot
     git clone --depth 1 https://github.com/smicallef/spiderfoot.git && \
     #git clone sublister
-    git clone --depth 1 https://github.com/aboul3la/Sublist3r.git
+    git clone --depth 1 https://github.com/aboul3la/Sublist3r.git &&\
+    #git clone jwt_tool
+    git clone --depth 1 https://github.com/ticarpi/jwt_tool.git
 
-### Installing Tools for the Sudomain findings start here
+### Installing Tools 
+## Installing JWT_Tool
+RUN \
+    cd ${TOOLS_WEB_VAPT}/jwt_tool &&\
+    python -m venv jwt_tool_env &&\
+    jwt_tool_env/bin/pip install -r requirements.txt
+
 ## Installing LinkFinder
 RUN \
-    cd LinkFinder &&\
+    cd ${TOOLS_WEB_VAPT}/LinkFinder &&\
     python setup.py install
 ## Download findomain
 RUN \
-    mkdir findomain &&\
-    cd findomain && \
+    cd ${TOOLS_WEB_VAPT}/findomain &&\
     wget --quiet https://github.com/Edu4rdSHL/findomain/releases/download/2.1.1/findomain-linux -O findomain && \
     chmod +x findomain
 ## Installing subfinder
@@ -250,13 +258,12 @@ RUN \
 ## All Mobile (Android and iOS) VAPT support
 WORKDIR ${TOOLS_MOBILE_VAPT}
 
-RUN \
+RUN \ 
     # Git cloning of MobSf
     git clone --depth 1 https://github.com/MobSF/Mobile-Security-Framework-MobSF.git
 
 RUN \
     cd Mobile-Security-Framework-MobSF && \
-    pip install virtualenv && \
     python -m venv venv &&\
     venv/bin/pip install -r requirements.txt
 

@@ -12,7 +12,7 @@ The Reason behind creating this Docker file to make a platform independent penet
 ## Docker Image build and Run 
 - Take a clone of the repository
 ```
-$ git clone https://github.com/RAJANAGORI/Nightingale.git
+$ git clone --depth 1 https://github.com/RAJANAGORI/Nightingale.git
 ```
 - Change the Directory
 ```
