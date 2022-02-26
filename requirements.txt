@@ -43,3 +43,4 @@ openpyxl>=3.0.9,<4
 argparse
 dnspython
 requests
+virtualenv
