@@ -179,19 +179,22 @@ RUN \
 ### Installing Tools 
 ## Installing JWT_Tool
 RUN \
-    cd ${TOOLS_WEB_VAPT}/jwt_tool &&\
+    cd jwt_tool &&\
     python -m venv jwt_tool_env &&\
     jwt_tool_env/bin/pip install -r requirements.txt
 
 ## Installing LinkFinder
 RUN \
-    cd ${TOOLS_WEB_VAPT}/LinkFinder &&\
+    cd LinkFinder &&\
     python setup.py install
 ## Download findomain
 RUN \
-    cd ${TOOLS_WEB_VAPT}/findomain &&\
+    mkdir findomain &&\
+    cd findomain &&\
     wget --quiet https://github.com/Edu4rdSHL/findomain/releases/download/2.1.1/findomain-linux -O findomain && \
-    chmod +x findomain
+    chmod +x findomain &&\
+    mv findomain /usr/local/bin/findomain &&\
+    rm -rf ../findomain
 ## Installing subfinder
 RUN \
     wget --quiet https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_amd64.tar.gz -O subfinder.tar.gz && \
