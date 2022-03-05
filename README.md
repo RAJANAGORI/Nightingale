@@ -1,10 +1,24 @@
 # Docker for Pentesters
+
+![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
+
+[![OWASP Flagship](https://img.shields.io/badge/owasp-flagship%20project-48A646.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)<br>
+
+![](https://img.shields.io/github/followers/RAJANAGORI?style=social)<br>
+![](https://img.shields.io/github/stars/RAJANAGORI?style=social)<br>
+[![](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/) [![](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)
+[![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
+
 ## Project Name: Nightingale
 ==================================================
 ## Docker for Pentesters: Pentesting Framework 
 
 ## Description
-This Docker image contain some usefull tools that are highly required for penetration testing and which is platform independent.
+Docker containerization is most powerful technologies in the current market so I came with the idea to develop Docker images for Pentesters.
+
+Nightingale contain all the required well-known tools that will be required to the Pentesters at the time of Penetration Testing. This docker image has a base support of Debian and it is completely platform Independent.
+
+You can either create a docker image in your local host machine by modifying according to your requirements or you can directly pull the docker image from the docker hub itself.
 
 ### Why? 
 The Reason behind creating this Docker file to make a platform independent penetration toolkit. It Include all the usefull tools that will be required to a penetration tester
@@ -56,17 +70,7 @@ service postgresql restart
 ```
 service postgresql stop
 ```
-
 Note: Use of Postgresql is for msfConsole.
-## Refrence 
-- https://github.com/phocean/dockerfile-msf.gitY
-- https://github.com/c0dejump/HawkScan.git
-- https://github.com/1N3/Sn1per.git
-- https://github.com/tomnomnom
-- https://github.com/s0md3v/XSStrike
-- https://github.com/tomnomnom/httprobe.git
-
-
 
 Please feel free to contribute
 
