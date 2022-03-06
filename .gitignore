@@ -1,3 +1,4 @@
 .history
 .github\workflows\automation.yml
 .github\workflows\docker.yml
+password.txt
