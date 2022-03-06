@@ -24,4 +24,4 @@ jobs:
       run: docker build . --file Dockerfile --tag rajanagori/nightingale:latest
       
     - name: Docker Push
-      run: docker push ${{secrets.DOCKER_USERNAME}}/nightingale:latest
+      run: docker push rajanagori/nightingale:latest
