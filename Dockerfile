@@ -102,7 +102,9 @@ RUN \
 RUN \
     apt-get install -y --no-install-recommends \
     default-jre-headless \
-    default-jdk-headless
+    default-jdk-headless \
+    nodejs \
+    npm
 
 # Install go and node
 WORKDIR /tmp
@@ -304,7 +306,6 @@ RUN \
     sudo 
 
 RUN \
-    nvm install v16.14.0 &&\
     # you can create a public URL for your application running locally without exposing it to the internet.
     npm install -g localtunnel
 
