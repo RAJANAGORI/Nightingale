@@ -304,7 +304,7 @@ RUN \
     sudo 
 
 RUN \
-    nvm install v16.14.0
+    nvm install v16.14.0 &&\
     # you can create a public URL for your application running locally without exposing it to the internet.
     npm install -g localtunnel
 
