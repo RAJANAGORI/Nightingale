@@ -97,7 +97,7 @@ RUN \
     python3-dev &&\
     cd /usr/local/bin &&\
     ln -s /usr/bin/python3 python &&\
-    pip3 install --upgrade pip
+    python -m pip install --upgrade pip
 
 RUN \
     apt-get install -y --no-install-recommends \
