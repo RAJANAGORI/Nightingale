@@ -301,7 +301,11 @@ RUN \
     hydra \
     medusa \
     figlet \
-    sudo  
+    sudo 
+
+RUN \
+    # you can create a public URL for your application running locally without exposing it to the internet.
+    npm install -g localtunnel
 
 WORKDIR ${METASPLOIT_TOOL}
 ### Installing Metasploit-framework start here
