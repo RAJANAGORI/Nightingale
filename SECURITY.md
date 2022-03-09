@@ -1,6 +1,6 @@
 # Security Policy
  
-Thank you for helping **NIGHTINGALE** stay secure. If you've identified a security vulnerability, please follow the reporting guidelines below to submit your finding. We aim to reply within **15** days of receiving your finding. If a finding is accepted, we aim to publish a patch within **15** days. If it is declined, we will reply to let you know.
+Thank you for helping **NIGHTINGALE** stay secure. If you've identified a security vulnerability, please follow the reporting guidelines below to submit your finding. We aim to reply within **5** days of receiving your finding. If a finding is accepted, we aim to publish a patch within **10** days. If it is declined, we will reply to let you know.
  
 ## Reporting Guidelines
  
