@@ -19,49 +19,46 @@ RUN \
     apt-get -y upgrade && \
     apt-get -f install -y --no-install-recommends \
     #### Operating system dependecies start
-    libcurl4-openssl-dev \
-    libssl-dev \
-    libwww-perl \
-    libcurl4-openssl-dev \
     software-properties-common \
     ca-certificates \
-    libz-dev \
-    libiconv-hook1 \
-    libiconv-hook-dev \  
-    build-essential \
-    zlib1g-dev \
-    liblzma-dev \
-    autoconf \
-    libpcap-dev \
-    libpq-dev \
-    libsqlite3-dev \
-    postgresql \
-    postgresql-contrib \
-    postgresql-client \
-    dialog apt-utils\
-    libjson-c-dev \
-    libwebsockets-dev \
-    python3-venv \
     aapt \
     android-framework-res \
-    default-jre-headless \
+    autoconf \
+    build-essential \
+    dialog apt-utils \
     libantlr3-runtime-java \
-    libcommons-cli-java \
-    libcommons-io-java \
-    libcommons-lang3-java \
+    libcurl4-openssl-dev \
+    libcurl4-openssl-dev \
     libguava-java \
+    libiconv-hook1 \
+    libiconv-hook-dev \
+    libjson-c-dev \
+    liblzma-dev \
+    libpcap-dev \
+    libpq-dev \
     libsmali-java \
+    libsqlite3-dev \
+    libssl-dev \
     libstringtemplate-java \
+    libwebsockets-dev \
+    libwww-perl \
     libxmlunit-java \
     libxpp3-java \
-    libyaml-snake-java\
+    libyaml-snake-java \
+    libz-dev \
+    postgresql \
+    postgresql-client \
+    postgresql-contrib \
+    python3-venv \
+    zlib1g-dev \
+
     ### Operating System Tools start here 
-    vim \
-    zsh \
-    locate \
-    tree \
     htop \
+    locate \
     snapd \
+    tree \
+    zsh \
+    vim \
     ### Compression Techniques starts
     unzip \
     p7zip-full \
@@ -102,9 +99,7 @@ RUN \
 RUN \
     apt-get install -y --no-install-recommends \
     default-jre-headless \
-    default-jdk-headless \
-    nodejs \
-    npm
+    default-jdk-headless
 
 # Install go and node
 WORKDIR /tmp
@@ -305,9 +300,9 @@ RUN \
     figlet \
     sudo 
 
-RUN \
-    # you can create a public URL for your application running locally without exposing it to the internet.
-    npm install -g localtunnel
+# RUN \
+#     # you can create a public URL for your application running locally without exposing it to the internet.
+#     npm install -g localtunnel
 
 WORKDIR ${METASPLOIT_TOOL}
 ### Installing Metasploit-framework start here

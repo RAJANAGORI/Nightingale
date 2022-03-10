@@ -57,6 +57,12 @@ source venv/bin/activate
 ```
 - Call your browser and hit 127.0.0.1:8080 for nightingale terminal and 127.0.0.1:8081 for MobFs to become you will be prooo!!!!
 
+### For Localtunnel
+- Hit 127.0.0.1:8080 in your browser and you will be able to access the Nightingale terminal
+- Now, run the following command in your terminal
+```
+nvm install v16.14.0 && npm install -g localtunnel
+```
 ## To start, Restart and Stop the Postgresql database 
 - To start the service
 ```
