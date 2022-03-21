@@ -133,7 +133,7 @@ ENV BINARIES=/home/binaries/
 ENV METASPLOIT_CONFIG=/home/metasploit_config/
 ENV METASPLOIT_TOOL=/home/metasploit
 ENV GREP_PATTERNS=/home/grep_patterns/
-
+ENV GO111MODULE=on
 ### Creating Directory for grep patterns
 WORKDIR ${GREP_PATTERNS}
 
