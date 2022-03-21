@@ -226,7 +226,7 @@ RUN \
 
 ## installing go tools 
 RUN \   
-    go install github.com/lc/gau/v2/cmd/gau@latest && \
+    go get -u github.com/lc/gau/v2/cmd/gau@latest && \
     go get -u github.com/tomnomnom/qsreplace && \
     go get -u github.com/tomnomnom/gf && \
     go get -u github.com/tomnomnom/httprobe && \
