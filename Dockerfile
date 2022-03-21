@@ -116,11 +116,6 @@ ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
 
-## Installing Python dependencies
-COPY requirements.txt /tmp
-RUN \
-    pip3 install -r /tmp/requirements.txt
-
 ### Creating Directories
 RUN \
     cd /home &&\
@@ -137,6 +132,14 @@ ENV WORDLIST=/home/wordlist/
 ENV BINARIES=/home/binaries/
 ENV METASPLOIT_CONFIG=/home/metasploit_config/
 ENV METASPLOIT_TOOL=/home/metasploit
+ENV GREP_PATTERNS=/home/grep_patterns/
+
+### Creating Directory for grep patterns
+WORKDIR ${GREP_PATTERNS}
+
+RUN \
+    mkdir -p ${GREP_PATTERNS}/.gf &&\
+    git clone --depth 1 https://github.com/1ndianl33t/Gf-Patterns.git ${GREP_PATTERNS}/.gf/    
 
 ### Tools for Web and Network VAPT
 WORKDIR ${TOOLS_WEB_VAPT}
@@ -146,8 +149,6 @@ RUN \
     git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git &&\
     # Git clone of HawkScan
     git clone --depth 1 https://github.com/c0dejump/HawkScan.git &&\
-    #Git clone Assetfinder
-    git clone --depth 1 https://github.com/tomnomnom/assetfinder.git &&\
     #git clone of xsstrike
     git clone --depth 1 https://github.com/s0md3v/XSStrike.git &&\
     #git clone whatweb
@@ -223,6 +224,17 @@ RUN \
     cd amass_linux_amd64 && \
     cp amass /usr/local/bin && cd .. && rm -rf amass_linux_amd64 amass.zip
 
+## installing go tools 
+RUN \   
+    go install github.com/lc/gau/v2/cmd/gau@latest && \
+    go get -u github.com/tomnomnom/qsreplace && \
+    go get -u github.com/tomnomnom/gf && \
+    go get -u github.com/tomnomnom/httprobe && \
+    go get -u github.com/tomnomnom/assetfinder && \
+    go get github.com/tomnomnom/waybackurls && \
+    go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest && \
+    go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest && \
+    go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 ### Installing Impact toolkit for Red-Team 
 WORKDIR ${TOOLS_RED_TEAMING}
 RUN \
