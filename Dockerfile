@@ -264,12 +264,12 @@ RUN \
 ## All binaries will store here
 WORKDIR ${BINARIES}
 ## INstallation stuff
+COPY \
+    binary/ ${BINARIES}
+    
 RUN \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
     chmod +x ttyd
-
-COPY \
-    binary/ ${BINARIES}
 
 # All Mobile (Android and iOS) VAPT support
 WORKDIR ${TOOLS_MOBILE_VAPT}
