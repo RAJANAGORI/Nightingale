@@ -1,5 +1,5 @@
 # Pulling the base image
-FROM debian:latest
+FROM debian
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
@@ -7,24 +7,32 @@ LABEL maintainer="Raja Nagori" \
 ## Banner shell and run shell file ##
 COPY \
     shells/banner.sh /tmp/banner.sh
+
+COPY \
+    configuration/source-apt /tmp/source-apt
+
 RUN \
-    cat /tmp/banner.sh >> /root/.bashrc
+    cat /tmp/banner.sh >> /root/.bashrc && \
+    cat tmp/source-apt >> /etc/apt/sources.list 
 
 USER root
 
 #### Installing os tools and other dependencies.
 RUN \
-    # apt-get -y dist-upgrade && \
-    apt-get -y update && \
+    apt-get -y update --fix-missing && \
     apt-get -y upgrade && \
-    apt-get -f install -y --no-install-recommends \
+    apt-get -f install -y \
     #### Operating system dependecies start
     software-properties-common \
     ca-certificates \
-    aapt \
-    android-framework-res \
-    autoconf \
     build-essential \
+    android-framework-res \
+    libruby \
+    ruby2.7-* \
+    libexpat1-dev \
+    linux-libc-dev \
+    aapt \
+    autoconf \
     dialog apt-utils \
     libantlr3-runtime-java \
     libcurl4-openssl-dev \
@@ -50,8 +58,6 @@ RUN \
     postgresql-client \
     postgresql-contrib \
     python3-venv \
-    zlib1g-dev \
-
     ### Operating System Tools start here 
     htop \
     locate \
@@ -63,9 +69,8 @@ RUN \
     unzip \
     p7zip-full \
     ftp \
-    dos2unix\
-    ssh \
     ### Dev Essentials start here
+    ssh \
     git \
     ruby \
     ruby-dev \
@@ -132,8 +137,7 @@ ENV WORDLIST=/home/wordlist/
 ENV BINARIES=/home/binaries/
 ENV METASPLOIT_CONFIG=/home/metasploit_config/
 ENV METASPLOIT_TOOL=/home/metasploit
-ENV GREP_PATTERNS=/home/grep_patterns/
-ENV GO111MODULE=on
+ENV GREP_PATTERNS=/home/grep_patterns
 ### Creating Directory for grep patterns
 WORKDIR ${GREP_PATTERNS}
 
@@ -226,16 +230,13 @@ RUN \
 
 ## installing go tools 
 RUN \   
-    go get -u github.com/lc/gau/v2/cmd/gau@latest && \
     go get -u github.com/tomnomnom/qsreplace && \
     go get -u github.com/tomnomnom/gf && \
     go get -u github.com/tomnomnom/httprobe && \
     go get -u github.com/tomnomnom/assetfinder && \
-    go get github.com/tomnomnom/waybackurls && \
-    go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest && \
-    go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest && \
-    go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-### Installing Impact toolkit for Red-Team 
+    go get github.com/tomnomnom/waybackurls
+
+## Installing Impact toolkit for Red-Team 
 WORKDIR ${TOOLS_RED_TEAMING}
 RUN \
     #Git clone of impacket toolkit
@@ -247,7 +248,7 @@ RUN \
     python setup.py build &&\
     python setup.py install
 
-## Wordlist for exploitation
+# Wordlist for exploitation
 WORKDIR ${WORDLIST}
 ## git cloning from repo
 RUN \
@@ -267,7 +268,10 @@ RUN \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
     chmod +x ttyd
 
-## All Mobile (Android and iOS) VAPT support
+COPY \
+    binary/ ${BINARIES}
+
+# All Mobile (Android and iOS) VAPT support
 WORKDIR ${TOOLS_MOBILE_VAPT}
 
 RUN \ 
