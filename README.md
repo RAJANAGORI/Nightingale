@@ -2,7 +2,7 @@
 
 ![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
 
-[![OWASP Flagship](https://img.shields.io/badge/owasp-flagship%20project-48A646.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)<br>
+[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)<br>
 
 ![](https://img.shields.io/github/followers/RAJANAGORI?style=social)<br>
 ![](https://img.shields.io/github/stars/RAJANAGORI?style=social)<br>
