@@ -2,11 +2,12 @@
 
 ![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
 
-[![OWASP Flagship](https://img.shields.io/badge/owasp-flagship%20project-48A646.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)<br>
+[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)<br>
 
 ![](https://img.shields.io/github/followers/RAJANAGORI?style=social)<br>
 ![](https://img.shields.io/github/stars/RAJANAGORI?style=social)<br>
 [![](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/) [![](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)
+![profile count](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)<br>
 [![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
 
 ## Project Name: Nightingale
