@@ -228,14 +228,6 @@ RUN \
     cd amass_linux_amd64 && \
     cp amass /usr/local/bin && cd .. && rm -rf amass_linux_amd64 amass.zip
 
-## installing go tools 
-RUN \   
-    go get -u github.com/tomnomnom/qsreplace && \
-    go get -u github.com/tomnomnom/gf && \
-    go get -u github.com/tomnomnom/httprobe && \
-    go get -u github.com/tomnomnom/assetfinder && \
-    go get github.com/tomnomnom/waybackurls
-
 ## Installing Impact toolkit for Red-Team 
 WORKDIR ${TOOLS_RED_TEAMING}
 RUN \
@@ -266,10 +258,23 @@ WORKDIR ${BINARIES}
 ## INstallation stuff
 COPY \
     binary/ ${BINARIES}
-    
+
 RUN \
-    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
-    chmod +x ttyd
+    ln -s ${BINARIES}/assetfinder /usr/local/bin/ && \
+    ln -s ${BINARIES}/gau /usr/local/bin/ && \
+    ln -s ${BINARIES}/gf /usr/local/bin/ && \
+    ln -s ${BINARIES}/httprobe /usr/local/bin/ && \
+    ln -s ${BINARIES}/httpx /usr/local/bin/ && \
+    ln -s ${BINARIES}/jadx /usr/local/bin/ && \
+    ln -s ${BINARIES}/nuclei /usr/local/bin/ && \
+    ln -s ${BINARIES}/qsreplace /usr/local/bin/ && \
+    ln -s ${BINARIES}/subfinder /usr/local/bin/ && \
+    ln -s ${BINARIES}/ttyd /usr/local/bin/ && \
+    ln -s ${BINARIES}/waybackurls /usr/local/bin/
+    
+# RUN \
+#     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
+#     chmod +x ttyd
 
 # All Mobile (Android and iOS) VAPT support
 WORKDIR ${TOOLS_MOBILE_VAPT}
