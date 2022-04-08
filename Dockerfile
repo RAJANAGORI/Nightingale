@@ -269,12 +269,11 @@ RUN \
     ln -s ${BINARIES}/nuclei /usr/local/bin/ && \
     ln -s ${BINARIES}/qsreplace /usr/local/bin/ && \
     ln -s ${BINARIES}/subfinder /usr/local/bin/ && \
-    ln -s ${BINARIES}/ttyd /usr/local/bin/ && \
     ln -s ${BINARIES}/waybackurls /usr/local/bin/
     
-# RUN \
-#     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
-#     chmod +x ttyd
+RUN \
+    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
+    chmod +x ttyd
 
 # All Mobile (Android and iOS) VAPT support
 WORKDIR ${TOOLS_MOBILE_VAPT}
