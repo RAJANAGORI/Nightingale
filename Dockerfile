@@ -273,7 +273,7 @@ RUN \
     
 RUN \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
-    chmod +x ttyd
+    chmod +x *
 
 # All Mobile (Android and iOS) VAPT support
 WORKDIR ${TOOLS_MOBILE_VAPT}
