@@ -290,7 +290,8 @@ RUN \
 RUN \
     apt-get -f install -y --no-install-recommends \
     apktool \
-    adb
+    adb && \
+    pip install objection
 
 ## Installing forensics tools
 RUN \
