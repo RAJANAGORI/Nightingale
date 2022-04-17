@@ -37,7 +37,10 @@ RUN \
     p7zip-full \
     ftp \
     ### Dev Essentials start here
-    ssh
+    ssh \
+    git \
+    curl \
+    wget
 
 ### Creating Directories
 RUN \
