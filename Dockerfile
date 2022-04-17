@@ -44,7 +44,7 @@ RUN \
     ssh \
     git \
     curl \
-    wget
+    wget \
 
     ### Web Vapt tools using apt-get
     dirb \
@@ -71,13 +71,13 @@ RUN \
 # installing Apktool and adb
     adb \
     apktool && \
-    pip install objection
+    pip install objection && \
     ## Installing tools using apt-get for forensics
     exiftool \
     steghide \
     binwalk \
     foremost
-    
+
 ### Creating Directories
 RUN \
     cd /home &&\
