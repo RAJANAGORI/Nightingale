@@ -22,26 +22,62 @@ RUN \
     apt-get -y update --fix-missing && \
     apt-get -y upgrade && \
     apt-get -f install -y \
+
     #### Operating system dependecies start
     software-properties-common \
     ca-certificates \
     build-essential \
+
     ### Operating System Tools start here 
     locate \
     snapd \
     tree \
     zsh \
     figlet \
+
     ### Compression Techniques starts
     unzip \
     p7zip-full \
     ftp \
+
     ### Dev Essentials start here
     ssh \
     git \
     curl \
     wget
 
+    ### Web Vapt tools using apt-get
+    dirb \
+
+    ## INstalling Network Tools using apt-get
+    nmap \
+    htop \
+    traceroute \
+    telnet \
+    net-tools \
+    iputils-ping \
+    tcpdump \
+    openvpn \
+    whois \
+    host \
+    tor \
+    john \
+    cewl \
+    hydra \
+    medusa \
+    figlet \
+    # Some android architecture dependency
+    android-framework-res \
+# installing Apktool and adb
+    adb \
+    apktool && \
+    pip install objection
+    ## Installing tools using apt-get for forensics
+    exiftool \
+    steghide \
+    binwalk \
+    foremost
+    
 ### Creating Directories
 RUN \
     cd /home &&\
@@ -63,8 +99,6 @@ ENV METASPLOIT_TOOL=/home/metasploit
 COPY \
     --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${BINARIES} ${BINARIES}
-COPY \
     --from=rajanagori/nightingale_web_vapt_image:v1.0 ${GREP_PATTERNS} ${GREP_PATTERNS}
 COPY \
     --from=rajanagori/nightingale_osint_image:v1.0 ${TOOLS_OSINT} ${TOOLS_OSINT}
@@ -76,6 +110,33 @@ COPY \
     --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
 COPY \
     --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+
+## All binaries will store here
+WORKDIR ${BINARIES}
+## INstallation stuff
+COPY \
+    binary/ ${BINARIES}
+
+RUN \
+    ln -s ${BINARIES}/assetfinder /usr/local/bin/ && \
+    ln -s ${BINARIES}/gau /usr/local/bin/ && \
+    ln -s ${BINARIES}/gf /usr/local/bin/ && \
+    ln -s ${BINARIES}/httprobe /usr/local/bin/ && \
+    ln -s ${BINARIES}/httpx /usr/local/bin/ && \
+    ln -s ${BINARIES}/jadx /usr/local/bin/ && \
+    ln -s ${BINARIES}/nuclei /usr/local/bin/ && \
+    ln -s ${BINARIES}/qsreplace /usr/local/bin/ && \
+    ln -s ${BINARIES}/subfinder /usr/local/bin/ && \
+    ln -s ${BINARIES}/waybackurls /usr/local/bin/ && \
+    ln -s ${BINARIES}/fuff /usr/local/bin/ && \
+    ln -s ${BINARIES}/findomain /usr/local/bin/ && \
+    ln -s ${BINARIES}/gobuster /usr/local/bin/ && \
+    ln -s ${BINARIES}/xray /usr/local/bin/ && \
+    ln -s ${BINARIES}/whatweb /usr/local/bin/ && \
+    ln -s ${BINARIES}/recon-ng /usr/local/bin/ && \
+    ln -s ${BINARIES}/masscan /usr/local/bin/ && \
+    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
+    chmod +x *
 
 # Wordlist for exploitation
 WORKDIR ${WORDLIST}

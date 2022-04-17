@@ -10,11 +10,6 @@ RUN \
     make \
     cmake \
     bundler \
-## Installing tools using apt-get for forensics
-    exiftool \
-    steghide \
-    binwalk \
-    foremost
 
 RUN \
     cd /home &&\

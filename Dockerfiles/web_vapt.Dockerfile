@@ -9,18 +9,16 @@ RUN \
     git \
     make \
     cmake \
-    bundler \
-    dirb 
+    bundler 
 
 ### Creating Directories
 RUN \
     cd /home && \
-    mkdir -p tools_web_vapt .gf binaries
+    mkdir -p tools_web_vapt .gf 
 
 ### Creating Directories
 ENV TOOLS_WEB_VAPT=/home/tools_web_vapt/
 ENV GREP_PATTERNS=/home/.gf/
-ENV BINARIES=/home/binaries/
 
 WORKDIR ${GREP_PATTERNS}
 
@@ -36,8 +34,6 @@ RUN \
     git clone --depth 1 https://github.com/c0dejump/HawkScan.git &&\
     #git clone of xsstrike
     git clone --depth 1 https://github.com/s0md3v/XSStrike.git &&\
-    #git clone whatweb
-    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git && \
     #git clone dirsearch
     git clone --depth 1  https://github.com/maurosoria/dirsearch.git && \
     #git clone arjun
@@ -78,13 +74,6 @@ RUN \
     pip3 install -r requirements.txt &&\
     cd .. && \
 
-## Installating Whatweb
-    cd WhatWeb && \
-    make && \
-    chmod +x whatweb && mv whatweb /usr/local/bin/ && \
-    rm -rf WhatWeb && \
-    cd .. && \
-
 ##  INstalling dirsearch
     cd dirsearch && \
     python3 setup.py install && \
@@ -114,30 +103,6 @@ RUN \
     wget --quiet https://github.com/OWASP/Amass/releases/download/v3.16.0/amass_linux_amd64.zip -O amass.zip &&\
     unzip amass.zip && \
     mv amass_linux_amd64/amass /usr/local/bin && rm -rf amass_linux_amd64 amass.zip
-
-## All binaries will store here
-WORKDIR ${BINARIES}
-## INstallation stuff
-COPY \
-    binary/ ${BINARIES}
-
-RUN \
-    ln -s ${BINARIES}/assetfinder /usr/local/bin/ && \
-    ln -s ${BINARIES}/gau /usr/local/bin/ && \
-    ln -s ${BINARIES}/gf /usr/local/bin/ && \
-    ln -s ${BINARIES}/httprobe /usr/local/bin/ && \
-    ln -s ${BINARIES}/httpx /usr/local/bin/ && \
-    ln -s ${BINARIES}/jadx /usr/local/bin/ && \
-    ln -s ${BINARIES}/nuclei /usr/local/bin/ && \
-    ln -s ${BINARIES}/qsreplace /usr/local/bin/ && \
-    ln -s ${BINARIES}/subfinder /usr/local/bin/ && \
-    ln -s ${BINARIES}/waybackurls /usr/local/bin/ && \
-    ln -s ${BINARIES}/fuff /usr/local/bin/ && \
-    ln -s ${BINARIES}/findomain /usr/local/bin/ && \
-    ln -s ${BINARIES}/gobuster /usr/local/bin/ && \
-    ln -s ${BINARIES}/xray /usr/local/bin/ && \
-    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
-    chmod +x *
 
 WORKDIR /home
 

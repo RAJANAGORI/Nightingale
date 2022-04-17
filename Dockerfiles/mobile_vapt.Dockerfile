@@ -9,13 +9,7 @@ RUN \
     git \
     make \
     cmake \
-    bundler \
-# Some android architecture dependency
-    android-framework-res \
-# installing Apktool and adb
-    adb \
-    apktool && \
-    pip install objection
+    bundler
 
 RUN \
     cd /home && \
