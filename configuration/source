@@ -1,0 +1,9 @@
+deb http://mirrors.linode.com/debian bullseye main
+deb-src http://mirrors.linode.com/debian bullseye main
+ 
+deb http://mirrors.linode.com/debian-security bullseye-security/updates main
+deb-src http://mirrors.linode.com/debian-security bullseye-security/updates main
+ 
+# bullseye-updates, previously known as 'volatile'
+deb http://mirrors.linode.com/debian bullseye-updates main
+deb-src http://mirrors.linode.com/debian bullseye-updates main
