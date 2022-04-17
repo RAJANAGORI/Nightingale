@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1.0 
+FROM rajanagori/nightingale_programming_image:v1
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
