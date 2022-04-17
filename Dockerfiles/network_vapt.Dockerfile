@@ -9,25 +9,7 @@ RUN \
     git \
     make \
     cmake \
-    bundler \
-## INstalling Network Tools using apt-get
-    nmap \
-    htop \
-    traceroute \
-    telnet \
-    net-tools \
-    iputils-ping \
-    tcpdump \
-    openvpn \
-    whois \
-    host \
-    ####### Extra
-    tor \
-    john \
-    cewl \
-    hydra \
-    medusa \
-    figlet 
+    bundler
 
 ### Creating Directories
 RUN \
@@ -40,18 +22,8 @@ WORKDIR ${TOOLS_NETWORK_VAPT}
 
 # git clonning of tools repository
 RUN \
-    # Git clone of masscan
-    git clone --depth 1 https://github.com/robertdavidgraham/masscan &&\
     # Git clone of nikto
     git clone --depth 1 https://github.com/sullo/nikto 
-
-
-RUN \
-# INstallation of masscan
-    cd masscan && \
-    make install && \
-    ln -s bin/masscan /usr/local/bin/ && \
-    cd ../ && rm -rf masscan
 
 WORKDIR /home
 

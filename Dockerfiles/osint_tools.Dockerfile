@@ -23,20 +23,14 @@ WORKDIR ${TOOLS_OSINT}
 # git clonning of the tools
 RUN \
     # Git clone of reconspider
-    git clone --depth 1 https://github.com/bhavsec/reconspider.git &&\
-    # Git clone of recon-ng 
-    git clone --depth 1 https://github.com/lanmaster53/recon-ng.git
+    git clone --depth 1 https://github.com/bhavsec/reconspider.git
 
 ### INstalling tools
 RUN \
 # Installing reconspider
     cd reconspider && \
     python3 setup.py install &&\
-    cd ../ && \
-# INstall recon-ng
-    cd recon-ng && \
-    ln -s recon-ng /usr/local/bin/recon-ng && \
-    cd ../ 
+    cd ../
 
 WORKDIR /home
 
