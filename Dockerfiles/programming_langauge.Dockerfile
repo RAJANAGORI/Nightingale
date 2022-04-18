@@ -58,6 +58,8 @@ RUN \
     libyaml-snake-java \
     libz-dev \
     linux-libc-dev \
+    libev-* \
+    libev4 \
 
     #Installing Python3
     python3-pip \

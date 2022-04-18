@@ -66,17 +66,19 @@ RUN \
     hydra \
     medusa \
     figlet \
+
     # Some android architecture dependency
     android-framework-res \
-# installing Apktool and adb
+    # installing Apktool and adb
     adb \
-    apktool && \
-    pip install objection && \
+    apktool \
+    
     ## Installing tools using apt-get for forensics
     exiftool \
     steghide \
     binwalk \
-    foremost
+    foremost && \
+    pip install objection
 
 ### Creating Directories
 RUN \
@@ -110,6 +112,8 @@ COPY \
     --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
 COPY \
     --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+COPY \
+    --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
@@ -118,47 +122,34 @@ COPY \
     binary/ ${BINARIES}
 
 RUN \
-    ln -s ${BINARIES}/assetfinder /usr/local/bin/ && \
-    ln -s ${BINARIES}/gau /usr/local/bin/ && \
-    ln -s ${BINARIES}/gf /usr/local/bin/ && \
-    ln -s ${BINARIES}/httprobe /usr/local/bin/ && \
-    ln -s ${BINARIES}/httpx /usr/local/bin/ && \
-    ln -s ${BINARIES}/jadx /usr/local/bin/ && \
-    ln -s ${BINARIES}/nuclei /usr/local/bin/ && \
-    ln -s ${BINARIES}/qsreplace /usr/local/bin/ && \
-    ln -s ${BINARIES}/subfinder /usr/local/bin/ && \
-    ln -s ${BINARIES}/waybackurls /usr/local/bin/ && \
-    ln -s ${BINARIES}/fuff /usr/local/bin/ && \
-    ln -s ${BINARIES}/findomain /usr/local/bin/ && \
-    ln -s ${BINARIES}/gobuster /usr/local/bin/ && \
-    ln -s ${BINARIES}/xray /usr/local/bin/ && \
-    ln -s ${BINARIES}/whatweb /usr/local/bin/ && \
-    ln -s ${BINARIES}/recon-ng /usr/local/bin/ && \
-    ln -s ${BINARIES}/masscan /usr/local/bin/ && \
+    ln -s assetfinder /usr/local/bin/ && \
+    ln -s gau /usr/local/bin/ && \
+    ln -s gf /usr/local/bin/ && \
+    ln -s httprobe /usr/local/bin/ && \
+    ln -s httpx /usr/local/bin/ && \
+    ln -s jadx /usr/local/bin/ && \
+    ln -s nuclei /usr/local/bin/ && \
+    ln -s qsreplace /usr/local/bin/ && \
+    ln -s subfinder /usr/local/bin/ && \
+    ln -s waybackurls /usr/local/bin/ && \
+    ln -s fuff /usr/local/bin/ && \
+    ln -s findomain /usr/local/bin/ && \
+    ln -s gobuster /usr/local/bin/ && \
+    ln -s xray /usr/local/bin/ && \
+    ln -s whatweb /usr/local/bin/ && \
+    ln -s recon-ng /usr/local/bin/ && \
+    ln -s masscan /usr/local/bin/ && \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
-    chmod +x *
-
-# Wordlist for exploitation
-WORKDIR ${WORDLIST}
-## git cloning from repo
-RUN \
-    git clone --depth 1  https://github.com/xmendez/wfuzz.git && \
-    git clone --depth 1  https://github.com/danielmiessler/SecLists.git && \
-    git clone --depth 1  https://github.com/fuzzdb-project/fuzzdb.git && \
-    git clone --depth 1  https://github.com/daviddias/node-dirbuster.git && \
-    git clone --depth 1  https://github.com/v0re/dirb.git && \
-    curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
-    curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
-    curl -L -o fuzz.txt https://raw.githubusercontent.com/Bo0oM/fuzz.txt/master/fuzz.txt
+    chmod +x ttyd
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}
 ### Installing Metasploit-framework start here
 ## PosgreSQL DB
-COPY ./configuration/msf-configuration/scripts/db.sql ${METASPLOIT_CONFIG}}
+COPY configuration/msf-configuration/scripts/db.sql .
 
 ## Startup script
-COPY ./configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
+COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
 RUN \
     wget -L https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb -O msfinstall && \
@@ -171,9 +162,8 @@ CMD "./configuration/msf-configuration/scripts/init.sh"
 
 # Expose the service ports
 EXPOSE 5432
-EXPOSE 9990-9999
-EXPOSE 8000-9000
-EXPOSE 5001
+EXPOSE 8080
+EXPOSE 8081
 EXPOSE 7681
 
 # Cleaning Unwanted libraries 
