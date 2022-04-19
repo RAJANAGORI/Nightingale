@@ -19,9 +19,60 @@ jobs:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       run: |
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD 
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    
+    - name: Build the docker image
+      run: docker build . --file Dockerfiles/wordlist.Dockerfile --tag rajanagori/nightingale_wordlist_image:v1.0
+
+    - name: Docker Push
+      run: docker push rajanagori/nightingale_wordlist_image:v1.0
+ 
+
+    - name: Build the docker image
+      run: docker build . --file Dockerfiles/programming_langauge.Dockerfile --tag rajanagori/nightingale_programming_image:v1
+
+    - name: Docker Push
+      run: docker push rajanagori/nightingale_programming_image:v1
+ 
+
+    - name: Build the docker image
+      run: docker build . --file Dockerfiles/web_vapt.Dockerfile --tag rajanagori/nightingale_web_vapt_image:v1.0
+
+    - name: Docker Push
+      run: docker push rajanagori/nightingale_web_vapt_image:v1.0
+ 
+    
+    - name: Build the docker image
+      run: docker build . --file Dockerfiles/osint_tools.Dockerfile --tag rajanagori/nightingale_osint_image:v1.0
+
+    - name: Docker Push
+      run: docker push rajanagori/nightingale_osint_image:v1.0
+ 
+
+    - name: Build the docker image
+      run: docker build . --file Dockerfiles/mobile_vapt.Dockerfile --tag rajanagori/nightingale_mobile_vapt_image:v1.0
+
+    - name: Docker Push
+      run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
+ 
+
+    - name: Build the docker image
+      run: docker build . --file Dockerfiles/network_vapt.Dockerfile --tag rajanagori/nightingale_network_vapt_image:v1.0
+
+    - name: Docker Push
+      run: docker push rajanagori/nightingale_network_vapt_image:v1.0
+ 
+    
+    - name: Build the docker image
+      run: docker build . --file Dockerfiles/forensics_and_redteam.Dockerfile --tag rajanagori/nightingale_forensic_and_red_teaming:v1.0
+
+    - name: Docker Push
+      run: docker push rajanagori/nightingale_forensic_and_red_teaming:v1.0
+ 
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag rajanagori/nightingale:latest
-      
+    
     - name: Docker Push
       run: docker push rajanagori/nightingale:latest
+      
