@@ -20,59 +20,9 @@ jobs:
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       run: |
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-    
-    # - name: Build the docker image and push it to docker hub for wordlist image
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker build . --file Dockerfiles/wordlist.Dockerfile --tag rajanagori/nightingale_wordlist_image:v1.0
-    # - name: Docker Push
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker push rajanagori/nightingale_wordlist_image:v1.0
 
-    # - name: Build the docker image and push it to docker hub for programming image
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker build . --file Dockerfiles/programming_langauge.Dockerfile --tag rajanagori/nightingale_programming_image:v1
-    # - name: Docker Push
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker push rajanagori/nightingale_programming_image:v1
- 
-    # - name: Build the docker image and push it to docker hub for web vapt image
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker build . --file Dockerfiles/web_vapt.Dockerfile --tag rajanagori/nightingale_web_vapt_image:v1.0
-    # - name: Docker Push
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker push rajanagori/nightingale_web_vapt_image:v1.0
- 
-    # - name: Build the docker image and push it to docker hub for osint image
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker build . --file Dockerfiles/osint_tools.Dockerfile --tag rajanagori/nightingale_osint_image:v1.0
-    # - name: Docker Push
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker push rajanagori/nightingale_osint_image:v1.0
-
-    # - name: Build the docker image and push it to docker hub for mobile vapt image
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker build . --file Dockerfiles/mobile_vapt.Dockerfile --tag rajanagori/nightingale_mobile_vapt_image:v1.0
-    # - name: Docker Push
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
- 
-    # - name: Build the docker image and push it to docker hub for network vapt image
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker build . --file Dockerfiles/network_vapt.Dockerfile --tag rajanagori/nightingale_network_vapt_image:v1.0
-    # - name: Docker Push
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker push rajanagori/nightingale_network_vapt_image:v1.0
- 
-    # - name: Build the docker image and push it to docker hub for database vapt image
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker build . --file Dockerfiles/forensics_and_redteam.Dockerfile --tag rajanagori/nightingale_forensic_and_red_teaming:v1.0
-    # - name: Docker Push
-    #   if: steps.changed_files.outputs.files_changed == 'true'
-    #   run: docker push rajanagori/nightingale_forensic_and_red_teaming:v1.0
- 
     - name: Build the Docker image and push it to docker hub for Final Nightingale image 
-      # if: steps.changed_files.outputs.files_changed == 'true'
       run: docker build . --file Dockerfile --tag rajanagori/nightingale:latest
+      
     - name: Docker Push
-      # if: steps.changed_files.outputs.files_changed == 'true'
       run: docker push rajanagori/nightingale:latest
