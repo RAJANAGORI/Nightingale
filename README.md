@@ -64,6 +64,11 @@ source venv/bin/activate
 ```
 nvm install v16.14.0 && npm install -g localtunnel
 ```
+and hit this command
+```
+lt --port 7681 --subdomain nightingale
+```
+Now, Click on the link generated and have fun with Nightingale !!!
 ## To start, Restart and Stop the Postgresql database 
 - To start the service
 ```
