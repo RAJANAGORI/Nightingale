@@ -73,7 +73,7 @@ RUN \
     adb \
     apktool \
     
-    ## Installing tools using apt-get for forensics
+    ## Installing tools using apt-get for forensics and objection install
     exiftool \
     steghide \
     binwalk \
@@ -114,7 +114,7 @@ COPY \
     --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS} 
 COPY \
     --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
-    
+
 ## All binaries will store here
 WORKDIR ${BINARIES}
 ## INstallation stuff
