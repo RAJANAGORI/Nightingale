@@ -9,7 +9,7 @@ RUN \
     git \
     make \
     cmake \
-    bundler \
+    bundler
 
 RUN \
     cd /home &&\
