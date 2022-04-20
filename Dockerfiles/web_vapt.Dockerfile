@@ -49,7 +49,9 @@ RUN \
     #git clone sublister
     git clone --depth 1 https://github.com/aboul3la/Sublist3r.git &&\
     #git clone jwt_tool
-    git clone --depth 1 https://github.com/ticarpi/jwt_tool.git
+    git clone --depth 1 https://github.com/ticarpi/jwt_tool.git &&\
+    #git clone whatweb
+    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git
 
 ### Installing Tools 
 
@@ -97,6 +99,11 @@ RUN \
 ## INstall Spiderfoot
     cd spiderfoot && \
     pip3 install -r requirements.txt &&\
+    cd .. && \
+
+# Installing WhatWeb
+    cd WhatWeb && \
+    make install && \
     cd .. && \
 
 ### Installing Amass 

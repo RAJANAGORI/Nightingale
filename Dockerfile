@@ -83,7 +83,7 @@ RUN \
 ### Creating Directories
 RUN \
     cd /home &&\
-    mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf
+    mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
 
 ## Environment for Directories
 ENV TOOLS_WEB_VAPT=/home/tools_web_vapt/
@@ -97,6 +97,7 @@ ENV TOOLS_FORENSICS=/home/tools_forensics/
 ENV WORDLIST=/home/wordlist/
 ENV METASPLOIT_CONFIG=/home/metasploit_config/
 ENV METASPLOIT_TOOL=/home/metasploit
+ENV SHELLS=/home/.shells/
 
 COPY \
     --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT} 
@@ -114,6 +115,17 @@ COPY \
     --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS} 
 COPY \
     --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
+COPY \
+    configuration/modules-installation/python-install-modules.sh /home/modules-installation/python-install-modules.sh
+
+COPY \
+    configuration/modules-installation/* ${SHELLS}/
+
+RUN \
+    cd ${SHELLS} && \
+    chmod +x *.sh && \
+    ./python-install-modules.sh && \
+    ./go-install-modules.sh
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
@@ -122,23 +134,20 @@ COPY \
     binary/ ${BINARIES}
 
 RUN \
-    ln -s assetfinder /usr/local/bin/ && \
-    ln -s gau /usr/local/bin/ && \
-    ln -s gf /usr/local/bin/ && \
-    ln -s httprobe /usr/local/bin/ && \
-    ln -s httpx /usr/local/bin/ && \
-    ln -s jadx /usr/local/bin/ && \
-    ln -s nuclei /usr/local/bin/ && \
-    ln -s qsreplace /usr/local/bin/ && \
-    ln -s subfinder /usr/local/bin/ && \
-    ln -s waybackurls /usr/local/bin/ && \
-    ln -s fuff /usr/local/bin/ && \
-    ln -s findomain /usr/local/bin/ && \
-    ln -s gobuster /usr/local/bin/ && \
-    ln -s xray /usr/local/bin/ && \
-    ln -s whatweb /usr/local/bin/ && \
-    ln -s recon-ng /usr/local/bin/ && \
-    ln -s masscan /usr/local/bin/ && \
+    mv assetfinder /usr/local/bin/ && \
+    mv gau /usr/local/bin/ && \
+    mv gf /usr/local/bin/ && \
+    mv httprobe /usr/local/bin/ && \
+    mv httpx /usr/local/bin/ && \
+    mv jadx /usr/local/bin/ && \
+    mv nuclei /usr/local/bin/ && \
+    mv qsreplace /usr/local/bin/ && \
+    mv subfinder /usr/local/bin/ && \
+    mv waybackurls /usr/local/bin/ && \
+    mv ffuf /usr/local/bin/ && \
+    mv findomain /usr/local/bin/ && \
+    mv gobuster /usr/local/bin/ && \
+    mv masscan /usr/local/bin/ && \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
     chmod +x ttyd
 

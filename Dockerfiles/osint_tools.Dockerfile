@@ -23,14 +23,26 @@ WORKDIR ${TOOLS_OSINT}
 # git clonning of the tools
 RUN \
     # Git clone of reconspider
-    git clone --depth 1 https://github.com/bhavsec/reconspider.git
+    git clone --depth 1 https://github.com/bhavsec/reconspider.git && \
+    # Git clone of recon-ng
+    git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
+    # Git clone of xray
+    git clone --depth 1 https://github.com/evilsocket/xray.git 
 
 ### INstalling tools
 RUN \
 # Installing reconspider
     cd reconspider && \
     python3 setup.py install &&\
-    cd ../
+    cd ../ && \
+
+    cd recon-ng && \
+    pip install -r REQUIREMENTS && \
+    cd ../ && \
+
+    go get github.com/evilsocket/xray && \
+    cd $GOPATH/src/github.com/evilsocket/xray/ && \
+    make
 
 WORKDIR /home
 
