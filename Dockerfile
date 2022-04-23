@@ -116,10 +116,10 @@ COPY \
 COPY \
     --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
 COPY \
-    configuration/modules-installation ${SHELLS}/modules-installation
+    configuration/modules-installation ${SHELLS}
 
 RUN \
-    cd ${SHELLS}/modules-installation && \
+    cd ${SHELLS}&& \
     chmod +x *.sh && \
     ./python-install-modules.sh && \
     ./go-install-modules.sh
