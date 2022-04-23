@@ -2,12 +2,12 @@
 
 ![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
 
-[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)<br>
+[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)
 
-![](https://img.shields.io/github/followers/RAJANAGORI?style=social)<br>
-![](https://img.shields.io/github/stars/RAJANAGORI?style=social)<br>
+![](https://img.shields.io/github/followers/RAJANAGORI?style=social)
+![](https://img.shields.io/github/stars/RAJANAGORI?style=social)
 [![](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/) [![](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)
-![profile count](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)<br>
+![profile count](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)
 [![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
 
 ## Project Name: Nightingale
@@ -15,16 +15,16 @@
 ## Docker for Pentesters: Pentesting Framework 
 
 ## Description
-Docker containerization is most powerful technologies in the current market so I came with the idea to develop Docker images for Pentesters.
+Docker containerization is the most powerful technology in the current market so I came up with the idea to develop Docker images for Pentesters.
 
-Nightingale contain all the required well-known tools that will be required to the Pentesters at the time of Penetration Testing. This docker image has a base support of Debian and it is completely platform Independent.
+Nightingale contains all the required well-known tools that will be required for the Pentesters at the time of Penetration Testing. This docker image has the base support of Debian and it is completely platform Independent.
 
-You can either create a docker image in your local host machine by modifying according to your requirements or you can directly pull the docker image from the docker hub itself.
+You can either create a docker image in your localhost machine by modifying it according to your requirements or you can directly pull the docker image from the docker hub itself.
 
 ### Why? 
-The Reason behind creating this Docker file to make a platform independent penetration toolkit. It Include all the usefull tools that will be required to a penetration tester
-(You can refer to the tool list section for same).
-## Docker Image build and Run 
+The Reason behind creating this Docker file is to make a platform-independent penetration toolkit. It includes all the useful tools that will be required for a penetration tester
+(You can refer to the tool list section for the same).
+## Docker Image Build and Run 
 - Take a clone of the repository
 ```
 git clone --depth 1 https://github.com/RAJANAGORI/Nightingale.git
@@ -41,11 +41,11 @@ docker build -t rajanagori/nightingale .
 ```
 docker run -ti --hostname nightingale  rajanagori/nightingale /bin/bash
 ```
-- Now, you can directly access Nightingale interactive terminal using browser
+- Now, you can directly access Nightingale interactive terminal using the browser
 ```
 docker run -it -p 0.0.0.0:8080:7681 -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash
 ```
-- If you want to run MobSF along with the nigtingale then I will give you a good new now you can do the same....!!
+- If you want to run MobSF along with the nightingale then I will give you good news now you can do the same....!!
 #### part 1
 ```
 docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash
@@ -56,7 +56,7 @@ cd /home/tools_mobile_vapt/Mobile-Security-Framework-MobSF/
 source venv/bin/activate
 ./run 0.0.0.0:8081 &
 ```
-- Call your browser and hit 127.0.0.1:8080 for nightingale terminal and 127.0.0.1:8081 for MobFs to become you will be prooo!!!!
+- Call your browser and hit 127.0.0.1:8080 for the nightingale terminal and 127.0.0.1:8081 for MobFs to become you will be prooo!!!!
 
 ### For Localtunnel
 - Hit 127.0.0.1:8080 in your browser and you will be able to access the Nightingale terminal
@@ -84,9 +84,9 @@ service postgresql stop
 ```
 Note: Use of Postgresql is for msfConsole.
 
-Please feel free to contribute in the tool
+Please feel free to contribute to the tool
 
 
-If you want to appreciate my work than you can buy me a coffe :)<br>
+If you want to appreciate my work then you can buy me a coffee :)<br>
 
 <a href="https://www.buymeacoffee.com/rajanagori"><img src="assets\images\blue-button.png" hight=100px; width=300px ></a>
