@@ -129,8 +129,9 @@ WORKDIR ${BINARIES}
 ## INstallation stuff
 COPY \
     binary/ ${BINARIES}
-
+    
 RUN \
+    chmod +x ${BINARIES}/* && \
     mv assetfinder /usr/local/bin/ && \
     mv gau /usr/local/bin/ && \
     mv gf /usr/local/bin/ && \
@@ -145,6 +146,7 @@ RUN \
     mv findomain /usr/local/bin/ && \
     mv gobuster /usr/local/bin/ && \
     mv masscan /usr/local/bin/ && \
+    mv amass /usr/local/bin/ && \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
     chmod +x ttyd
 
