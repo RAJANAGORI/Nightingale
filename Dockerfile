@@ -22,33 +22,27 @@ RUN \
     apt-get -y update --fix-missing && \
     apt-get -y upgrade && \
     apt-get -f install -y \
-
     #### Operating system dependecies start
     software-properties-common \
     ca-certificates \
     build-essential \
-
     ### Operating System Tools start here 
     locate \
     snapd \
     tree \
     zsh \
     figlet \
-
     ### Compression Techniques starts
     unzip \
     p7zip-full \
     ftp \
-
     ### Dev Essentials start here
     ssh \
     git \
     curl \
     wget \
-
     ### Web Vapt tools using apt-get
     dirb \
-
     ## INstalling Network Tools using apt-get
     nmap \
     htop \
@@ -66,13 +60,11 @@ RUN \
     hydra \
     medusa \
     figlet \
-
     # Some android architecture dependency
     android-framework-res \
     # installing Apktool and adb
     adb \
     apktool \
-    
     ## Installing tools using apt-get for forensics and objection install
     exiftool \
     steghide \
