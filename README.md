@@ -15,11 +15,28 @@
 ## Docker for Pentesters: Pentesting Framework 
 
 ## Description
-Docker containerization is the most powerful technology in the current market so I came up with the idea to develop Docker images for Pentesters.
+In today's technological era, docker is the most powerful technology in each and every domain, whether it is Development, cyber security, DevOps, Automation, or Infrastructure.
 
-Nightingale contains all the required well-known tools that will be required for the Pentesters at the time of Penetration Testing. This docker image has the base support of Debian and it is completely platform Independent.
+Considering the demand of the industry, I would like to introduce my idea to create a docker image for pentesters, the reason being, docker is a mainstream technology to provide a scalable environment and rapidly boots up processes in order to use.
 
-You can either create a docker image in your localhost machine by modifying it according to your requirements or you can directly pull the docker image from the docker hub itself.
+Nightingale contains all the required famous tools that will be required to the pentesters at the time of Penetration Testing, also it is a completely independent platform and supports the Debian operating system.
+
+The best part is you can either create an altered docker image or pull the pre-built docker image from the hub.
+PROS
+Some of the best features are listed below, I would highly recommend going through it and starting penetrating into the application.
+Link to access tool list : 
+
+### Pros
+1.	No need to install multiple programming language support and multiple modules.
+2.	Booting process is very fast as per the virtualization concept.
+3.	Need as per use resource of the host machine.
+4.	All pre-install tools are installed and if you install any new software or tool use can go with that option.
+5.	You can perform vulnerability assessment and penetration testing of any scope.
+6.	You can access this docker container via browser by calling your local address.
+
+### Cons
+1.  You can run the container over cloud server but can’t perform mobile pentesting.
+2.  Creating tunnel with SSH can’t help you to provide the connection to your physical device or virtual environment.
 
 ### Why? 
 The Reason behind creating this Docker file is to make a platform-independent penetration toolkit. It includes all the useful tools that will be required for a penetration tester
