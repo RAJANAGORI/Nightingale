@@ -41,6 +41,10 @@ Link to access tool list : [tool list](https://owasp.org/www-project-nightingale
 ### Why? 
 The Reason behind creating this Docker file is to make a platform-independent penetration toolkit. It includes all the useful tools that will be required for a penetration tester
 (You can refer to the tool list section for the same).
+
+## Architecture Diagram of the NIGHTINGALE.
+[Diagram](https://github.com/RAJANAGORI/Nightingale/blob/main/assets/images/architecture.jpg)
+
 ## Docker Image Build and Run 
 - Take a clone of the repository
 ```
