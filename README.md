@@ -79,6 +79,11 @@ source venv/bin/activate
 ```
 - Call your browser and hit 127.0.0.1:8080 for the nightingale terminal and 127.0.0.1:8081 for MobFs to become you will be prooo!!!!
 
+- If you want to bind your host machine directory to your container directory then you can do the same.
+```
+docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -v /<your_host_machine_directory_path>:/<your_container_directory_path> -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash
+```
+
 ### For Localtunnel
 - Hit 127.0.0.1:8080 in your browser and you will be able to access the Nightingale terminal
 - Now, run the following command in your terminal
