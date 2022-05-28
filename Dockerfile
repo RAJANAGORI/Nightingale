@@ -60,6 +60,7 @@ RUN \
     hydra \
     medusa \
     figlet \
+    dnsutil \
     # Some android architecture dependency
     android-framework-res \
     # installing Apktool and adb
