@@ -111,8 +111,3 @@ service postgresql stop
 Note: Use of Postgresql is for msfConsole.
 
 Please feel free to contribute to the tool
-
-
-If you want to appreciate my work then you can buy me a coffee :)<br>
-
-<a href="https://www.buymeacoffee.com/rajanagori"><img src="assets\images\blue-button.png" hight=100px; width=300px ></a>
