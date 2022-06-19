@@ -19,17 +19,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: docker login
+    - 
+    name: docker login
+      uses: actions/checkout@v3
       env:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       run: |
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: docker build for programming language image and pushing to the docker hub
+    - 
+    name: docker build for programming language image and pushing to the docker hub
+      uses: actions/checkout@v3
       id: programming-language-image
       with:
           filters: |
@@ -40,9 +41,9 @@ jobs:
     - if: steps.programming-language-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_programming_image:v1
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: docker build for forensics image and pushing to the docker hub
+    - 
+    name: docker build for forensics image and pushing to the docker hub
+      uses: actions/checkout@v3
       id: forensics-image
       with:
           filters: |
@@ -53,9 +54,9 @@ jobs:
     - if: steps.forensics-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_forensic_and_red_teaming:v1.0
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: docker build for web image and pushing to the docker hub
+    - 
+    name: docker build for web image and pushing to the docker hub
+      uses: actions/checkout@v3
       id: web-image
       with:
           filters: |
@@ -66,9 +67,9 @@ jobs:
     - if: steps.web-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_web_vapt_image:v1.0
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: docker build for network image and pushing to the docker hub
+    - 
+    name: docker build for network image and pushing to the docker hub
+      uses: actions/checkout@v3
       id: network-image
       with:
           filters: |
@@ -78,10 +79,10 @@ jobs:
 
     - if: steps.network-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_network_vapt_image:v1.0
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: docker build for osint image and pushing to the docker hub
+    
+    - 
+    name: docker build for osint image and pushing to the docker hub
+      uses: actions/checkout@v3
       id: osint-image
       with:
           filters: |
@@ -92,9 +93,9 @@ jobs:
     - if: steps.osint-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_osint_image:v1.0
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: docker build for mobile image
+    - 
+    name: docker build for mobile image
+      uses: actions/checkout@v3
       id: mobile-image
       with:
           filters: |
@@ -105,9 +106,9 @@ jobs:
     - if: steps.mobile-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: docker build for wordlist image
+    - 
+    name: docker build for wordlist image
+      uses: actions/checkout@v3
       id: wordlist-image
       with:
           filters: |
@@ -116,10 +117,10 @@ jobs:
       run: docker build . --file Dockerfiles/wordlist.Dockerfile --tag rajanagori/nightingale_wordlist_image:v1.0
     - if: steps.wordlist-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_wordlist_image:v1.0
-      
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image and push it to docker hub for Final Nightingale image
+
+    - 
+    name: Build the Docker image and push it to docker hub for Final Nightingale image
+      uses: actions/checkout@v3
       id: final-image
       with:
           filters: |
