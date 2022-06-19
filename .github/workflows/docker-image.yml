@@ -21,7 +21,7 @@ jobs:
     steps:
     - 
     name: docker login
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       env:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
@@ -30,7 +30,7 @@ jobs:
 
     - 
     name: docker build for programming language image and pushing to the docker hub
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       id: programming-language-image
       with:
           filters: |
@@ -43,7 +43,7 @@ jobs:
 
     - 
     name: docker build for forensics image and pushing to the docker hub
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       id: forensics-image
       with:
           filters: |
@@ -56,7 +56,7 @@ jobs:
 
     - 
     name: docker build for web image and pushing to the docker hub
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       id: web-image
       with:
           filters: |
@@ -69,7 +69,7 @@ jobs:
 
     - 
     name: docker build for network image and pushing to the docker hub
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       id: network-image
       with:
           filters: |
@@ -82,7 +82,7 @@ jobs:
     
     - 
     name: docker build for osint image and pushing to the docker hub
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       id: osint-image
       with:
           filters: |
@@ -95,7 +95,7 @@ jobs:
 
     - 
     name: docker build for mobile image
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       id: mobile-image
       with:
           filters: |
@@ -108,7 +108,7 @@ jobs:
 
     - 
     name: docker build for wordlist image
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       id: wordlist-image
       with:
           filters: |
@@ -120,7 +120,7 @@ jobs:
 
     - 
     name: Build the Docker image and push it to docker hub for Final Nightingale image
-      uses: actions/checkout@v3
+    uses: actions/checkout@v3
       id: final-image
       with:
           filters: |
