@@ -4,6 +4,7 @@ FROM rajanagori/nightingale_programming_image:v1
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
 
+USER root
 ## Banner shell and run shell file ##
 COPY \
     shells/banner.sh /tmp/banner.sh
@@ -13,15 +14,11 @@ COPY \
 
 RUN \
     cat /tmp/banner.sh >> /root/.bashrc && \
-    cat /tmp/source >> /etc/apt/sources.list 
-
-USER root
+    cat /tmp/source >> /etc/apt/sources.list &&\
 
 #### Installing os tools and other dependencies.
-RUN \
     apt-get -y update --fix-missing && \
-    apt-get -y upgrade && \
-    apt-get -f install -y \
+    apt-get -f --no-install-recommends install -y \
     #### Operating system dependecies start
     software-properties-common \
     ca-certificates \
@@ -71,10 +68,14 @@ RUN \
     steghide \
     binwalk \
     foremost && \
-    pip install objection
+    pip install objection &&\
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/* &&\
 
 ### Creating Directories
-RUN \
     cd /home &&\
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
 
@@ -175,10 +176,5 @@ EXPOSE 8080
 EXPOSE 8081
 EXPOSE 7681
 
-# Cleaning Unwanted libraries 
-RUN apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
 ### Working Directory of tools ends here
 WORKDIR /home
