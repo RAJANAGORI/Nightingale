@@ -2,17 +2,14 @@ FROM debian:latest
 
 RUN \
     apt-get update -y && \
-    apt-get upgrade -y && \
 ### Programming Language Support
-    apt-get install -y \
-
+    apt-get -f --no-install-recommends install -y \
     ## Essentials
     software-properties-common \
     ca-certificates \
     build-essential \
     wget \
     curl \
-
     ## Dev Essentials
     git \
     vim \
@@ -76,7 +73,13 @@ RUN \
     default-jdk-headless &&\
 
     ## Installing Nokogiri to parse any HTML and XMl in RUBY
-    gem install nokogiri
+    gem install nokogiri &&\
+    #removing the unnecessary packages
+    rm -rf /home/* &&\
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/*
 
 # Install go and node
 WORKDIR /home
@@ -84,18 +87,11 @@ RUN \
     wget -q https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     # Install node
-    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash && \
 
-RUN \
+# Installing go Language
     mkdir -p /root/go
 
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
-
-RUN \
-    rm -rf /home/* &&\
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
