@@ -28,7 +28,6 @@ jobs:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
     - name: docker build for programming language image and pushing to the docker hub
-      uses: actions/checkout@v3
       id: programming-language-image
       with:
           filters: |
@@ -40,7 +39,6 @@ jobs:
       run: docker push rajanagori/nightingale_programming_image:v1
 
     - name: docker build for forensics image and pushing to the docker hub
-      uses: actions/checkout@v3
       id: forensics-image
       with:
           filters: |
@@ -52,7 +50,6 @@ jobs:
       run: docker push rajanagori/nightingale_forensic_and_red_teaming:v1.0
 
     - name: docker build for web image and pushing to the docker hub
-      uses: actions/checkout@v3
       id: web-image
       with:
           filters: |
@@ -64,7 +61,6 @@ jobs:
       run: docker push rajanagori/nightingale_web_vapt_image:v1.0
 
     - name: docker build for network image and pushing to the docker hub
-      uses: actions/checkout@v3
       id: network-image
       with:
           filters: |
@@ -76,7 +72,6 @@ jobs:
       run: docker push rajanagori/nightingale_network_vapt_image:v1.0
     
     - name: docker build for osint image and pushing to the docker hub
-      uses: actions/checkout@v3
       id: osint-image
       with:
           filters: |
@@ -88,7 +83,6 @@ jobs:
       run: docker push rajanagori/nightingale_osint_image:v1.0
 
     - name: docker build for mobile image
-      uses: actions/checkout@v3
       id: mobile-image
       with:
           filters: |
@@ -100,7 +94,6 @@ jobs:
       run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
 
     - name: docker build for wordlist image
-      uses: actions/checkout@v3
       id: wordlist-image
       with:
           filters: |
@@ -111,13 +104,11 @@ jobs:
       run: docker push rajanagori/nightingale_wordlist_image:v1.0
 
     - name: Build the Docker image and push it to docker hub for Final Nightingale image
-      uses: actions/checkout@v3
       id: final-image
       with:
           filters: |
             dockerfile:
               - Dockerfile
       run: docker build . --file Dockerfile --tag rajanagori/nightingale:latest
-      
     - if: steps.final-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale:latest
