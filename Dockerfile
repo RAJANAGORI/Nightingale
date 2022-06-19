@@ -2,7 +2,8 @@
 FROM rajanagori/nightingale_programming_image:v1
 
 LABEL maintainer="Raja Nagori" \
-    email="raja.nagori@owasp.org"
+    email="raja.nagori@owasp.org" \
+    lable="OWASP"
 
 USER root
 ## Banner shell and run shell file ##
