@@ -27,6 +27,8 @@ jobs:
       run: |
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
+    steps:
+    - uses: actions/checkout@v3
     - name: docker build for programming language image and pushing to the docker hub
       id: programming-language-image
       with:
@@ -38,6 +40,8 @@ jobs:
     - if: steps.programming-language-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_programming_image:v1
 
+    steps:
+    - uses: actions/checkout@v3
     - name: docker build for forensics image and pushing to the docker hub
       id: forensics-image
       with:
@@ -49,6 +53,8 @@ jobs:
     - if: steps.forensics-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_forensic_and_red_teaming:v1.0
 
+    steps:
+    - uses: actions/checkout@v3
     - name: docker build for web image and pushing to the docker hub
       id: web-image
       with:
@@ -60,6 +66,8 @@ jobs:
     - if: steps.web-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_web_vapt_image:v1.0
 
+    steps:
+    - uses: actions/checkout@v3
     - name: docker build for network image and pushing to the docker hub
       id: network-image
       with:
@@ -70,7 +78,9 @@ jobs:
 
     - if: steps.network-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_network_vapt_image:v1.0
-    
+
+    steps:
+    - uses: actions/checkout@v3
     - name: docker build for osint image and pushing to the docker hub
       id: osint-image
       with:
@@ -82,6 +92,8 @@ jobs:
     - if: steps.osint-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_osint_image:v1.0
 
+    steps:
+    - uses: actions/checkout@v3
     - name: docker build for mobile image
       id: mobile-image
       with:
@@ -93,6 +105,8 @@ jobs:
     - if: steps.mobile-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
 
+    steps:
+    - uses: actions/checkout@v3
     - name: docker build for wordlist image
       id: wordlist-image
       with:
@@ -102,7 +116,9 @@ jobs:
       run: docker build . --file Dockerfiles/wordlist.Dockerfile --tag rajanagori/nightingale_wordlist_image:v1.0
     - if: steps.wordlist-image.outputs.dockerfile == 'true'
       run: docker push rajanagori/nightingale_wordlist_image:v1.0
-
+      
+    steps:
+    - uses: actions/checkout@v3
     - name: Build the Docker image and push it to docker hub for Final Nightingale image
       id: final-image
       with:
