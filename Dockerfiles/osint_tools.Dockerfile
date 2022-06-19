@@ -9,10 +9,14 @@ RUN \
     git \
     make \
     cmake \
-    bundler
+    bundler && \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/* &&\
 
 ### Creating Directories
-RUN \
     cd /home && \
     mkdir -p tools_osint
 
@@ -27,10 +31,9 @@ RUN \
     # Git clone of recon-ng
     git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
     # Git clone of xray
-    git clone --depth 1 https://github.com/evilsocket/xray.git 
+    git clone --depth 1 https://github.com/evilsocket/xray.git && \
 
 ### INstalling tools
-RUN \
 # Installing reconspider
     cd reconspider && \
     python3 setup.py install &&\
@@ -45,9 +48,3 @@ RUN \
     make
 
 WORKDIR /home
-
-# Cleaning Unwanted libraries 
-RUN apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*

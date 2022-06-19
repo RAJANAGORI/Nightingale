@@ -9,10 +9,14 @@ RUN \
     git \
     make \
     cmake \
-    bundler 
+    bundler && \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/* &&\
 
 ### Creating Directories
-RUN \
     cd /home && \
     mkdir -p tools_web_vapt .gf 
 
@@ -51,11 +55,10 @@ RUN \
     #git clone jwt_tool
     git clone --depth 1 https://github.com/ticarpi/jwt_tool.git &&\
     #git clone whatweb
-    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git
+    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git &&\
 
 ### Installing Tools 
 
-RUN \
 ## Installing Arjun
     cd Arjun && \
     python3 setup.py install && \
@@ -112,12 +115,6 @@ RUN \
     mv amass_linux_amd64/amass /usr/local/bin && rm -rf amass_linux_amd64 amass.zip
 
 WORKDIR /home
-
-# Cleaning Unwanted libraries 
-RUN apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
 
 
 

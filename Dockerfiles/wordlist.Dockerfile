@@ -8,9 +8,8 @@ RUN \
     apt-get install -y \
     git \
     curl \
-    wget
-
-RUN \
+    wget && \
+# Creating Directories
     cd /home && \
     mkdir -p wordlist
 
