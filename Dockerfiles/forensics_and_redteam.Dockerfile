@@ -9,9 +9,14 @@ RUN \
     git \
     make \
     cmake \
-    bundler
+    bundler && \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/* &&\
 
-RUN \
+    # Creating Directories
     cd /home &&\
     mkdir -p tools_red_teaming tools_forensics
 
@@ -23,18 +28,11 @@ WORKDIR ${TOOLS_RED_TEAMING}
 
 RUN \
     #Git clone of impacket toolkit
-    git clone --depth 1 https://github.com/SecureAuthCorp/impacket.git
+    git clone --depth 1 https://github.com/SecureAuthCorp/impacket.git && \
 
     #installing impact tool
-RUN \
     cd impacket &&\
     python3 setup.py build &&\
     python3 setup.py install
-
-# Cleaning Unwanted libraries 
-RUN apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home

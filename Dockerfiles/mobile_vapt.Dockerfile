@@ -9,9 +9,14 @@ RUN \
     git \
     make \
     cmake \
-    bundler
+    bundler && \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/* &&\
 
-RUN \
+    # Creating Directories
     cd /home && \
     mkdir -p tools_mobile_vapt
 
@@ -22,17 +27,10 @@ WORKDIR ${TOOLS_MOBILE_VAPT}
 
 RUN \ 
     # Git cloning of MobSf
-    git clone --depth 1 https://github.com/MobSF/Mobile-Security-Framework-MobSF.git
+    git clone --depth 1 https://github.com/MobSF/Mobile-Security-Framework-MobSF.git && \
 
-RUN \
     cd Mobile-Security-Framework-MobSF && \
     python3 -m venv venv &&\
     venv/bin/pip install -r requirements.txt
 
 WORKDIR /home
-
-# Cleaning Unwanted libraries 
-RUN apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*

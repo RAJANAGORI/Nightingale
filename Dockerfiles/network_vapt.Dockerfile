@@ -9,10 +9,15 @@ RUN \
     git \
     make \
     cmake \
-    bundler
+    bundler && \
+
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/* &&\
 
 ### Creating Directories
-RUN \
     cd /home &&\
     mkdir -p tools_network_vapt
 
@@ -26,10 +31,4 @@ RUN \
     git clone --depth 1 https://github.com/sullo/nikto.git
 
 WORKDIR /home
-
-# Cleaning Unwanted libraries 
-RUN apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
     

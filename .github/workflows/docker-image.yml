@@ -3,14 +3,14 @@ name: Docker Image CI
 on:
   push:
     branches: [ main ]
-    # paths:
-    #   - 'Dockerfiles/*'
-    #   - 'Dockerfile'
+    paths:
+      - 'Dockerfiles/*'
+      - 'Dockerfile'
   pull_request:
     branches: [ main ]
-    # paths:
-    #   - 'Dockerfiles/*'
-    #   - 'Dockerfile'
+    paths:
+      - 'Dockerfiles/*'
+      - 'Dockerfile'
 
 jobs:
 
@@ -32,6 +32,42 @@ jobs:
 
     - name : docker push programming language image
       run: docker push rajanagori/nightingale_programming_image:v1
+
+    - name: docker build for forensics image
+      run: docker build . --file Dockerfiles/forensics_and_redteam.Dockerfile --tag rajanagori/nightingale_forensic_and_red_teaming:v1.0
+    
+    - name : docker push forensics image
+      run: docker push rajanagori/nightingale_forensic_and_red_teaming:v1.0
+
+    - name: docker build for web image
+      run: docker build . --file Dockerfiles/web_vapt.Dockerfile --tag rajanagori/nightingale_web_vapt_image:v1.0
+
+    - name : docker push web image
+      run: docker push rajanagori/nightingale_web_vapt_image:v1.0
+
+    - name: docker build for network image
+      run: docker build . --file Dockerfiles/network_vapt.Dockerfile --tag rajanagori/nightingale_network_vapt_image:v1.0
+    
+    - name : docker push network image
+      run: docker push rajanagori/nightingale_network_vapt_image:v1.0
+    
+    - name: docker build for osint image
+      run: docker build . --file Dockerfiles/osint_tools.Dockerfile --tag rajanagori/nightingale_osint_image:v1.0
+
+    - name : docker push osint image
+      run: docker push rajanagori/nightingale_osint_image:v1.0
+
+    - name: docker build for mobile image
+      run: docker build . --file Dockerfiles/mobile_vapt.Dockerfile --tag rajanagori/nightingale_mobile_vapt_image:v1.0
+
+    - name : docker push mobile image
+      run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
+
+    - name: docker build for wordlist image
+      run: docker build . --file Dockerfiles/wordlist.Dockerfile --tag rajanagori/nightingale_wordlist_image:v1.0
+
+    - name : docker push wordlist image
+      run: docker push rajanagori/nightingale_wordlist_image:v1.0
 
     - name: Build the Docker image and push it to docker hub for Final Nightingale image 
       run: docker build . --file Dockerfile --tag rajanagori/nightingale:latest
