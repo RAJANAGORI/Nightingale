@@ -78,7 +78,7 @@ RUN \
 
 ### Creating Directories
     cd /home &&\
-    mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells test
+    mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
 
 ## Environment for Directories
 ENV TOOLS_WEB_VAPT=/home/tools_web_vapt/
