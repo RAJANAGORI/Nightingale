@@ -22,11 +22,8 @@ jobs:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
     - name: docker build for programming language image
-      on:
-        push:
-          paths:
-            - Dockerfiles/programming_langauge.Dockerfile
       run: docker build -t rajanagori/nightingale_programming_image:v1
+      
     - name : docker push programming language image
       run: docker push rajanagori/nightingale_programming_image:v1
 
