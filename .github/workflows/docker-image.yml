@@ -111,6 +111,5 @@ jobs:
           filters: |
             dockerfile:
               - Dockerfile
-    
     - if: steps.final-image.outputs.dockerfile == 'true'
       run: docker build . --file Dockerfile --tag rajanagori/nightingale:latest && docker push rajanagori/nightingale:latest
