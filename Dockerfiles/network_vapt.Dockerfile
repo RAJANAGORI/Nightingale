@@ -4,8 +4,7 @@ FROM rajanagori/nightingale_programming_image:v1
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
-    apt-get upgrade -y && \
-    apt-get install -y \
+    apt-get -f --no-install-recommends install -y \
     git \
     make \
     cmake \
