@@ -98,13 +98,13 @@
        fill-opacity=".3"
        transform="scale(.1)"
        textLength="970"
-       id="text903">Black Hat Arsenal</text>
+       id="text903">OWASP Appsec</text>
     <text
        x="545"
        y="140"
        transform="scale(.1)"
        textLength="970"
-       id="text905">Black Hat Arsenal</text>
+       id="text905">OWASP Appsec</text>
     <text
        x="1385"
        y="150"
@@ -112,13 +112,13 @@
        textLength="550"
        id="text907"
        lengthAdjust="spacing"
-       style="fill:#010101;fill-opacity:0.3">Asia 2022</text>
+       style="fill:#010101;fill-opacity:0.3">EU 2022</text>
     <text
        x="1385"
        y="140"
        transform="scale(0.1)"
        textLength="550"
        id="text909"
-       lengthAdjust="spacing">Asia 2022</text>
+       lengthAdjust="spacing">EU 2022</text>
   </g>
 </svg>
