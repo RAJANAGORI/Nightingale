@@ -1,5 +1,11 @@
 FROM debian:latest
 
+# nvm environment variables
+ENV NVM_DIR = /usr/local/nvm
+ENV NODE_VERSION = 16.14.0
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
 RUN \
     apt-get update -y && \
 ### Programming Language Support
@@ -79,18 +85,22 @@ RUN \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* &&\
+    rm -rf /var/cache/apt/archives/* &&\
+# Installing go Language
+    mkdir -p /root/go
 
 # Install go and node
 WORKDIR /home
 RUN \ 
     wget -q https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
+    rm go.tar.gz && \
     # Install node
-    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash && \
-
-# Installing go Language
-    mkdir -p /root/go
+    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
+    source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION
 
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
