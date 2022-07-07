@@ -1,11 +1,5 @@
 FROM debian:latest
 
-# nvm environment variables
-ENV NVM_DIR = /usr/local/nvm
-ENV NODE_VERSION = 16.14.0
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
-
 RUN \
     apt-get update -y && \
 ### Programming Language Support
@@ -88,8 +82,14 @@ RUN \
     rm -rf /var/lib/apt/lists/* &&\
     rm -rf /var/cache/apt/archives/* &&\
 # Installing go Language
-    mkdir -p /root/go
+    mkdir -p /root/go /usr/local/nvm
 
+# nvm environment variables
+ENV NVM_DIR = /usr/local/nvm
+ENV NODE_VERSION = 16.14.0
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+ 
 # Install go and node
 WORKDIR /home
 RUN \ 
