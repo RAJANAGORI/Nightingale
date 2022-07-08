@@ -73,7 +73,7 @@ RUN \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
+    rm -rf /var/lib/apt/lists/*
 
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
