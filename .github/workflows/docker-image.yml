@@ -70,7 +70,7 @@ jobs:
       run: docker push rajanagori/nightingale_wordlist_image:v1.0
 
     - name: Build the Docker image and push it to docker hub for Final Nightingale image
-      run: docker build . --file Dockerfile --tag rajanagori/nightingale:latest
+      run: docker build . --file Dockerfile --tag rajanagori/nightingale:development
 
     - name: Pushing the docker image
-      run: docker push rajanagori/nightingale:latest
+      run: docker push rajanagori/nightingale:development

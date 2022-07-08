@@ -1,7 +1,14 @@
 FROM debian:latest
 
+COPY \
+    configuration/source /tmp/source
+
+COPY \
+    shells/node-installation-script.sh /temp/node-installation-script.sh
+
 RUN \
-    apt-get update -y && \
+    cat /tmp/source >> /etc/apt/sources.list && \
+    apt-get update -y --fix-missing && \
 ### Programming Language Support
     apt-get -f --no-install-recommends install -y \
     ## Essentials
@@ -82,25 +89,18 @@ RUN \
     rm -rf /var/lib/apt/lists/* &&\
     rm -rf /var/cache/apt/archives/* &&\
 # Installing go Language
-    mkdir -p /root/go /usr/local/nvm
+    mkdir -p /root/go
 
-# nvm environment variables
-ENV NVM_DIR = /usr/local/nvm
-ENV NODE_VERSION = 16.14.0
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
- 
 # Install go and node
 WORKDIR /home
 RUN \ 
     wget -q https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
-    rm go.tar.gz && \
+    rm go.tar.gz &&\
     # Install node
-    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
-    source $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias default $NODE_VERSION
+    bash /temp/node-installation-script.sh
+    # wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
+    # export NVM_DIR="$HOME/.nvm" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"

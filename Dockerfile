@@ -75,6 +75,11 @@ RUN \
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/* &&\
 
+COPY \
+    shells/node-installation-script.sh /temp/node-installation-script.sh
+RUN \
+    chmod +x /temp/node-installation-script.sh && /temp/node-installation-script.sh &&\
+
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
