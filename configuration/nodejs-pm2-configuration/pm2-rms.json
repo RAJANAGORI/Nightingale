@@ -1,0 +1,9 @@
+{
+    "apps": [
+        {
+            "name": "Real time Mobile Security",
+            "script": "rms.js",
+            "exec_mode": "cluster"
+        }
+    ]
+}
