@@ -3,6 +3,8 @@ FROM rajanagori/nightingale_programming_image:v1
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
+    
+ARG DEBIAN_FRONTEND=noninteractive
 
 USER root
 ## Banner shell and run shell file ##
