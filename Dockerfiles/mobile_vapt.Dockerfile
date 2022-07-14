@@ -1,6 +1,7 @@
 ## Taking Image from Docker Hub for Programming language support
 FROM rajanagori/nightingale_programming_image:v1 
 ARG DEBIAN_FRONTEND=noninteractive
+
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
 
@@ -34,7 +35,6 @@ WORKDIR ${TOOLS_MOBILE_VAPT}
 RUN \ 
     # Git cloning of MobSf
     git clone --depth 1 https://github.com/MobSF/Mobile-Security-Framework-MobSF.git && \
-    
     # Installing RMS-Runtime-Mobile-Security tool idea by github user m2sup3rn0va and repo name RMS-Runtime-Mobile-Security
     git clone --depth 1 https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security.git rms 
 
