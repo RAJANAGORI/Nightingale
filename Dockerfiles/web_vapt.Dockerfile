@@ -1,6 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1 
-ARG DEBIAN_FRONTEND=noninteractive
+FROM rajanagori/nightingale_programming_image:v1
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \

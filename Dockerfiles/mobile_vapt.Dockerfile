@@ -1,6 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1 
-ARG DEBIAN_FRONTEND=noninteractive
+FROM rajanagori/nightingale_programming_image:v1
 
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh

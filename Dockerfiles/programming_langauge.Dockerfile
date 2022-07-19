@@ -1,5 +1,4 @@
 FROM debian:latest
-ARG DEBIAN_FRONTEND=noninteractive
 COPY \
     configuration/source /tmp/source
 
