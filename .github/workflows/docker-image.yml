@@ -57,11 +57,11 @@ jobs:
     - name: Pushing the docker image
       run: docker push rajanagori/nightingale_osint_image:v1.0
 
-    # - name: docker build for mobile image
-    #   run: docker build . --file Dockerfiles/mobile_vapt.Dockerfile --tag rajanagori/nightingale_mobile_vapt_image:v1.0
+    - name: docker build for mobile image
+      run: docker build . --file Dockerfiles/mobile_vapt.Dockerfile --tag rajanagori/nightingale_mobile_vapt_image:v1.0
 
-    # - name: Pushing the docker image
-    #   run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
+    - name: Pushing the docker image
+      run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
 
     - name: docker build for wordlist image
       run: docker build . --file Dockerfiles/wordlist.Dockerfile --tag rajanagori/nightingale_wordlist_image:v1.0
