@@ -9,6 +9,7 @@ COPY \
 
 ## Installing tools using apt-get for web vapt
 RUN \
+    true \
     apt-get update -y && \
     apt-get -f --no-install-recommends install -y \
     git \
