@@ -7,10 +7,10 @@ name: build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ development ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ main ]
+    branches: [ development ]
   schedule:
     - cron: '18 8 * * 5'
 
@@ -31,7 +31,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@2a2157eb22c08c9a1fac99263430307b8d1bc7a2
         with:
-          image-ref: 'docker.io/rajanagori/nightingale:latest'
+          image-ref: 'docker.io/rajanagori/nightingale:development'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
