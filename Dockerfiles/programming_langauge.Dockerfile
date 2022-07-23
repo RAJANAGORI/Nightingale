@@ -31,12 +31,10 @@ RUN \
     autoconf \
     automake \
     dialog apt-utils \
-
     ## Database Support
     postgresql \
     postgresql-client \
     postgresql-contrib \
-
     ## Essentials Library Support
     libantlr3-runtime-java \
     libcurl4-openssl-dev \
@@ -63,7 +61,6 @@ RUN \
     linux-libc-dev \
     libev-* \
     libev4 \
-
     #Installing Python3
     python3-pip \
     python3-venv \
@@ -72,12 +69,10 @@ RUN \
     libssl-dev \
     libffi-dev &&\
     python3 -m pip install --upgrade pip &&\
-
     #installing java
     apt-get install -y --no-install-recommends \
     default-jre-headless \
     default-jdk-headless &&\
-
     ## Installing Nokogiri to parse any HTML and XMl in RUBY
     gem install nokogiri &&\
     #removing the unnecessary packages
