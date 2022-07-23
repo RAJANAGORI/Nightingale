@@ -12,12 +12,11 @@ COPY \
     shells/banner.sh /tmp/banner.sh
 
 COPY \
-    configuration/source /tmp/source
+    configuration/source /tmp/source 
 
 RUN \
     cat /tmp/banner.sh >> /root/.bashrc && \
     cat /tmp/source >> /etc/apt/sources.list &&\
-
 #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
     apt-get -f --no-install-recommends install -y \
@@ -81,7 +80,6 @@ COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
 RUN \
     chmod +x /temp/node-installation-script.sh && /temp/node-installation-script.sh &&\
-
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
@@ -101,28 +99,28 @@ ENV METASPLOIT_TOOL=/home/metasploit
 ENV SHELLS=/home/.shells/
 
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+    --from=rajanagori/nightingale_web_vapt_image:development ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${GREP_PATTERNS} ${GREP_PATTERNS}
+    --from=rajanagori/nightingale_web_vapt_image:development ${GREP_PATTERNS} ${GREP_PATTERNS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_osint_image:v1.0 ${TOOLS_OSINT} ${TOOLS_OSINT}
+    --from=rajanagori/nightingale_osint_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_mobile_vapt_image:v1.0 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+    --from=rajanagori/nightingale_mobile_vapt_image:development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_network_vapt_image:v1.0 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+    --from=rajanagori/nightingale_network_vapt_image:development ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
+    --from=rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
 RUN true
 COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+    --from=rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
+    --from=rajanagori/nightingale_wordlist_image:development ${WORDLIST} ${WORDLIST}
 RUN true
 COPY \
     configuration/modules-installation ${SHELLS}

@@ -1,8 +1,9 @@
 ## Taking Image from Docker Hub for Programming language support
 FROM rajanagori/nightingale_programming_image:v1
+ARG DEBIAN_FRONTEND=noninteractive
 
 COPY \
-    shells/node-installation-script.sh /temp/node-installation-script.sh
+    shells/ /temp
 
 COPY \
     configuration/modules-installation/rms-install-module.sh /temp/rms-install-module.sh
@@ -22,7 +23,6 @@ RUN \
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/* &&\
-
     # Creating Directories
     cd /home && \
     mkdir -p tools_mobile_vapt 
@@ -36,7 +36,7 @@ RUN \
     # Git cloning of MobSf
     git clone --depth 1 https://github.com/MobSF/Mobile-Security-Framework-MobSF.git && \
     # Installing RMS-Runtime-Mobile-Security tool idea by github user m2sup3rn0va and repo name RMS-Runtime-Mobile-Security
-    git clone --depth 1 https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security.git rms 
+    git clone --depth 1 https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security.git rms
 
 COPY \
     configuration/nodejs-pm2-configuration/pm2-rms.json rms/pm2-rms.json
@@ -45,7 +45,7 @@ RUN \
     # Installing MobSF
     cd Mobile-Security-Framework-MobSF && \
     python3 -m venv venv &&\
-    venv/bin/pip install -r requirements.txt &&\
+    ./setup.sh &&\
     cd .. && \
     # Installing RMS-Runtime-Mobile-Security
     chmod +x /temp/rms-install-module.sh && \
