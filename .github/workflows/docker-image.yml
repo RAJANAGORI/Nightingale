@@ -2,12 +2,12 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ development ]
+    branches: [ main ]
     paths:
       - 'Dockerfiles/*'
       - 'Dockerfile'
   pull_request:
-    branches: [ development ]
+    branches: [ main ]
     paths:
       - 'Dockerfiles/*'
       - 'Dockerfile'
