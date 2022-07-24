@@ -99,28 +99,28 @@ ENV METASPLOIT_TOOL=/home/metasploit
 ENV SHELLS=/home/.shells/
 
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:development ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:development ${GREP_PATTERNS} ${GREP_PATTERNS}
+    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${GREP_PATTERNS} ${GREP_PATTERNS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_osint_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
+    --from=rajanagori/nightingale_osint_image:v1.0 ${TOOLS_OSINT} ${TOOLS_OSINT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_mobile_vapt_image:development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+    --from=rajanagori/nightingale_mobile_vapt_image:v1.0 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_network_vapt_image:development ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+    --from=rajanagori/nightingale_network_vapt_image:v1.0 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
+    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
 RUN true
 COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_wordlist_image:development ${WORDLIST} ${WORDLIST}
+    --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
 RUN true
 COPY \
     configuration/modules-installation ${SHELLS}
