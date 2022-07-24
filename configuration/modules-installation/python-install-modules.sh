@@ -3,7 +3,7 @@ cd ${TOOLS_RED_TEAMING}/impacket
 python3 setup.py build && python3 setup.py install
 
 cd ${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF
-python3 -m venv venv && venv/bin/pip install -r requirements.txt
+python3 -m venv venv && bash setup.sh
 
 cd ${TOOLS_WEB_VAPT}/Arjun 
 python3 setup.py install 
