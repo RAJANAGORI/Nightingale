@@ -16,10 +16,10 @@ jobs:
 
   build:
 
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: docker login
       env:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
