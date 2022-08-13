@@ -4,13 +4,13 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'Dockerfiles/*'
-      - 'Dockerfile'
+    - 'Dockerfiles/*'
+    - 'Dockerfile'
   pull_request:
     branches: [ main ]
     paths:
-      - 'Dockerfiles/*'
-      - 'Dockerfile'
+    - 'Dockerfiles/*'
+    - 'Dockerfile'
 
 jobs:
 
