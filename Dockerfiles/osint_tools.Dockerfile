@@ -36,11 +36,9 @@ RUN \
     cd reconspider && \
     python3 setup.py install &&\
     cd ../ && \
-
     cd recon-ng && \
     pip install -r REQUIREMENTS && \
     cd ../ && \
-
     go get github.com/evilsocket/xray && \
     cd $GOPATH/src/github.com/evilsocket/xray/ && \
     make
