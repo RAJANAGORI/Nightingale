@@ -13,7 +13,6 @@ RUN \
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/* &&\
-
 ### Creating Directories
     cd /home && \
     mkdir -p tools_osint
@@ -30,7 +29,6 @@ RUN \
     git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
     # Git clone of xray
     git clone --depth 1 https://github.com/evilsocket/xray.git && \
-
 ### INstalling tools
 # Installing reconspider
     cd reconspider && \
@@ -39,8 +37,7 @@ RUN \
     cd recon-ng && \
     pip install -r REQUIREMENTS && \
     cd ../ && \
-    go get github.com/evilsocket/xray && \
-    cd $GOPATH/src/github.com/evilsocket/xray/ && \
+    cd xray && \
     make
 
 WORKDIR /home

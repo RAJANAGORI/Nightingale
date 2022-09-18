@@ -88,7 +88,7 @@ RUN \
 # Install go and node
 WORKDIR /home
 RUN \ 
-    wget -q https://dl.google.com/go/go1.17.2.linux-amd64.tar.gz -O go.tar.gz && \
+    wget -q https://go.dev/dl/go1.19.1.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz &&\
     # Install node
