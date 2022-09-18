@@ -85,18 +85,18 @@ RUN \
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
 
 ## Environment for Directories
-ENV TOOLS_WEB_VAPT=/home/tools_web_vapt/
-ENV BINARIES=/home/binaries/
+ENV TOOLS_WEB_VAPT=/home/tools_web_vapt
+ENV BINARIES=/home/binaries
 ENV GREP_PATTERNS=/home/.gf
-ENV TOOLS_OSINT=/home/tools_osint/
-ENV TOOLS_MOBILE_VAPT=/home/tools_mobile_vapt/
-ENV TOOLS_NETWORK_VAPT=/home/tools_network_vapt/
-ENV TOOLS_RED_TEAMING=/home/tools_red_teaming/
-ENV TOOLS_FORENSICS=/home/tools_forensics/
-ENV WORDLIST=/home/wordlist/
-ENV METASPLOIT_CONFIG=/home/metasploit_config/
+ENV TOOLS_OSINT=/home/tools_osint
+ENV TOOLS_MOBILE_VAPT=/home/tools_mobile_vapt
+ENV TOOLS_NETWORK_VAPT=/home/tools_network_vapt
+ENV TOOLS_RED_TEAMING=/home/tools_red_teaming
+ENV TOOLS_FORENSICS=/home/tools_forensics
+ENV WORDLIST=/home/wordlist
+ENV METASPLOIT_CONFIG=/home/metasploit_config
 ENV METASPLOIT_TOOL=/home/metasploit
-ENV SHELLS=/home/.shells/
+ENV SHELLS=/home/.shells
 
 COPY \
     --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
