@@ -9,12 +9,6 @@ RUN \
     cmake \
     bundler && \
 
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
-
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_network_vapt
@@ -26,7 +20,13 @@ WORKDIR ${TOOLS_NETWORK_VAPT}
 # git clonning of tools repository
 RUN \
     # Git clone of nikto
-    git clone --depth 1 https://github.com/sullo/nikto.git
+    git clone --depth 1 https://github.com/sullo/nikto.git  &&\
+    
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home
     

@@ -17,12 +17,7 @@ RUN \
     make \
     cmake \
     bundler &&\
-    bash /temp/node-installation-script.sh && \
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
+    bash /temp/node-installation-script.sh &&\
     # Creating Directories
     cd /home && \
     mkdir -p tools_mobile_vapt 
@@ -49,6 +44,12 @@ RUN \
     cd .. && \
     # Installing RMS-Runtime-Mobile-Security
     chmod +x /temp/rms-install-module.sh && \
-    /temp/rms-install-module.sh
+    /temp/rms-install-module.sh && \
+
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home

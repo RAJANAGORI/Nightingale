@@ -9,11 +9,6 @@ RUN \
     cmake \
     bundler \
     unzip && \
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
 
 ### Creating Directories
     cd /home && \
@@ -111,7 +106,12 @@ RUN \
 ### Installing Amass 
     wget --quiet https://github.com/OWASP/Amass/releases/download/v3.16.0/amass_linux_amd64.zip -O amass.zip &&\
     unzip amass.zip && \
-    mv amass_linux_amd64/amass /usr/local/bin && rm -rf amass_linux_amd64 amass.zip
+    mv amass_linux_amd64/amass /usr/local/bin && rm -rf amass_linux_amd64 amass.zip && \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home
 

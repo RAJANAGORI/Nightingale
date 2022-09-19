@@ -8,12 +8,6 @@ RUN \
     make \
     cmake \
     bundler && \
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
-
     # Creating Directories
     cd /home &&\
     mkdir -p tools_red_teaming tools_forensics
@@ -31,6 +25,12 @@ RUN \
     #installing impact tool
     cd impacket &&\
     python3 setup.py build &&\
-    python3 setup.py install
+    python3 setup.py install &&\
+
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home
