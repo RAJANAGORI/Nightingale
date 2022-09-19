@@ -69,12 +69,7 @@ RUN \
     steghide \
     binwalk \
     foremost && \
-    pip install objection &&\
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
+    pip install objection
 
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
@@ -126,8 +121,7 @@ COPY \
     configuration/modules-installation ${SHELLS}
 
 RUN \
-    cd ${SHELLS}&& \
-    chmod +x *.sh && \
+    cd ${SHELLS} && chmod +x *.sh && \
     ./python-install-modules.sh && \
     ./go-install-modules.sh
 
@@ -180,6 +174,13 @@ EXPOSE 5432
 EXPOSE 8080
 EXPOSE 8081
 EXPOSE 7681
+
+RUN \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/*
 
 ### Working Directory of tools ends here
 WORKDIR /home

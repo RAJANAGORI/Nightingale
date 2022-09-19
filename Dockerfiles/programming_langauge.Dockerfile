@@ -76,12 +76,6 @@ RUN \
     ## Installing Nokogiri to parse any HTML and XMl in RUBY
     gem install nokogiri &&\
     #removing the unnecessary packages
-    rm -rf /home/* &&\
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
-    rm -rf /var/cache/apt/archives/* &&\
 # Installing go Language
     mkdir -p /root/go
 
@@ -92,9 +86,13 @@ RUN \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz &&\
     # Install node
-    bash /temp/node-installation-script.sh
-    # wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
-    # export NVM_DIR="$HOME/.nvm" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    bash /temp/node-installation-script.sh && \
+    rm -rf /home/* &&\
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/* &&\
+    rm -rf /var/cache/apt/archives/*
 
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"

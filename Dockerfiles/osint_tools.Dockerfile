@@ -8,11 +8,6 @@ RUN \
     make \
     cmake \
     bundler && \
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
 ### Creating Directories
     cd /home && \
     mkdir -p tools_osint
@@ -38,6 +33,11 @@ RUN \
     pip install -r REQUIREMENTS && \
     cd ../ && \
     cd xray && \
-    make
+    make && \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home
