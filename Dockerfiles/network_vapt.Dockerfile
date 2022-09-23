@@ -21,7 +21,6 @@ WORKDIR ${TOOLS_NETWORK_VAPT}
 RUN \
     # Git clone of nikto
     git clone --depth 1 https://github.com/sullo/nikto.git  &&\
-    
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\

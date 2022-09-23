@@ -11,12 +11,12 @@ USER root
 COPY \
     shells/banner.sh /tmp/banner.sh
 
-COPY \
-    configuration/source /tmp/source 
+# COPY \
+#     configuration/source /tmp/source 
 
 RUN \
     cat /tmp/banner.sh >> /root/.bashrc && \
-    cat /tmp/source >> /etc/apt/sources.list &&\
+    # cat /tmp/source >> /etc/apt/sources.list &&\
 #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
     apt-get -f --no-install-recommends install -y \
@@ -133,21 +133,7 @@ COPY \
     
 RUN \
     chmod +x ${BINARIES}/* && \
-    mv assetfinder /usr/local/bin/ && \
-    mv gau /usr/local/bin/ && \
-    mv gf /usr/local/bin/ && \
-    mv httprobe /usr/local/bin/ && \
-    mv httpx /usr/local/bin/ && \
-    mv jadx /usr/local/bin/ && \
-    mv nuclei /usr/local/bin/ && \
-    mv qsreplace /usr/local/bin/ && \
-    mv subfinder /usr/local/bin/ && \
-    mv waybackurls /usr/local/bin/ && \
-    mv ffuf /usr/local/bin/ && \
-    mv findomain /usr/local/bin/ && \
-    mv gobuster /usr/local/bin/ && \
-    mv masscan /usr/local/bin/ && \
-    mv amass /usr/local/bin/ && \
+    mv ${BINARIES}/* /usr/local/bin/ && \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
     chmod +x ttyd
 
