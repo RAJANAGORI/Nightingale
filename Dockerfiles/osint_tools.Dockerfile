@@ -22,8 +22,7 @@ RUN \
     git clone --depth 1 https://github.com/bhavsec/reconspider.git && \
     # Git clone of recon-ng
     git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
-    # Git clone of xray
-    git clone --depth 1 https://github.com/evilsocket/xray.git && \
+
 ### INstalling tools
 # Installing reconspider
     cd reconspider && \
@@ -32,8 +31,7 @@ RUN \
     cd recon-ng && \
     pip install -r REQUIREMENTS && \
     cd ../ && \
-    cd xray && \
-    make && \
+    
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\
