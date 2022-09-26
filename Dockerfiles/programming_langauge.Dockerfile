@@ -1,12 +1,12 @@
 FROM debian:latest
-COPY \
-    configuration/source /tmp/source
+# COPY \
+#     configuration/source /tmp/source
 
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
 
 RUN \
-    cat /tmp/source >> /etc/apt/sources.list && \
+    # cat /tmp/source >> /etc/apt/sources.list && \
     apt-get update -y --fix-missing && \
 ### Programming Language Support
     apt-get -f --no-install-recommends install -y \
