@@ -42,8 +42,6 @@ RUN \
     git clone --depth 1 https://github.com/s0md3v/Striker.git && \
     # git clone LinkFinder
     git clone --depth 1 https://github.com/GerbenJavado/LinkFinder.git &&  \
-    #git clone Spiderfoot
-    git clone --depth 1 https://github.com/smicallef/spiderfoot.git && \
     #git clone sublister
     git clone --depth 1 https://github.com/aboul3la/Sublist3r.git &&\
     #git clone jwt_tool
@@ -92,12 +90,7 @@ RUN \
     cd XSStrike && \
     pip3 install -r requirements.txt &&\
     cd .. && \
-
-## INstall Spiderfoot
-    cd spiderfoot && \
-    pip3 install -r requirements.txt &&\
-    cd .. && \
-
+    
 # Installing WhatWeb
     cd WhatWeb && \
     make install && \

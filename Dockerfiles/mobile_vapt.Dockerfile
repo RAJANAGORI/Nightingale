@@ -42,6 +42,7 @@ RUN \
     python3 -m venv venv &&\
     ./setup.sh &&\
     cd .. && \
+    
     # Installing RMS-Runtime-Mobile-Security
     chmod +x /temp/rms-install-module.sh && \
     /temp/rms-install-module.sh && \

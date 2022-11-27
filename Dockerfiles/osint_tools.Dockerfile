@@ -22,16 +22,36 @@ RUN \
     git clone --depth 1 https://github.com/bhavsec/reconspider.git && \
     # Git clone of recon-ng
     git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
-
+    #Git clone Spiderfoot
+    git clone --depth 1 https://github.com/smicallef/spiderfoot.git && \
+    #Git clon metagoofil
+    git clone --depth 1 https://github.com/opsdisk/metagoofil &&\
+    #Git clone of theharvester
+    git clone --depth 1 https://github.com/laramies/theHarvester &&\
 ### INstalling tools
 # Installing reconspider
-    cd reconspider && \
-    python3 setup.py install &&\
-    cd ../ && \
+    cd reconspider &&\
+    sed -i 's/urllib3/urllib3==1.26.13/g' setup.py &&\
+    python3 setup.py install && \
+    cd ../ &&\
+
     cd recon-ng && \
-    pip install -r REQUIREMENTS && \
-    cd ../ && \
+    pip3 install -r REQUIREMENTS && \
+    cd ../ &&\
+
+## INstall Spiderfoot
+    cd spiderfoot && \
+    pip3 install -r requirements.txt &&\
+    cd ../ &&\
     
+    cd metagoofil &&\
+    python3 -m venv venv &&\
+    pip3 install -r requirements.txt &&\
+    cd ../ &&\
+
+    cd theHarvester &&\
+    python3 -m pip install -r requirements/base.txt &&\
+
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\
