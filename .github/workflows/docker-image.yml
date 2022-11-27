@@ -47,10 +47,10 @@ jobs:
       run: docker push rajanagori/nightingale_network_vapt_image:v1.0
     
     - name: docker build for osint image  
-      run: docker build . --file Dockerfiles/osint_tools.Dockerfile --tag rajanagori/nightingale_osint_image:v1.0
+      run: docker build . --file Dockerfiles/osint_tools.Dockerfile --tag rajanagori/nightingale_osint_image:v1.1
 
     - name: Pushing the docker image
-      run: docker push rajanagori/nightingale_osint_image:v1.0
+      run: docker push rajanagori/nightingale_osint_image:v1.1
 
     - name: docker build for mobile image
       run:  docker build . --file Dockerfiles/mobile_vapt.Dockerfile --tag rajanagori/nightingale_mobile_vapt_image:v1.0
