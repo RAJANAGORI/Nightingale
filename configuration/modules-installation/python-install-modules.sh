@@ -17,22 +17,22 @@ cd ${TOOLS_WEB_VAPT}/LinkFinder
 python3 setup.py install
 
 cd ${TOOLS_WEB_VAPT}/Striker 
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 
 cd ${TOOLS_WEB_VAPT}/dirsearch
 python3 setup.py install 
 
 cd ${TOOLS_WEB_VAPT}/jwt_tool
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 
 cd ${TOOLS_WEB_VAPT}/Sublist3r
 python3 setup.py install
 
 cd ${TOOLS_WEB_VAPT}/XSStrike
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 
 cd ${TOOLS_WEB_VAPT}/spiderfoot 
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 
 cd ${TOOLS_WEB_VAPT}/WhatWeb 
 make install
@@ -42,13 +42,13 @@ sed -i 's/urllib3/urllib3==1.26.13/g' setup.py
 python3 setup.py install
 
 cd ${TOOLS_OSINT}/recon-ng 
-pip3 install -r REQUIREMENTS
+pip install -r REQUIREMENTS
 
 # Installation from pypi
-pip3 install objection octosuite
+pip install objection octosuite
 
 cd ${TOOLS_OSINT}/metagoofil
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 
 cd ${TOOLS_OSINT}/theHarvester
-python3 -m pip3 install -r requirements/base.txt
+python3 -m pip install -r requirements/base.txt

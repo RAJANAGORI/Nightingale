@@ -119,10 +119,11 @@ RUN true
 COPY \
     configuration/modules-installation ${SHELLS}
 
+WORKDIR ${SHELLS}
 RUN \
-    cd ${SHELLS} && chmod +x *.sh && \
-    ./python-install-modules.sh && \
-    ./go-install-modules.sh
+    chmod +x *.sh && \
+    bash -c python-install-modules.sh && \
+    bash -c go-install-modules.sh
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
