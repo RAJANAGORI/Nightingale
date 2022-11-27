@@ -1,54 +1,35 @@
-#/bin/bash
-cd ${TOOLS_RED_TEAMING}/impacket
-python3 setup.py build
-python3 setup.py install
 
-cd ${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF
-python3 -m venv venv 
-bash setup.sh
+python3 ${TOOLS_RED_TEAMING}/impacket/setup.py build && ${TOOLS_RED_TEAMING}/impacket/python3 setup.py install
 
-cd ${TOOLS_WEB_VAPT}/Arjun
-python3 setup.py install 
+python3 -m venv ${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF/venv && bash ${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF/setup.sh
 
-cd ${TOOLS_WEB_VAPT}/HawkScan
-python3 setup.py install 
+python3 ${TOOLS_WEB_VAPT}/Arjun/setup.py install
 
-cd ${TOOLS_WEB_VAPT}/LinkFinder 
-python3 setup.py install
+python3 ${TOOLS_WEB_VAPT}/HawkScan/setup.py install
 
-cd ${TOOLS_WEB_VAPT}/Striker 
-pip install -r requirements.txt
+python3 ${TOOLS_WEB_VAPT}/LinkFinder/setup.py install
 
-cd ${TOOLS_WEB_VAPT}/dirsearch
-python3 setup.py install 
+pip install -r ${TOOLS_WEB_VAPT}/Striker/requirements.txt
 
-cd ${TOOLS_WEB_VAPT}/jwt_tool
-pip install -r requirements.txt
+python3 ${TOOLS_WEB_VAPT}/dirsearch/setup.py install
 
-cd ${TOOLS_WEB_VAPT}/Sublist3r
-python3 setup.py install
+pip install -r ${TOOLS_WEB_VAPT}/jwt_tool/requirements.txt
 
-cd ${TOOLS_WEB_VAPT}/XSStrike
-pip install -r requirements.txt
+python3 ${TOOLS_WEB_VAPT}/Sublist3r/setup.py install
 
-cd ${TOOLS_WEB_VAPT}/spiderfoot 
-pip install -r requirements.txt
+pip install -r ${TOOLS_WEB_VAPT}/XSStrike/requirements.txt
 
-cd ${TOOLS_WEB_VAPT}/WhatWeb 
-make install
+${TOOLS_WEB_VAPT}/WhatWeb/make install
 
-cd ${TOOLS_OSINT}/reconspider
-sed -i 's/urllib3/urllib3==1.26.13/g' setup.py
-python3 setup.py install
+pip install -r ${TOOLS_OSINT}/spiderfoot/requirements.txt
 
-cd ${TOOLS_OSINT}/recon-ng 
-pip install -r REQUIREMENTS
+sed -i 's/urllib3/urllib3==1.26.13/g' ${TOOLS_OSINT}/reconspider/setup.py && python3 ${TOOLS_OSINT}/reconspider/setup.py install
+
+pip install -r ${TOOLS_OSINT}/recon-ng/REQUIREMENTS
+
+pip install -r ${TOOLS_OSINT}/metagoofil/requirements.txt
+
+pip install -r ${TOOLS_OSINT}/theHarvester/requirements/base.txt
 
 # Installation from pypi
 pip install objection octosuite
-
-cd ${TOOLS_OSINT}/metagoofil
-pip install -r requirements.txt
-
-cd ${TOOLS_OSINT}/theHarvester
-python3 -m pip install -r requirements/base.txt
