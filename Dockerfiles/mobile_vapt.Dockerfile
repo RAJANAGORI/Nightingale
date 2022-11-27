@@ -6,7 +6,7 @@ COPY \
     shells/ /temp
 
 COPY \
-    configuration/modules-installation/rms-install-module.sh /temp/rms-install-module.sh
+    configuration/modules-installation/rms-install-modules.sh /temp/rms-install-module.sh
 
 ## Installing tools using apt-get for web vapt
 RUN \
