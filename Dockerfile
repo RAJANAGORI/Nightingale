@@ -116,14 +116,11 @@ RUN true
 COPY \
     --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
 RUN true
-COPY \
-    configuration/modules-installation ${SHELLS}
 
-WORKDIR ${SHELLS}
+COPY \
+    configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 RUN \
-    chmod +x *.sh && \
-    bash -c python-install-modules.sh && \
-    bash -c go-install-modules.sh
+    chmod +x ${SHELLS}/python-install-modules.sh && ${SHELLS}/python-install-modules.sh
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
