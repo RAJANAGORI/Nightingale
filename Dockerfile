@@ -68,8 +68,7 @@ RUN \
     exiftool \
     steghide \
     binwalk \
-    foremost && \
-    pip install objection
+    foremost
 
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
@@ -100,7 +99,7 @@ COPY \
     --from=rajanagori/nightingale_web_vapt_image:v1.0 ${GREP_PATTERNS} ${GREP_PATTERNS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_osint_image:v1.0 ${TOOLS_OSINT} ${TOOLS_OSINT}
+    --from=rajanagori/nightingale_osint_image:v1.1 ${TOOLS_OSINT} ${TOOLS_OSINT}
 RUN true
 COPY \
     --from=rajanagori/nightingale_mobile_vapt_image:v1.0 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}

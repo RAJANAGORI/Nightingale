@@ -31,10 +31,10 @@ RUN \
     autoconf \
     automake \
     dialog apt-utils \
-    ## Database Support
-    postgresql \
-    postgresql-client \
-    postgresql-contrib \
+    # ## Database Support
+    # postgresql \
+    # postgresql-client \
+    # postgresql-contrib \
     ## Essentials Library Support
     libantlr3-runtime-java \
     libcurl4-openssl-dev \
