@@ -48,7 +48,7 @@ The Reason behind creating this Docker file is to make a platform-independent pe
 (You can refer to the tool list section for the same).
 
 ## Architecture Diagram of the NIGHTINGALE.
-[Diagram](https://github.com/RAJANAGORI/Nightingale/blob/main/assets/images/architecture.jpg)
+[Diagram](https://github.com/RAJANAGORI/Nightingale/blob/main/assets/images/architecture.png)
 
 ## Docker Image Build and Run 
 - Take a clone of the repository

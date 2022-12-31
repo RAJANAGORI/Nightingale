@@ -6,5 +6,7 @@ shells/try.sh
 shells/requirements_file_module.sh
 shell.bat
 Dockerfiles/*_copy.Dockerfile
+Dockerfiles/*_alpine.Dockerfile
 testing.Dockerfile
 configuration/postgres
+.github
