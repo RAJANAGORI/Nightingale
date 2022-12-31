@@ -6,6 +6,7 @@
 
 ![BlackHat Asia 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2022.svg)
 ![OWASP AppSec EU 2022 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
+[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6871/badge)](https://bestpractices.coreinfrastructure.org/projects/6871)
 
 ![](https://img.shields.io/github/followers/RAJANAGORI?style=social)
 ![](https://img.shields.io/github/stars/RAJANAGORI?style=social)
