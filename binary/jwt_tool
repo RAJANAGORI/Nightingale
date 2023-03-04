@@ -1,0 +1,3 @@
+#!/bin/bash
+python3 /home/tools_web_vapt/jwt_tool/jwt_tool.py "$@"
+ 
