@@ -1,0 +1,2 @@
+#/bin/bash
+python3 /home/tools_osint/metagoofil/metagoofil.py "$@"

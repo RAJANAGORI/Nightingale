@@ -70,12 +70,12 @@ docker run -ti --hostname nightingale  rajanagori/nightingale /bin/bash
 ```
 - Now, you can directly access Nightingale interactive terminal using the browser
 ```
-docker run -it -p 0.0.0.0:8080:7681 -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash
+docker run -it -p 0.0.0.0:8080:7681 -d rajanagori/nightingale ttyd -p 7681 bash
 ```
 ### If you want to run MobSF along with the nightingale then I will give you good news now you can do the same....!!
 #### part 1
 ```
-docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash 
+docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -d rajanagori/nightingale ttyd -p 7681 bash 
 ```
 #### part 2
 ```
@@ -87,7 +87,7 @@ source venv/bin/activate
 
 - If you want to bind your host machine directory to your container directory then you can do the same.
 ```
-docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -v /<your_host_machine_directory_path>:/<your_container_directory_path> -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash
+docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -v /<your_host_machine_directory_path>:/<your_container_directory_path> -d rajanagori/nightingale ttyd -p 7681 bash
 ```
 
 ### For Localtunnel
@@ -99,7 +99,7 @@ lt --port 7681 --subdomain nightingale
 ### To start Runtime Mobile Security Framework
 #### part 1
 ```
-docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -p 0.0.0.0:5000:5000 -d rajanagori/nightingale /home/binaries/ttyd -p 7681 bash
+docker run -it -p 0.0.0.0:8080:7681 -p 0.0.0.0:8081:8081 -p 0.0.0.0:5000:5000 -d rajanagori/nightingale ttyd -p 7681 bash
 ```
 #### part 2
 ```

@@ -1,35 +1,70 @@
+#!/bin/bash
 
-python3 ${TOOLS_RED_TEAMING}/impacket/setup.py build && ${TOOLS_RED_TEAMING}/impacket/python3 setup.py install
+# Install Impacket
+cd "${TOOLS_RED_TEAMING}/impacket"
+python3 setup.py build && python3 setup.py install
 
-python3 -m venv ${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF/venv && bash ${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF/setup.sh
+# Create and activate MobSF virtual environment, and install MobSF
+cd "${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF"
+python3 -m venv venv
+bash setup.sh
 
-python3 ${TOOLS_WEB_VAPT}/Arjun/setup.py install
+# Install Arjun
+cd "${TOOLS_WEB_VAPT}/Arjun"
+python3 setup.py install
 
-python3 ${TOOLS_WEB_VAPT}/HawkScan/setup.py install
+# Install HawkScan
+cd "${TOOLS_WEB_VAPT}/HawkScan"
+python3 setup.py install
 
-python3 ${TOOLS_WEB_VAPT}/LinkFinder/setup.py install
+# Install LinkFinder
+cd "${TOOLS_WEB_VAPT}/LinkFinder"
+python3 setup.py install
 
-pip install -r ${TOOLS_WEB_VAPT}/Striker/requirements.txt
+# Install Striker
+cd "${TOOLS_WEB_VAPT}/Striker"
+pip3 install -r requirements.txt
 
-python3 ${TOOLS_WEB_VAPT}/dirsearch/setup.py install
+# Install dirsearch
+cd "${TOOLS_WEB_VAPT}/dirsearch"
+python3 setup.py install
 
-pip install -r ${TOOLS_WEB_VAPT}/jwt_tool/requirements.txt
+# Install jwt_tool
+cd "${TOOLS_WEB_VAPT}/jwt_tool"
+pip3 install -r requirements.txt
 
-python3 ${TOOLS_WEB_VAPT}/Sublist3r/setup.py install
+# Install Sublist3r
+cd "${TOOLS_WEB_VAPT}/Sublist3r"
+python3 setup.py install
 
-pip install -r ${TOOLS_WEB_VAPT}/XSStrike/requirements.txt
+# Install XSStrike
+cd "${TOOLS_WEB_VAPT}/XSStrike"
+pip3 install -r requirements.txt
 
-${TOOLS_WEB_VAPT}/WhatWeb/make install
+# Install WhatWeb
+cd "${TOOLS_WEB_VAPT}/WhatWeb"
+make install && bundle install
 
-pip install -r ${TOOLS_OSINT}/spiderfoot/requirements.txt
+# Install SpiderFoot
+cd "${TOOLS_OSINT}/spiderfoot"
+pip3 install -r requirements.txt
 
-sed -i 's/urllib3/urllib3==1.26.13/g' ${TOOLS_OSINT}/reconspider/setup.py && python3 ${TOOLS_OSINT}/reconspider/setup.py install
+# Install ReconSpider
+cd "${TOOLS_OSINT}/reconspider"
+sed -i 's/urllib3/urllib3==1.26.13/g' setup.py
+python3 setup.py install
 
-pip install -r ${TOOLS_OSINT}/recon-ng/REQUIREMENTS
+# Install Recon-ng
+cd "${TOOLS_OSINT}/recon-ng"
+pip3 install -r REQUIREMENTS
 
-pip install -r ${TOOLS_OSINT}/metagoofil/requirements.txt
+# Install Metagoofil
+cd "${TOOLS_OSINT}/metagoofil"
+pip3 install -r requirements.txt
 
-pip install -r ${TOOLS_OSINT}/theHarvester/requirements/base.txt
+# Install theHarvester
+cd "${TOOLS_OSINT}/theHarvester"
+pip3 install -r requirements/base.txt
 
-# Installation from pypi
-pip install objection octosuite
+# Install objection and octosuite from PyPI
+pip3 install objection octosuite

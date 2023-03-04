@@ -39,6 +39,7 @@ RUN \
     git \
     curl \
     wget \
+    file \
     ### Web Vapt tools using apt-get
     dirb \
     ## INstalling Network Tools using apt-get
@@ -68,7 +69,11 @@ RUN \
     exiftool \
     steghide \
     binwalk \
-    foremost
+    foremost \
+    dos2unix \
+    postgresql \
+    postgresql-client \
+    postgresql-contrib
 
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
@@ -119,8 +124,11 @@ RUN true
 
 COPY \
     configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
+
 RUN \
-    chmod +x ${SHELLS}/python-install-modules.sh && ${SHELLS}/python-install-modules.sh
+    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh
+
+RUN ${SHELLS}/python-install-modules.sh
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
@@ -131,7 +139,7 @@ COPY \
 RUN \
     chmod +x ${BINARIES}/* && \
     mv ${BINARIES}/* /usr/local/bin/ && \
-    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd?raw=true -O ttyd && \
+    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
     chmod +x ttyd
 
 ## Installing metasploit
@@ -144,7 +152,7 @@ COPY configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
 RUN \
-    wget -L https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb -O msfinstall && \
+    curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
     chmod 755 msfinstall && \
     ./msfinstall
 ## DB config
