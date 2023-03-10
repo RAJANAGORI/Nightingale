@@ -9,4 +9,4 @@ Dockerfiles/*_copy.Dockerfile
 Dockerfiles/*_alpine.Dockerfile
 testing.Dockerfile
 configuration/postgres
-.github
+requirements.txt
