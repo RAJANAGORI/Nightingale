@@ -153,6 +153,11 @@ WORKDIR ${BINARIES}
 COPY \
     binary/ ${BINARIES}
 
+RUN \
+    chmod +x ${BINARIES}/* && \
+    mv ${BINARIES}/* /usr/local/bin/ && \
+    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
+    chmod +x ttyd
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}
