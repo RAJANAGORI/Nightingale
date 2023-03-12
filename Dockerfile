@@ -3,7 +3,7 @@ FROM rajanagori/nightingale_programming_image:v1
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
-    
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 USER root
@@ -17,7 +17,7 @@ COPY \
 RUN \
     cat /tmp/banner.sh >> /root/.bashrc && \
     # cat /tmp/source >> /etc/apt/sources.list &&\
-#### Installing os tools and other dependencies.
+    #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
     apt-get -f --no-install-recommends install -y \
     #### Operating system dependecies start
@@ -47,8 +47,16 @@ RUN \
     htop \
     traceroute \
     telnet \
+    build-essential \
+    cmake \
+    git \
+    libjson-c-dev \
+    libwebsockets-dev \
     net-tools \
     iputils-ping \
+    xorg \
+    dbus-x11 \
+    x11-xserver-utils \
     tcpdump \
     openvpn \
     whois \
@@ -79,9 +87,18 @@ COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
 RUN \
     chmod +x /temp/node-installation-script.sh && /temp/node-installation-script.sh &&\
-### Creating Directories
+    ### Creating Directories
     cd /home &&\
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
+
+RUN \
+    cd /home && git clone https://github.com/tsl0922/ttyd.git 
+
+RUN \
+    cd /home/ttyd && mkdir build && cd build \
+    cmake CMakeLists.txt \
+    make \
+    make install
 
 ## Environment for Directories
 ENV TOOLS_WEB_VAPT=/home/tools_web_vapt
@@ -135,12 +152,7 @@ WORKDIR ${BINARIES}
 ## INstallation stuff
 COPY \
     binary/ ${BINARIES}
-    
-RUN \
-    chmod +x ${BINARIES}/* && \
-    mv ${BINARIES}/* /usr/local/bin/ && \
-    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
-    chmod +x ttyd
+
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}
