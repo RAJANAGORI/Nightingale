@@ -14,6 +14,13 @@
 ![profile count](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)
 [![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
 
+### Conferences
+- Blackhat Arsenal ASIA 2022
+- OWAPS Global AppSec EU 2022
+- Docker community hands on #6
+- Blackhat Arsenal MEA 2022 (Shortlisted)
+- Blackhat Arsenal ASIA 2023
+
 ## Project Name: Nightingale
 ==================================================
 ## Docker for Pentesters: Pentesting Framework 
