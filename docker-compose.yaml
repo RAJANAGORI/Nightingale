@@ -1,0 +1,78 @@
+version: '3'
+services:
+  openldap:
+    command: --loglevel debug
+    image: osixia/openldap:latest
+    container_name: openldap
+    hostname: openldap
+    ports: 
+      - "0.0.0.0:389:389"
+      - "0.0.0.0:636:636"
+    environment: 
+      - LDAP_ORGANISATION=local
+      - LDAP_DOMAIN=local.com
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=admin_pass
+      - LDAP_CONFIG_PASSWORD=config_pass
+      - LDAP_BASE_DN=dc=local,dc=com
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=user-ro
+      - LDAP_READONLY_USER_PASSWORD=ro_pass
+    networks:
+      - openldap
+  
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    hostname: phpldapadmin
+    ports: 
+      - "0.0.0.0:5000:80"
+    environment: 
+      - PHPLDAPADMIN_LDAP_HOSTS=openldap
+      - PHPLDAPADMIN_HTTPS=false
+    depends_on:
+      - openldap
+    networks:
+      - openldap
+
+  nightingale:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nightingale
+    environment:
+      - LDAP_URI=ldap://openldap:389
+      - LDAP_BASE_DN=dc=local,dc=com
+      - LDAP_BIND_DN=cn=admin,dc=local,dc=com
+      - LDAP_BIND_PASSWORD=admin_pass
+    ports:
+      - "0.0.0.0:8080:7681"
+      - "0.0.0.0:8081:8081"
+    command: ttyd -p 7681 zsh
+    depends_on:
+      - openldap
+    networks:
+      - openldap
+
+  db:
+    image: postgres:13
+    hostname: postgresql
+    ports:
+      - "0.0.0.0:5432:5432"
+    container_name: postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: metasploit
+      POSTGRES_PASSWORD: metasploit
+      POSTGRES_DB: metasploit
+    volumes:
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+
+volumes:
+  postgresql:
+  postgresql_data:
+
+networks:
+  openldap:
+    driver: bridge

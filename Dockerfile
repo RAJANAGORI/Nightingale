@@ -6,16 +6,9 @@ LABEL maintainer="Raja Nagori" \
     
 ARG DEBIAN_FRONTEND=noninteractive
 
-USER root
-## Banner shell and run shell file ##
-COPY \
-    shells/banner.sh /tmp/banner.sh
-
-# COPY \
-#     configuration/source /tmp/source 
+# USER root
 
 RUN \
-    cat /tmp/banner.sh >> /root/.bashrc && \
     # cat /tmp/source >> /etc/apt/sources.list &&\
 #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
@@ -71,14 +64,35 @@ RUN \
     binwalk \
     foremost \
     dos2unix \
-    postgresql \
-    postgresql-client \
-    postgresql-contrib
+    # postgresql \
+    # postgresql-client \
+    # postgresql-contrib \
+    libnss-ldap \
+    libpam-ldap \
+    ldap-utils
+
+COPY \
+    configuration/ldap/ldap.conf /etc/ldap/ldap.conf
+## Banner shell and run shell file ##
+COPY \
+    shells/banner.sh /tmp/banner.sh
+
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
+    -t https://github.com/denysdovhan/spaceship-prompt \
+    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="true"' \
+    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="true"' \
+    -p git \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-completions
+
+RUN \
+    cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
+    cat /tmp/banner.sh >> ${HOME}/.zshrc
 
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
 RUN \
-    chmod +x /temp/node-installation-script.sh && /temp/node-installation-script.sh &&\
+    dos2unix /temp/node-installation-script.sh && chmod +x /temp/node-installation-script.sh &&\
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
@@ -128,7 +142,8 @@ COPY \
 RUN \
     dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh
 
-RUN ${SHELLS}/python-install-modules.sh
+RUN ${SHELLS}/python-install-modules.sh &&\
+    /temp/node-installation-script.sh
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
@@ -154,11 +169,23 @@ COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 RUN \
     curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
     chmod 755 msfinstall && \
-    ./msfinstall
+    ./msfinstall 
 ## DB config
-COPY ./configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/ 
+COPY ./configuration/msf-configuration/conf/database.yml /home/msfuser/.msf4/database.yml
 
+RUN \
+    groupadd -r msfuser &&\
+    useradd -g msfuser -d /home/msfuser msfuser &&\
+    chown -R msfuser:msfuser /home/msfuser/.msf4/ &&\
+    chmod -R 755 /home/msfuser/.msf4/ &&\
+    usermod -aG sudo msfuser &&\
+    echo "msfuser:msfuser" | chpasswd &&\
+    printf "no\nyes\nno\nyes\n" | su -c "msfdb init" msfuser &&\
+    exit
 CMD "./configuration/msf-configuration/scripts/init.sh"
+
+### Working Directory of tools ends here
+WORKDIR /home/
 
 # Expose the service ports
 EXPOSE 5432
@@ -173,5 +200,3 @@ RUN \
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/*
 
-### Working Directory of tools ends here
-WORKDIR /home

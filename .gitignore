@@ -2,7 +2,6 @@
 password.txt
 text.md
 test.Dockerfile
-shells/try.sh
 shells/requirements_file_module.sh
 shell.bat
 Dockerfiles/*_copy.Dockerfile
@@ -10,3 +9,10 @@ Dockerfiles/*_alpine.Dockerfile
 testing.Dockerfile
 configuration/postgres
 requirements.txt
+data/
+devsecops.docker-compose.yml
+docker-compose copy.yaml
+raja.docker-compose.yaml
+review copy.py
+review.py
+shells/ttyd.sh
