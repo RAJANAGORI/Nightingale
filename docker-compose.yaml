@@ -4,6 +4,7 @@ services:
     command: --loglevel debug
     image: osixia/openldap:latest
     container_name: openldap
+    restart: unless-stopped
     hostname: openldap
     ports: 
       - "0.0.0.0:389:389"
@@ -24,6 +25,7 @@ services:
   phpldapadmin:
     image: osixia/phpldapadmin:latest
     container_name: phpldapadmin
+    restart: unless-stopped
     hostname: phpldapadmin
     ports: 
       - "0.0.0.0:5000:80"
@@ -40,15 +42,18 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: nightingale
+    restart: unless-stopped
     environment:
       - LDAP_URI=ldap://openldap:389
       - LDAP_BASE_DN=dc=local,dc=com
       - LDAP_BIND_DN=cn=admin,dc=local,dc=com
       - LDAP_BIND_PASSWORD=admin_pass
+
     ports:
       - "0.0.0.0:8080:7681"
       - "0.0.0.0:8081:8081"
     command: ttyd -p 7681 zsh
+    # command: ttyd --login "ldapwhoami -x -H ldap://openldap:389 -D cn={USERNAME},ou=people,dc=local,dc=com -W" -p 7681 zsh
     depends_on:
       - openldap
     networks:

@@ -69,10 +69,11 @@ RUN \
     # postgresql-contrib \
     libnss-ldap \
     libpam-ldap \
-    ldap-utils
+    ldap-utils \
+    nscd
 
-COPY \
-    configuration/ldap/ldap.conf /etc/ldap/ldap.conf
+# COPY \
+#     configuration/ldap/libnss-ldap.conf /etc/libnss-ldap.conf
 ## Banner shell and run shell file ##
 COPY \
     shells/banner.sh /tmp/banner.sh
@@ -173,16 +174,24 @@ RUN \
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml /home/msfuser/.msf4/database.yml
 
+# RUN \
+#     groupadd -r msfuser &&\
+#     useradd -g msfuser -d /home/msfuser msfuser &&\
+#     chown -R msfuser:msfuser /home/msfuser/.msf4/ &&\
+#     chmod -R 755 /home/msfuser/.msf4/ &&\
+#     usermod -aG sudo msfuser &&\
+#     echo "msfuser:msfuser" | chpasswd &&\
+#     printf "no\nyes\nno\nyes\n" | su -c "msfdb init" msfuser &&\
+#     exit
+
+# CMD "./configuration/msf-configuration/scripts/init.sh" && "dpkg-reconfigure libnss-ldap"
+CMD "dpkg-reconfigure libnss-ldap"
+
+COPY configuration/ldap/ldap.sh /home/.ldap-files/ldap.sh
+
 RUN \
-    groupadd -r msfuser &&\
-    useradd -g msfuser -d /home/msfuser msfuser &&\
-    chown -R msfuser:msfuser /home/msfuser/.msf4/ &&\
-    chmod -R 755 /home/msfuser/.msf4/ &&\
-    usermod -aG sudo msfuser &&\
-    echo "msfuser:msfuser" | chpasswd &&\
-    printf "no\nyes\nno\nyes\n" | su -c "msfdb init" msfuser &&\
-    exit
-CMD "./configuration/msf-configuration/scripts/init.sh"
+    chmod +x /home/.ldap-files/ldap.sh &&\
+    /home/.ldap-files/ldap.sh
 
 ### Working Directory of tools ends here
 WORKDIR /home/
