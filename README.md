@@ -14,6 +14,10 @@
 ![profile count](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)
 [![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
 
+### To run the Nightingale with OPENLdap, use the below command
+```
+docker-compose up -d
+```
 ### Conferences
 - Blackhat Arsenal ASIA 2022
 - OWAPS Global AppSec EU 2022
