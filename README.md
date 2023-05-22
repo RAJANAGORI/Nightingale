@@ -30,7 +30,7 @@ In today's technological era, docker is the most powerful technology in each and
 
 Considering the demand of the industry, I would like to introduce my idea to create a NIGHTINGALE: docker image for pentesters.
 
-This docker image is ready to use environment will the required tools that are needed at the time of pentesting on any of the scopes, whether it can be web application penetration testing, network penetration testing, mobile, API, OSINT, or Forensics.
+This docker image is ready to use environment with the required tools that are needed at the time of pentesting on any of the scopes, whether it can be web application penetration testing, network penetration testing, mobile, API, OSINT, or Forensics.
 
 The best part is you can either create an altered docker image or pull the pre-built docker image from the hub.
 
