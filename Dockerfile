@@ -71,9 +71,7 @@ RUN \
     libpam-ldap \
     ldap-utils \
     nscd
-
-# COPY \
-#     configuration/ldap/libnss-ldap.conf /etc/libnss-ldap.conf
+    
 ## Banner shell and run shell file ##
 COPY \
     shells/banner.sh /tmp/banner.sh
@@ -88,7 +86,9 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 
 RUN \
     cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
-    cat /tmp/banner.sh >> ${HOME}/.zshrc
+    cat /tmp/banner.sh >> ${HOME}/.zshrc &&\
+    dos2unix ${HOME}/.bashrc &&\
+    dos2unix ${HOME}/.zshrc
 
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
@@ -154,6 +154,7 @@ COPY \
     
 RUN \
     chmod +x ${BINARIES}/* && \
+    dos2unix * &&\
     mv ${BINARIES}/* /usr/local/bin/ && \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
     chmod +x ttyd
@@ -174,23 +175,13 @@ RUN \
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml /home/msfuser/.msf4/database.yml
 
-# RUN \
-#     groupadd -r msfuser &&\
-#     useradd -g msfuser -d /home/msfuser msfuser &&\
-#     chown -R msfuser:msfuser /home/msfuser/.msf4/ &&\
-#     chmod -R 755 /home/msfuser/.msf4/ &&\
-#     usermod -aG sudo msfuser &&\
-#     echo "msfuser:msfuser" | chpasswd &&\
-#     printf "no\nyes\nno\nyes\n" | su -c "msfdb init" msfuser &&\
-#     exit
-
-# CMD "./configuration/msf-configuration/scripts/init.sh" && "dpkg-reconfigure libnss-ldap"
-CMD "dpkg-reconfigure libnss-ldap"
+CMD ["dpkg-reconfigure libnss-ldap" && "dpkg-reconfigure libpam-ldap"]
 
 COPY configuration/ldap/ldap.sh /home/.ldap-files/ldap.sh
 
 RUN \
     chmod +x /home/.ldap-files/ldap.sh &&\
+    dos2unix /home/.ldap-files/ldap.sh &&\
     /home/.ldap-files/ldap.sh
 
 ### Working Directory of tools ends here
@@ -201,6 +192,7 @@ EXPOSE 5432
 EXPOSE 8080
 EXPOSE 8081
 EXPOSE 7681
+EXPOSE 8083
 
 RUN \
     # Cleaning Unwanted libraries 
@@ -208,4 +200,3 @@ RUN \
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/*
-
