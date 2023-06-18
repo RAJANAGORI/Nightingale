@@ -43,12 +43,6 @@ services:
       dockerfile: Dockerfile
     container_name: nightingale
     restart: unless-stopped
-    environment:
-      - LDAP_URI=ldap://openldap:389
-      - LDAP_BASE_DN=dc=local,dc=com
-      - LDAP_BIND_DN=cn=admin,dc=local,dc=com
-      - LDAP_BIND_PASSWORD=admin_pass
-
     ports:
       - "0.0.0.0:8080:7681"
       - "0.0.0.0:8081:8081"
