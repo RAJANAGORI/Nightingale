@@ -1,41 +1,37 @@
-## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1
+# Stage 1: Building the image
+FROM rajanagori/nightingale_programming_image:v1 AS builder
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
-    
+
 ARG DEBIAN_FRONTEND=noninteractive
 
-# USER root
-
-RUN \
-    # cat /tmp/source >> /etc/apt/sources.list &&\
-#### Installing os tools and other dependencies.
-    apt-get -y update --fix-missing && \
+# Update and install dependencies
+RUN apt-get -y update --fix-missing && \
     apt-get -f --no-install-recommends install -y \
-    #### Operating system dependecies start
     software-properties-common \
     ca-certificates \
-    build-essential \
-    ### Operating System Tools start here 
+    build-essential
+
+# Stage 2: Install OS tools and dependencies
+FROM builder AS os-tools
+
+RUN apt-get -y update && \
+    apt-get -f --no-install-recommends install -y \
     locate \
     snapd \
     tree \
     zsh \
     figlet \
-    ### Compression Techniques starts
     unzip \
     p7zip-full \
     ftp \
-    ### Dev Essentials start here
     ssh \
     git \
     curl \
     wget \
     file \
-    ### Web Vapt tools using apt-get
     dirb \
-    ## INstalling Network Tools using apt-get
     nmap \
     htop \
     traceroute \
@@ -53,29 +49,27 @@ RUN \
     medusa \
     figlet \
     dnsutils \
-    # Some android architecture dependency
     android-framework-res \
-    # installing Apktool and adb
     adb \
     apktool \
-    ## Installing tools using apt-get for forensics and objection install
     exiftool \
     steghide \
     binwalk \
     foremost \
     dos2unix \
-    # postgresql \
-    # postgresql-client \
-    # postgresql-contrib \
     libnss-ldap \
     libpam-ldap \
     ldap-utils \
     nscd
-    
-## Banner shell and run shell file ##
-COPY \
-    shells/banner.sh /tmp/banner.sh
 
+# Stage 3: Set up shell and environment
+FROM builder AS shell
+
+# Copy necessary scripts
+COPY shells/banner.sh /tmp/banner.sh
+COPY shells/node-installation-script.sh /temp/node-installation-script.sh
+
+# Set up zsh
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t https://github.com/denysdovhan/spaceship-prompt \
     -a 'SPACESHIP_PROMPT_ADD_NEWLINE="true"' \
@@ -84,108 +78,75 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -p https://github.com/zsh-users/zsh-autosuggestions \
     -p https://github.com/zsh-users/zsh-completions
 
-RUN \
-    cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
-    cat /tmp/banner.sh >> ${HOME}/.zshrc &&\
-    dos2unix ${HOME}/.bashrc &&\
-    dos2unix ${HOME}/.zshrc
+RUN cat /tmp/banner.sh >> ${HOME}/.bashrc && \
+    cat /tmp/banner.sh >> ${HOME}/.zshrc && \
+    dos2unix ${HOME}/.bashrc && \
+    dos2unix ${HOME}/.zshrc && \
+    dos2unix /temp/node-installation-script.sh && \
+    chmod +x /temp/node-installation-script.sh
 
-COPY \
-    shells/node-installation-script.sh /temp/node-installation-script.sh
-RUN \
-    dos2unix /temp/node-installation-script.sh && chmod +x /temp/node-installation-script.sh &&\
-### Creating Directories
-    cd /home &&\
-    mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
+# Stage 4: Copy directories and files
+FROM builder AS directories
 
-## Environment for Directories
-ENV TOOLS_WEB_VAPT=/home/tools_web_vapt
-ENV BINARIES=/home/binaries
-ENV GREP_PATTERNS=/home/.gf
-ENV TOOLS_OSINT=/home/tools_osint
-ENV TOOLS_MOBILE_VAPT=/home/tools_mobile_vapt
-ENV TOOLS_NETWORK_VAPT=/home/tools_network_vapt
-ENV TOOLS_RED_TEAMING=/home/tools_red_teaming
-ENV TOOLS_FORENSICS=/home/tools_forensics
-ENV WORDLIST=/home/wordlist
-ENV METASPLOIT_CONFIG=/home/metasploit_config
-ENV METASPLOIT_TOOL=/home/metasploit
-ENV SHELLS=/home/.shells
+# Create necessary directories
+RUN mkdir -p /home/tools_web_vapt /home/binaries /home/.gf /home/tools_osint /home/tools_mobile_vapt \
+    /home/tools_network_vapt /home/tools_red_teaming /home/tools_forensics /home/wordlist /home/.shells
 
-COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
-RUN true
-COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${GREP_PATTERNS} ${GREP_PATTERNS}
-RUN true
-COPY \
-    --from=rajanagori/nightingale_osint_image:v1.1 ${TOOLS_OSINT} ${TOOLS_OSINT}
-RUN true
-COPY \
-    --from=rajanagori/nightingale_mobile_vapt_image:v1.0 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
-RUN true
-COPY \
-    --from=rajanagori/nightingale_network_vapt_image:v1.0 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
-RUN true
-COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
-RUN true
-COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
-RUN true
-COPY \
-    --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
-RUN true
+# Copy directories from other images
+COPY --from=rajanagori/nightingale_web_vapt_image:v1.0 /home/tools_web_vapt /home/tools_web_vapt
+COPY --from=rajanagori/nightingale_web_vapt_image:v1.0 /home/.gf /home/.gf
+COPY --from=rajanagori/nightingale_osint_image:v1.1 /home/tools_osint /home/tools_osint
+COPY --from=rajanagori/nightingale_mobile_vapt_image:v1.0 /home/tools_mobile_vapt /home/tools_mobile_vapt
+COPY --from=rajanagori/nightingale_network_vapt_image:v1.0 /home/tools_network_vapt /home/tools_network_vapt
+COPY --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 /home/tools_red_teaming /home/tools_red_teaming
+COPY --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 /home/tools_forensics /home/tools_forensics
+COPY --from=rajanagori/nightingale_wordlist_image:v1.0 /home/wordlist /home/wordlist
 
-COPY \
-    configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
+# Stage 5: Install scripts and binaries
+FROM builder AS scripts-binaries
 
-RUN \
-    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh
+# Copy scripts and run them
+COPY configuration/modules-installation/python-install-modules.sh /home/.shells/python-install-modules.sh
+RUN dos2unix /home/.shells/python-install-modules.sh && chmod +x /home/.shells/python-install-modules.sh
+RUN /home/.shells/python-install-modules.sh && /temp/node-installation-script.sh
 
-RUN ${SHELLS}/python-install-modules.sh &&\
-    /temp/node-installation-script.sh
-
-## All binaries will store here
-WORKDIR ${BINARIES}
-## INstallation stuff
-COPY \
-    binary/ ${BINARIES}
-    
-RUN \
-    chmod +x ${BINARIES}/* && \
-    dos2unix * &&\
-    mv ${BINARIES}/* /usr/local/bin/ && \
+# Copy and install binaries
+WORKDIR /home/binaries
+COPY binary/ /home/binaries
+RUN chmod +x /home/binaries/* && \
+    dos2unix * && \
+    mv /home/binaries/* /usr/local/bin/ && \
     wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
     chmod +x ttyd
 
-## Installing metasploit
-WORKDIR ${METASPLOIT_TOOL}
-### Installing Metasploit-framework start here
-## PosgreSQL DB
-COPY configuration/msf-configuration/scripts/db.sql .
+# Stage 6: Install Metasploit
+FROM builder AS metasploit
 
-## Startup script
+WORKDIR /home/metasploit
+
+# Copy Metasploit files
+COPY configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
-## Installation of msf framework
-RUN \
-    curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
-    chmod 755 msfinstall && \
-    ./msfinstall 
-## DB config
 COPY ./configuration/msf-configuration/conf/database.yml /home/msfuser/.msf4/database.yml
 
-CMD ["dpkg-reconfigure libnss-ldap" && "dpkg-reconfigure libpam-ldap"]
+# Install Metasploit framework
+RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+    chmod 755 msfinstall && \
+    ./msfinstall
 
-COPY configuration/ldap/ldap.sh /home/.ldap-files/ldap.sh
+# Stage 7: Final Image
+FROM rajanagori/nightingale_programming_image:v1
 
-RUN \
-    chmod +x /home/.ldap-files/ldap.sh &&\
-    dos2unix /home/.ldap-files/ldap.sh &&\
-    /home/.ldap-files/ldap.sh
+LABEL maintainer="Raja Nagori" \
+    email="raja.nagori@owasp.org"
 
-### Working Directory of tools ends here
-WORKDIR /home/
+# Copy necessary files and directories from each stage
+COPY --from=os-tools /usr/bin/ /usr/bin/
+COPY --from=shell /root/ /root/
+COPY --from=directories /home/ /home/
+COPY --from=scripts-binaries /usr/local/bin/ /usr/local/bin/
+COPY --from=scripts-binaries /usr/local/rvm/ /usr/local/rvm/
+COPY --from=metasploit /home/metasploit/ /home/metasploit/
 
 # Expose the service ports
 EXPOSE 5432
@@ -194,9 +155,8 @@ EXPOSE 8081
 EXPOSE 7681
 EXPOSE 8083
 
-RUN \
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
+# Clean up unnecessary libraries
+RUN apt-get -y autoremove && \
+    apt-get -y clean && \
+    rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/*
