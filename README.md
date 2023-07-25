@@ -50,3 +50,5 @@ The Reason behind creating this Docker file is to make a platform-independent pe
 (You can refer to the tool list section for the same).
 
 Please feel free to contribute to the tool
+
+For more information [Nightingale Wiki](http://nightingale-wiki.gitbook.io/nightingale/)
