@@ -75,10 +75,28 @@ RUN \
     postgresql-client \
     postgresql-contrib
 
+## Banner shell and run shell file ##
+COPY \
+    shells/banner.sh /tmp/banner.sh
+
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
+    -t https://github.com/denysdovhan/spaceship-prompt \
+    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="true"' \
+    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="true"' \
+    -p git \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-completions
+
+RUN \
+    cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
+    cat /tmp/banner.sh >> ${HOME}/.zshrc &&\
+    dos2unix ${HOME}/.bashrc &&\
+    dos2unix ${HOME}/.zshrc
+
 COPY \
     shells/node-installation-script.sh /temp/node-installation-script.sh
 RUN \
-    chmod +x /temp/node-installation-script.sh && /temp/node-installation-script.sh &&\
+    dos2unix /temp/node-installation-script.sh && chmod +x /temp/node-installation-script.sh &&\
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
