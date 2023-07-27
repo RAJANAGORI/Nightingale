@@ -68,7 +68,7 @@ RUN \
     build-essential \
     libssl-dev \
     libffi-dev &&\
-    python3 -m pip install --upgrade pip &&\
+    python3 -m pip install --upgrade pip --break-system-packages &&\
     #installing java
     apt-get install -y --no-install-recommends \
     default-jre-headless \
