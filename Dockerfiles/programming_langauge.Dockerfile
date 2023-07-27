@@ -70,7 +70,7 @@ RUN \
     libffi-dev &&\
     python3 -m pip install --upgrade pip --break-system-packages &&\
     #installing java
-    apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends -f \
     default-jre-headless \
     default-jdk-headless &&\
     ## Installing Nokogiri to parse any HTML and XMl in RUBY
