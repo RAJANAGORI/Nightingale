@@ -90,7 +90,7 @@ RUN git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git && \
 ## Installing Amass
 RUN wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.1.0/amass_Linux_amd64.zip -O amass.zip && \
     unzip amass.zip && \
-    mv amass_linux_amd64/amass /usr/local/bin && rm -rf amass_linux_amd64 amass.zip
+    mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip
 
 ### Cleaning Unwanted libraries
 RUN apt-get -y autoremove && \
