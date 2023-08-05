@@ -24,12 +24,12 @@ jobs:
         echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
 
     # Build Docker images
-    - name: Build nightingale_programming_image
-      run: |
-        docker build . --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development
-    # # Push Docker images
-    - name: Push nightingale_programming_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development"
+    # - name: Build nightingale_programming_image
+    #   run: |
+    #     docker build . --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development
+    # # # Push Docker images
+    # - name: Push nightingale_programming_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development"
 
     - name: Build nightingale_forensic_and_red_teaming
       run: |
