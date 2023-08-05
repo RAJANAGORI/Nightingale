@@ -31,12 +31,12 @@ jobs:
     # - name: Push nightingale_programming_image
     #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development"
 
-    - name: Build nightingale_forensic_and_red_teaming
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development
+    # - name: Build nightingale_forensic_and_red_teaming
+    #   run: |
+    #     docker build . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development
     
-    - name: Push nightingale_forensic_and_red_teaming1
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development"
+    # - name: Push nightingale_forensic_and_red_teaming1
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development"
     
     - name: Build nightingale_web_vapt_image
       run: |
