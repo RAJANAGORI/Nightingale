@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1
+FROM ghcr.io/rajanagori/nightingale_programming_image:development
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
@@ -70,7 +70,8 @@ RUN \
     libnss-ldap \
     libpam-ldap \
     ldap-utils \
-    nscd
+    nscd \
+    nginx
     
 ## Banner shell and run shell file ##
 COPY \
@@ -113,28 +114,28 @@ ENV METASPLOIT_TOOL=/home/metasploit
 ENV SHELLS=/home/.shells
 
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${GREP_PATTERNS} ${GREP_PATTERNS}
+    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${GREP_PATTERNS} ${GREP_PATTERNS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_osint_image:v1.1 ${TOOLS_OSINT} ${TOOLS_OSINT}
+    --from=ghcr.io/rajanagori/nightingale_osint_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_mobile_vapt_image:v1.0 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_network_vapt_image:v1.0 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_network_vapt_image:development ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
+    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
 RUN true
 COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
+    --from=ghcr.io/rajanagori/nightingale_wordlist_image:development ${WORDLIST} ${WORDLIST}
 RUN true
 
 COPY \
@@ -152,12 +153,22 @@ WORKDIR ${BINARIES}
 COPY \
     binary/ ${BINARIES}
     
+COPY \
+    configuration/nginx/nginx.conf /etc/nginx/sites-available/nginx.conf
+
+RUN \
+    ln -s /etc/nginx/sites-available/nginx.conf /etc/nginx/sites-enabled/nginx.conf
+
 RUN \
     chmod +x ${BINARIES}/* && \
-    dos2unix * &&\
     mv ${BINARIES}/* /usr/local/bin/ && \
-    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
-    chmod +x ttyd
+    apt-get install -y libjson-c-dev libwebsockets-dev && \
+    git clone https://github.com/tsl0922/ttyd.git && \
+    cd ttyd && mkdir build && cd build && \
+    cmake .. && \
+    make && make install &&\
+    mv ttyd /usr/local/bin &&\
+    cd ${BINARIES} && rm -rf ttyd
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}

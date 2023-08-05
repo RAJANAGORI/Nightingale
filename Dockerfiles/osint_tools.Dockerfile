@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1
+FROM ghcr.io/rajanagori/nightingale_programming_image:development
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
@@ -30,27 +30,27 @@ RUN \
     git clone --depth 1 https://github.com/laramies/theHarvester &&\
 ### INstalling tools
 # Installing reconspider
-    cd reconspider &&\
-    sed -i 's/urllib3/urllib3==1.26.13/g' setup.py &&\
-    python3 setup.py install && \
-    cd ../ &&\
+    # cd reconspider &&\
+    # sed -i 's/urllib3/urllib3==1.26.13/g' setup.py &&\
+    # python3 setup.py install && \
+    # cd ../ &&\
 
-    cd recon-ng && \
-    pip3 install -r REQUIREMENTS && \
-    cd ../ &&\
+#     cd recon-ng && \
+#     pip3 install -r REQUIREMENTS && \
+#     cd ../ &&\
 
-## INstall Spiderfoot
-    cd spiderfoot && \
-    pip3 install -r requirements.txt &&\
-    cd ../ &&\
+# ## INstall Spiderfoot
+#     cd spiderfoot && \
+#     pip3 install -r requirements.txt &&\
+#     cd ../ &&\
     
-    cd metagoofil &&\
-    python3 -m venv venv &&\
-    pip3 install -r requirements.txt &&\
-    cd ../ &&\
+#     cd metagoofil &&\
+#     python3 -m venv venv &&\
+#     pip3 install -r requirements.txt &&\
+#     cd ../ &&\
 
-    cd theHarvester &&\
-    python3 -m pip install -r requirements/base.txt &&\
+#     cd theHarvester &&\
+#     python3 -m pip install -r requirements/base.txt &&\
 
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\

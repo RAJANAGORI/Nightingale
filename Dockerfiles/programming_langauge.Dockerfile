@@ -13,6 +13,7 @@ RUN \
     ## Essentials
     software-properties-common \
     ca-certificates \
+    ca-certificates-java\
     build-essential \
     wget \
     curl \
@@ -61,21 +62,33 @@ RUN \
     linux-libc-dev \
     libev-* \
     libev4 \
-    #Installing Python3
-    python3-pip \
-    python3-venv \
-    python3-dev \
+    # #Installing Python3
+    # python3-pip \
+    # # python3-venv \
+    # python3-dev \
+    # python3-full \
     build-essential \
     libssl-dev \
-    libffi-dev &&\
-    python3 -m pip install --upgrade pip &&\
+    libffi-dev \
     #installing java
-    apt-get install -y --no-install-recommends \
-    default-jre-headless \
-    default-jdk-headless &&\
+    openjdk-17-jre \
+    openjdk-17-jdk
+
+RUN \
+    wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz &&\
+    tar -xzf Python-3.11.2.tgz &&\
+    cd Python-3.11.2 &&\
+    ./configure --enable-optimizations &&\
+    make &&\
+    make install &&\
+    wget https://files.pythonhosted.org/packages/c7/42/be1c7bbdd83e1bfb160c94b9cafd8e25efc7400346cf7ccdbdb452c467fa/setuptools-68.0.0-py3-none-any.whl &&\
+    pip3 install setuptools-68.0.0-py3-none-any.whl
+#     python3 -m pip install --upgrade pip
+
+RUN \
     ## Installing Nokogiri to parse any HTML and XMl in RUBY
-    gem install nokogiri &&\
-    #removing the unnecessary packages
+    gem install nokogiri
+RUN \
 # Installing go Language
     mkdir -p /root/go
 
@@ -92,7 +105,8 @@ RUN \
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/* &&\
-    rm -rf /var/cache/apt/archives/*
+    rm -rf /var/cache/apt/archives/* &&\
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"

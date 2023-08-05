@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1
+FROM ghcr.io/rajanagori/nightingale_programming_image:development
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY \
@@ -37,11 +37,11 @@ COPY \
     configuration/nodejs-pm2-configuration/pm2-rms.json rms/pm2-rms.json
 
 RUN \
-    # Installing MobSF
-    cd Mobile-Security-Framework-MobSF && \
-    python3 -m venv venv &&\
-    ./setup.sh &&\
-    cd .. && \
+    # # Installing MobSF
+    # cd Mobile-Security-Framework-MobSF && \
+    # python3 -m venv venv &&\
+    # ./setup.sh &&\
+    # cd .. && \
     
     # Installing RMS-Runtime-Mobile-Security
     chmod +x /temp/rms-install-module.sh && \

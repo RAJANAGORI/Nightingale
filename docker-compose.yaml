@@ -44,9 +44,10 @@ services:
     container_name: nightingale
     restart: unless-stopped
     ports:
-      - "0.0.0.0:8080:7681"
-      - "0.0.0.0:8081:8081"
+      - "0.0.0.0:8000:7681"
+      - "0.0.0.0:8001:8081"
     command: ttyd -p 7681 zsh
+    # command: ttyd -p 7681 login
     depends_on:
       - openldap
     networks:
