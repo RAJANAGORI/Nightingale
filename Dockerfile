@@ -176,7 +176,8 @@ COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 RUN \
     curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
     chmod 755 msfinstall && \
-    ./msfinstall 
+    ./msfinstall
+    
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml /home/msfuser/.msf4/database.yml
 
