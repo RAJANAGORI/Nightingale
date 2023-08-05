@@ -57,7 +57,7 @@ jobs:
         docker build . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development
     
     - name: Push nightingale_osint_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_image:development"
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development"
     
     - name: Build nightingale_mobile_vapt_image
       run: |
