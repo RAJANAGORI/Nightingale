@@ -38,19 +38,19 @@ jobs:
     # - name: Push nightingale_forensic_and_red_teaming1
     #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development"
     
-    - name: Build nightingale_web_vapt_image
-      run: |
-        docker build  . --file $DOCKERFILES_PATH/web_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development
+    # - name: Build nightingale_web_vapt_image
+    #   run: |
+    #     docker build  . --file $DOCKERFILES_PATH/web_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development
     
-    - name: Push nightingale_web_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development"
+    # - name: Push nightingale_web_vapt_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development"
     
-    - name: Build nightingale_network_vapt_image
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development
+    # - name: Build nightingale_network_vapt_image
+    #   run: |
+    #     docker build . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development
     
-    - name: Push nightingale_network_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development"
+    # - name: Push nightingale_network_vapt_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development"
     
     - name: Build nightingale_osint_image
       run: |
