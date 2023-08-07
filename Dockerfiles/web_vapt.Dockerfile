@@ -25,7 +25,7 @@ RUN git clone --depth 1 https://github.com/1ndianl33t/Gf-Patterns.git ${GREP_PAT
 WORKDIR ${TOOLS_WEB_VAPT}
 
 # git clonning of tools repository
-RUN git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git && \
+RUN \
     git clone --depth 1 https://github.com/c0dejump/HawkScan.git && \
     git clone --depth 1 https://github.com/s0md3v/XSStrike.git && \
     git clone --depth 1  https://github.com/maurosoria/dirsearch.git && \
@@ -39,53 +39,52 @@ RUN git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git && \
 
 # Installing Tools
 
-# # Installing Arjun
-# RUN cd Arjun && \
-#     python3 setup.py install && \
-#     cd ..
+# Installing Arjun
+RUN cd Arjun && \
+    python3 setup.py install && \
+    cd ..
 
-# ## Installing HawkScan
-# RUN cd HawkScan && \
-#     sed -i 's/^python-whois$/python-whois==0.7.3/' requirements.txt &&\
-#     python3 setup.py install && \
-#     pip3 install -r requirements.txt && \
-#     python3 -m pip install -r requirements.txt &&\
-#     cd ..
+## Installing HawkScan
+RUN cd HawkScan && \
+    sed -i 's/^python-whois$/python-whois==0.7.3/' requirements.txt &&\
+    pip3 install -r requirements.txt && \
+    python3 -m pip install -r requirements.txt &&\
+    cd ..
 
-# # Installing LinkFinder
-# RUN cd LinkFinder && \
-#     python3 setup.py install &&\
-#     cd ..
+# Installing LinkFinder
+RUN cd LinkFinder && \
+    pip3 install -r requirements.txt &&\
+    cd ..
 
-# ## Installing Striker
-# RUN cd Striker && \
-#     pip3 install -r requirements.txt &&\
-#     cd ..
+## Installing Striker
+RUN cd Striker && \
+    pip3 install -r requirements.txt &&\
+    cd ..
 
-# ## Installing dirsearch
-# RUN cd dirsearch && \
-#     python3 setup.py install && \
-#     cd ..
+## Installing dirsearch
+RUN cd dirsearch && \
+    pip3 install -r requirements.txt && \
+    cd ..
 
-# ## Installing jwt_tool
-# RUN cd jwt_tool && \
-#     pip3 install -r requirements.txt &&\
-#     cd ..
+## Installing jwt_tool
+RUN cd jwt_tool && \
+    pip3 install -r requirements.txt &&\
+    cd ..
 
-# ## Installing Sublist3r
-# RUN cd Sublist3r && \
-#     python3 setup.py install &&\
-#     cd ..
+## Installing Sublist3r
+RUN cd Sublist3r && \
+    pip3 install -r requirements.txt &&\
+    cd ..
 
-# ## Installing XSStrike
-# RUN cd XSStrike && \
-#     pip3 install -r requirements.txt &&\
-#     cd ..
+## Installing XSStrike
+RUN cd XSStrike && \
+    pip3 install -r requirements.txt &&\
+    cd ..
 
-# # Installing WhatWeb
-# RUN cd WhatWeb && \
-#     make install && \
-#     cd ..
+# Installing WhatWeb
+RUN cd WhatWeb && \
+    make install && \
+    cd ..
 
 ## Installing Amass
 RUN wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.1.0/amass_Linux_amd64.zip -O amass.zip && \

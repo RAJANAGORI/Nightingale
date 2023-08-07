@@ -141,11 +141,15 @@ RUN true
 COPY \
     configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 
+COPY \
+    configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
+
 RUN \
-    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh
+    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh && dos2unix ${SHELLS}/go-install-modules.sh && chmod +x ${SHELLS}/go-install-modules.sh
 
 RUN ${SHELLS}/python-install-modules.sh &&\
-    /temp/node-installation-script.sh
+    ${SHELLS}/go-install-modules.sh &&\
+    /temp/node-installation-script.sh 
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
@@ -174,9 +178,11 @@ COPY configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
 RUN \
-    curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
-    chmod 755 msfinstall && \
-    ./msfinstall
+    wget -q https://apt.metasploit.com/pool/main/m/metasploit-framework/metasploit-framework_6.3.29%2B20230805102816~1rapid7-1_amd64.deb -O metasploit.deb &&\
+    dpkg -i metasploit.deb
+    # curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+    # chmod 755 msfinstall && \
+    # ./msfinstall
     
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml /home/msfuser/.msf4/database.yml
