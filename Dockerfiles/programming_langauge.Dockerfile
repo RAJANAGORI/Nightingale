@@ -74,7 +74,7 @@ RUN \
     openjdk-17-jre \
     openjdk-17-jdk
 
-RUN \
+# RUN \
     # wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz &&\
     # tar -xzf Python-3.11.2.tgz &&\
     # cd Python-3.11.2 &&\
