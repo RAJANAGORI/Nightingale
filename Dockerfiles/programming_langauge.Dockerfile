@@ -74,15 +74,15 @@ RUN \
     openjdk-17-jre \
     openjdk-17-jdk
 
-# RUN \
-    # wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz &&\
-    # tar -xzf Python-3.11.2.tgz &&\
-    # cd Python-3.11.2 &&\
-    # ./configure --enable-optimizations &&\
-    # make &&\
-    # make install &&\
-    # wget https://files.pythonhosted.org/packages/c7/42/be1c7bbdd83e1bfb160c94b9cafd8e25efc7400346cf7ccdbdb452c467fa/setuptools-68.0.0-py3-none-any.whl &&\
-    # pip3 install setuptools-68.0.0-py3-none-any.whl
+RUN \
+    wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz &&\
+    tar -xzf Python-3.11.2.tgz &&\
+    cd Python-3.11.2 &&\
+    ./configure --enable-optimizations &&\
+    make &&\
+    make install &&\
+    wget https://files.pythonhosted.org/packages/c7/42/be1c7bbdd83e1bfb160c94b9cafd8e25efc7400346cf7ccdbdb452c467fa/setuptools-68.0.0-py3-none-any.whl &&\
+    pip3 install setuptools-68.0.0-py3-none-any.whl
 #     python3 -m pip install --upgrade pip
 
 RUN \
