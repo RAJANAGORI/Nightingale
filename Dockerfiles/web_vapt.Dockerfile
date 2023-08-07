@@ -34,8 +34,7 @@ RUN \
     git clone --depth 1 https://github.com/s0md3v/Striker.git && \
     git clone --depth 1 https://github.com/GerbenJavado/LinkFinder.git && \
     git clone --depth 1 https://github.com/aboul3la/Sublist3r.git && \
-    git clone --depth 1 https://github.com/ticarpi/jwt_tool.git && \
-    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git
+    git clone --depth 1 https://github.com/ticarpi/jwt_tool.git
 
 # Installing Tools
 
@@ -82,8 +81,13 @@ RUN cd XSStrike && \
     cd ..
 
 # Installing WhatWeb
-RUN cd WhatWeb && \
-    make install && \
+RUN \
+    mkdir WhatWeb &&\
+    cd WhatWeb && \
+    wget -q https://github.com/urbanadventurer/WhatWeb/archive/refs/tags/v0.5.5.tar.gz -O whatweb.tar.gz &&\
+    tar -zxvf WhatWeb-v0.5.2.tar.gz &&\
+    cd WhatWeb-0.5.2/ &&\
+    ln -s ${PWD}/whatweb /usr/local/bin/whatweb &&\
     cd ..
 
 ## Installing Amass
