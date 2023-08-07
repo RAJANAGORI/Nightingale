@@ -86,9 +86,9 @@ RUN \
     cd WhatWeb && \
     wget -q https://github.com/urbanadventurer/WhatWeb/archive/refs/tags/v0.5.5.tar.gz -O whatweb.tar.gz &&\
     tar -zxvf whatweb.tar.gz &&\
-    cd WhatWeb-0.5.2/ &&\
+    cd WhatWeb-0.5.5/ &&\
     mv whatweb /usr/local/bin/whatweb &&\
-    rm -rf ../WhatWeb-0.5.2 &&\
+    rm -rf ../WhatWeb-0.5.5 &&\
     cd ..
 
 ## Installing Amass
