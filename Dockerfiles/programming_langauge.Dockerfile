@@ -64,10 +64,10 @@ RUN \
     libev-* \
     libev4 \
     # #Installing Python3
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    python3-full \
+    # python3-pip \
+    # python3-venv \
+    # python3-dev \
+    # python3-full \
     libssl-dev \
     libffi-dev \
     #installing java
@@ -75,9 +75,9 @@ RUN \
     openjdk-17-jdk
 
 RUN \
-    wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz &&\
-    tar -xzf Python-3.11.2.tgz &&\
-    cd Python-3.11.2 &&\
+    wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz &&\
+    tar -xzf Python-3.10.12.tgz &&\
+    cd Python-3.10.12 &&\
     ./configure --enable-optimizations &&\
     make &&\
     make install &&\
