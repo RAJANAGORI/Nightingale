@@ -81,8 +81,8 @@ RUN \
     # ./configure --enable-optimizations &&\
     # make &&\
     # make install &&\
-    wget https://files.pythonhosted.org/packages/c7/42/be1c7bbdd83e1bfb160c94b9cafd8e25efc7400346cf7ccdbdb452c467fa/setuptools-68.0.0-py3-none-any.whl &&\
-    pip3 install setuptools-68.0.0-py3-none-any.whl
+    # wget https://files.pythonhosted.org/packages/c7/42/be1c7bbdd83e1bfb160c94b9cafd8e25efc7400346cf7ccdbdb452c467fa/setuptools-68.0.0-py3-none-any.whl &&\
+    # pip3 install setuptools-68.0.0-py3-none-any.whl
 #     python3 -m pip install --upgrade pip
 
 RUN \
