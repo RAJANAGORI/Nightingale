@@ -8,6 +8,7 @@ COPY \
 RUN \
     # cat /tmp/source >> /etc/apt/sources.list && \
     apt-get update -y --fix-missing && \
+    apt-get upgrade -y &&\
 ### Programming Language Support
     apt-get -f --no-install-recommends install -y \
     ## Essentials
@@ -63,11 +64,10 @@ RUN \
     libev-* \
     libev4 \
     # #Installing Python3
-    # python3-pip \
-    # # python3-venv \
-    # python3-dev \
-    # python3-full \
-    build-essential \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    python3-full \
     libssl-dev \
     libffi-dev \
     #installing java

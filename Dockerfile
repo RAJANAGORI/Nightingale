@@ -158,15 +158,19 @@ COPY \
     binary/ ${BINARIES}
 
 RUN \
+    # chmod +x ${BINARIES}/* && \
+    # mv ${BINARIES}/* /usr/local/bin/ && \
+    # apt-get install -y libjson-c-dev libwebsockets-dev && \
+    # git clone https://github.com/tsl0922/ttyd.git && \
+    # cd ttyd && mkdir build && cd build && \
+    # cmake .. && \
+    # make && make install &&\
+    # mv ttyd /usr/local/bin &&\
+    # cd ${BINARIES} && rm -rf ttyd
     chmod +x ${BINARIES}/* && \
     mv ${BINARIES}/* /usr/local/bin/ && \
-    apt-get install -y libjson-c-dev libwebsockets-dev && \
-    git clone https://github.com/tsl0922/ttyd.git && \
-    cd ttyd && mkdir build && cd build && \
-    cmake .. && \
-    make && make install &&\
-    mv ttyd /usr/local/bin &&\
-    cd ${BINARIES} && rm -rf ttyd
+    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
+    chmod +x ttyd
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}
