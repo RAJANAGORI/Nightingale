@@ -1,4 +1,4 @@
-FROM debian:latest
+FROM debian:stable-slim
 # COPY \
 #     configuration/source /tmp/source
 
