@@ -6,9 +6,16 @@ LABEL maintainer="Raja Nagori" \
     
 ARG DEBIAN_FRONTEND=noninteractive
 
-# USER root
+USER root
+## Banner shell and run shell file ##
+COPY \
+    shells/banner.sh /tmp/banner.sh
+
+# COPY \
+#     configuration/source /tmp/source 
 
 RUN \
+    cat /tmp/banner.sh >> /root/.bashrc && \
     # cat /tmp/source >> /etc/apt/sources.list &&\
 #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
@@ -64,15 +71,10 @@ RUN \
     binwalk \
     foremost \
     dos2unix \
-    # postgresql \
-    # postgresql-client \
-    # postgresql-contrib \
-    libnss-ldap \
-    libpam-ldap \
-    ldap-utils \
-    nscd \
-    nginx
-    
+    postgresql \
+    postgresql-client \
+    postgresql-contrib
+
 ## Banner shell and run shell file ##
 COPY \
     shells/banner.sh /tmp/banner.sh
@@ -120,7 +122,7 @@ COPY \
     --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${GREP_PATTERNS} ${GREP_PATTERNS}
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_osint_tools_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
+    --from=ghcr.io/rajanagori/nightingale_osint_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
 RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
@@ -141,36 +143,24 @@ RUN true
 COPY \
     configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 
-COPY \
-    configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
-
 RUN \
-    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh && dos2unix ${SHELLS}/go-install-modules.sh && chmod +x ${SHELLS}/go-install-modules.sh
+    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh
 
-RUN ${SHELLS}/python-install-modules.sh &&\
-    ${SHELLS}/go-install-modules.sh &&\
-    /temp/node-installation-script.sh 
+RUN ${SHELLS}/python-install-modules.sh
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
 ## INstallation stuff
 COPY \
     binary/ ${BINARIES}
-
+    
 RUN \
-    # chmod +x ${BINARIES}/* && \
-    # mv ${BINARIES}/* /usr/local/bin/ && \
-    # apt-get install -y libjson-c-dev libwebsockets-dev && \
-    # git clone https://github.com/tsl0922/ttyd.git && \
-    # cd ttyd && mkdir build && cd build && \
-    # cmake .. && \
-    # make && make install &&\
-    # mv ttyd /usr/local/bin &&\
-    # cd ${BINARIES} && rm -rf ttyd
     chmod +x ${BINARIES}/* && \
     mv ${BINARIES}/* /usr/local/bin/ && \
-    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
-    chmod +x ttyd
+    wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
+    unzip 1.7.2.zip &&\
+    cd ttyd-1.7.2 && mkdir build && cd build &&\
+    cmake .. && make && make install
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}
@@ -181,34 +171,21 @@ COPY configuration/msf-configuration/scripts/db.sql .
 ## Startup script
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
+
 RUN \
     wget -q https://apt.metasploit.com/pool/main/m/metasploit-framework/metasploit-framework_6.3.29%2B20230805102816~1rapid7-1_amd64.deb -O metasploit.deb &&\
     dpkg -i metasploit.deb
-    # curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
-    # chmod 755 msfinstall && \
-    # ./msfinstall
-    
+
 ## DB config
-COPY ./configuration/msf-configuration/conf/database.yml /home/msfuser/.msf4/database.yml
+COPY ./configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/ 
 
-CMD ["dpkg-reconfigure libnss-ldap" && "dpkg-reconfigure libpam-ldap"]
-
-COPY configuration/ldap/ldap.sh /home/.ldap-files/ldap.sh
-
-RUN \
-    chmod +x /home/.ldap-files/ldap.sh &&\
-    dos2unix /home/.ldap-files/ldap.sh &&\
-    /home/.ldap-files/ldap.sh
-
-### Working Directory of tools ends here
-WORKDIR /home/
+CMD "./configuration/msf-configuration/scripts/init.sh"
 
 # Expose the service ports
 EXPOSE 5432
 EXPOSE 8080
 EXPOSE 8081
 EXPOSE 7681
-EXPOSE 8083
 
 RUN \
     # Cleaning Unwanted libraries 
@@ -216,3 +193,6 @@ RUN \
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/*
+
+### Working Directory of tools ends here
+WORKDIR /home

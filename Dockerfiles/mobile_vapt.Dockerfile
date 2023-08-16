@@ -37,16 +37,18 @@ COPY \
     configuration/nodejs-pm2-configuration/pm2-rms.json rms/pm2-rms.json
 
 RUN \
-    # # Installing MobSF
-    # cd Mobile-Security-Framework-MobSF && \
-    # python3 -m venv venv &&\
-    # ./setup.sh &&\
-    # cd .. && \
-    
+    # Installing MobSF
+    cd Mobile-Security-Framework-MobSF && \
+    python3 -m venv venv &&\
+    ./setup.sh &&\
+    cd ..
+
+RUN \
     # Installing RMS-Runtime-Mobile-Security
     chmod +x /temp/rms-install-module.sh && \
-    /temp/rms-install-module.sh && \
-
+    /temp/rms-install-module.sh 
+    
+RUN \
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\
