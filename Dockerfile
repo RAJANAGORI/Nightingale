@@ -122,7 +122,7 @@ COPY \
     --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${GREP_PATTERNS} ${GREP_PATTERNS}
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_osint_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
+    --from=ghcr.io/rajanagori/nightingale_osint_tools_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
 RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
