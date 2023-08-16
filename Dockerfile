@@ -143,10 +143,14 @@ RUN true
 COPY \
     configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 
-RUN \
-    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh
+COPY \
+    configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
 
-RUN ${SHELLS}/python-install-modules.sh
+RUN \
+    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh &&\
+    dos2unix ${SHELLS}/go-install-modules.sh && chmod +x ${SHELLS}/go-install-modules.sh
+
+RUN ${SHELLS}/python-install-modules.sh && ${SHELLS}/go-install-modules.sh
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
