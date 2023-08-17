@@ -148,7 +148,9 @@ COPY \
 
 RUN \
     dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh &&\
-    ${SHELLS}/python-install-modules.sh &&\
+    ${SHELLS}/python-install-modules.sh
+
+RUN \
     dos2unix ${SHELLS}/go-install-modules.sh && chmod +x ${SHELLS}/go-install-modules.sh &&\
     ${SHELLS}/go-install-modules.sh
 
