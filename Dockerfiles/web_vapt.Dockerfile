@@ -94,6 +94,9 @@ RUN \
     pip3 install -r requirements.txt &&\
     cd ..
 
+#Installating Nuclei
+RUN go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+
 RUN \
 ### Installing Amass 
     wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.1.0/amass_Linux_amd64.zip -O amass.zip &&\
