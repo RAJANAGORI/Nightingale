@@ -89,8 +89,9 @@ RUN wget -q https://go.dev/dl/go1.19.1.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 
-RUN bash /temp/node-installation-script.sh
-
+RUN chmod +x /temp/node-installation-script.sh &&\
+    /temp/node-installation-script.sh
+    
 # Cleanup
 RUN rm -rf /home/* && \
     apt-get -y autoremove && \
