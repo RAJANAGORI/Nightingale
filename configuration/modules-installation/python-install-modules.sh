@@ -67,6 +67,3 @@ pip3 install -r requirements/base.txt
 
 # Install objection and octosuite from PyPI
 pip3 install objection octosuite dirsearch sqlmap
-
-#Installating Nuclei
-go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
