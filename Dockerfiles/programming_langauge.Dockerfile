@@ -1,6 +1,6 @@
 FROM debian:latest
 
-COPY shells/node-installation-script.sh /temp/node-installation-script.sh
+COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
 
 RUN apt-get update -y --fix-missing
 

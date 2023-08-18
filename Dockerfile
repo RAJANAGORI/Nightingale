@@ -7,16 +7,8 @@ LABEL maintainer="Raja Nagori" \
 ARG DEBIAN_FRONTEND=noninteractive
 
 USER root
-## Banner shell and run shell file ##
-COPY \
-    shells/banner.sh /tmp/banner.sh
-
-# COPY \
-#     configuration/source /tmp/source 
 
 RUN \
-    cat /tmp/banner.sh >> /root/.bashrc && \
-    # cat /tmp/source >> /etc/apt/sources.list &&\
 #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
     apt-get -f --no-install-recommends install -y \
@@ -58,7 +50,6 @@ RUN \
     cewl \
     hydra \
     medusa \
-    figlet \
     dnsutils \
     # Some android architecture dependency
     android-framework-res \
@@ -87,16 +78,17 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -p https://github.com/zsh-users/zsh-autosuggestions \
     -p https://github.com/zsh-users/zsh-completions
 
+COPY \
+    configuration/nodejs/ /temp/
+
 RUN \
     cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
     cat /tmp/banner.sh >> ${HOME}/.zshrc &&\
+    cat /tmp/env_zsh.txt >> ${HOME}/.zshrc &&\
     dos2unix ${HOME}/.bashrc &&\
     dos2unix ${HOME}/.zshrc
 
-COPY \
-    shells/node-installation-script.sh /temp/node-installation-script.sh
 RUN \
-    dos2unix /temp/node-installation-script.sh && chmod +x /temp/node-installation-script.sh &&\
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
