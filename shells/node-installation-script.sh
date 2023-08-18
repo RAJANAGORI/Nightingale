@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 git clone --depth 1 https://github.com/nvm-sh/nvm.git /root/.nvm && \
 chmod -R 777 /root/.nvm/ && \
 bash /root/.nvm/install.sh && \
