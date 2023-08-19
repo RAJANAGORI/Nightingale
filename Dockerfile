@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
@@ -7,16 +7,8 @@ LABEL maintainer="Raja Nagori" \
 ARG DEBIAN_FRONTEND=noninteractive
 
 USER root
-## Banner shell and run shell file ##
-COPY \
-    shells/banner.sh /tmp/banner.sh
-
-# COPY \
-#     configuration/source /tmp/source 
 
 RUN \
-    cat /tmp/banner.sh >> /root/.bashrc && \
-    # cat /tmp/source >> /etc/apt/sources.list &&\
 #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
     apt-get -f --no-install-recommends install -y \
@@ -58,7 +50,6 @@ RUN \
     cewl \
     hydra \
     medusa \
-    figlet \
     dnsutils \
     # Some android architecture dependency
     android-framework-res \
@@ -79,6 +70,9 @@ RUN \
 COPY \
     shells/banner.sh /tmp/banner.sh
 
+COPY \
+    configuration/nodejs/ /temp/
+
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t https://github.com/denysdovhan/spaceship-prompt \
     -a 'SPACESHIP_PROMPT_ADD_NEWLINE="true"' \
@@ -88,15 +82,13 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -p https://github.com/zsh-users/zsh-completions
 
 RUN \
+    dos2unix ${HOME}/.bashrc &&\
+    dos2unix ${HOME}/.zshrc &&\
     cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
     cat /tmp/banner.sh >> ${HOME}/.zshrc &&\
-    dos2unix ${HOME}/.bashrc &&\
-    dos2unix ${HOME}/.zshrc
+    cat /temp/env_zsh.txt >> ${HOME}/.zshrc
 
-COPY \
-    shells/node-installation-script.sh /temp/node-installation-script.sh
 RUN \
-    dos2unix /temp/node-installation-script.sh && chmod +x /temp/node-installation-script.sh &&\
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
@@ -116,37 +108,36 @@ ENV METASPLOIT_TOOL=/home/metasploit
 ENV SHELLS=/home/.shells
 
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${GREP_PATTERNS} ${GREP_PATTERNS}
+    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${GREP_PATTERNS} ${GREP_PATTERNS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_osint_image:v1.1 ${TOOLS_OSINT} ${TOOLS_OSINT}
+    --from=ghcr.io/rajanagori/nightingale_osint_tools_image:stable ${TOOLS_OSINT} ${TOOLS_OSINT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_mobile_vapt_image:v1.0 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:stable ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_network_vapt_image:v1.0 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_network_vapt_image:stable ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
+    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
 RUN true
 COPY \
-    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
 RUN true
 COPY \
-    --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
+    --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable ${WORDLIST} ${WORDLIST}
 RUN true
 
 COPY \
     configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 
 RUN \
-    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh
-
-RUN ${SHELLS}/python-install-modules.sh
+    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh &&\
+    ${SHELLS}/python-install-modules.sh
 
 ## All binaries will store here
 WORKDIR ${BINARIES}
@@ -157,8 +148,10 @@ COPY \
 RUN \
     chmod +x ${BINARIES}/* && \
     mv ${BINARIES}/* /usr/local/bin/ && \
-    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
-    chmod +x ttyd
+    wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
+    unzip 1.7.2.zip &&\
+    cd ttyd-1.7.2 && mkdir build && cd build &&\
+    cmake .. && make && make install
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}
@@ -169,10 +162,11 @@ COPY configuration/msf-configuration/scripts/db.sql .
 ## Startup script
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
+
 RUN \
-    curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
-    chmod 755 msfinstall && \
-    ./msfinstall
+    wget -q https://apt.metasploit.com/pool/main/m/metasploit-framework/metasploit-framework_6.3.29%2B20230805102816~1rapid7-1_amd64.deb -O metasploit.deb &&\
+    dpkg -i metasploit.deb
+
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/ 
 

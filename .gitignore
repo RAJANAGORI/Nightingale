@@ -9,4 +9,14 @@ Dockerfiles/*_copy.Dockerfile
 Dockerfiles/*_alpine.Dockerfile
 testing.Dockerfile
 configuration/postgres
+configuration/ldap
+configuration/nginx
+configuration/ttyd
+configuration/source
 requirements.txt
+data
+ldap_admin_password
+ldap_config_password
+backup_content.txt
+*.yaml
+export.ldif

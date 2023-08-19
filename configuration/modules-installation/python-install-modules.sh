@@ -25,9 +25,8 @@ python3 setup.py install
 cd "${TOOLS_WEB_VAPT}/Striker"
 pip3 install -r requirements.txt
 
-# Install dirsearch
-cd "${TOOLS_WEB_VAPT}/dirsearch"
-python3 setup.py install
+# # Install dirsearch
+# cd "${TOOLS_WEB_VAPT}/dirsearch"
 
 # Install jwt_tool
 cd "${TOOLS_WEB_VAPT}/jwt_tool"
@@ -41,9 +40,9 @@ python3 setup.py install
 cd "${TOOLS_WEB_VAPT}/XSStrike"
 pip3 install -r requirements.txt
 
-# Install WhatWeb
-cd "${TOOLS_WEB_VAPT}/WhatWeb"
-make install && bundle install
+# # Install WhatWeb
+# cd "${TOOLS_WEB_VAPT}/WhatWeb"
+# make install && bundle install
 
 # Install SpiderFoot
 cd "${TOOLS_OSINT}/spiderfoot"
@@ -67,4 +66,4 @@ cd "${TOOLS_OSINT}/theHarvester"
 pip3 install -r requirements/base.txt
 
 # Install objection and octosuite from PyPI
-pip3 install objection octosuite
+pip3 install objection octosuite dirsearch sqlmap
