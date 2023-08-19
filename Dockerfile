@@ -82,11 +82,11 @@ COPY \
     configuration/nodejs/ /temp/
 
 RUN \
+    dos2unix ${HOME}/.bashrc &&\
+    dos2unix ${HOME}/.zshrc &&\
     cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
     cat /tmp/banner.sh >> ${HOME}/.zshrc &&\
-    cat /tmp/env_zsh.txt >> ${HOME}/.zshrc &&\
-    dos2unix ${HOME}/.bashrc &&\
-    dos2unix ${HOME}/.zshrc
+    cat /tmp/env_zsh.txt >> ${HOME}/.zshrc
 
 RUN \
 ### Creating Directories
