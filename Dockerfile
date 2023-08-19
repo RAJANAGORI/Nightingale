@@ -70,6 +70,9 @@ RUN \
 COPY \
     shells/banner.sh /tmp/banner.sh
 
+COPY \
+    configuration/nodejs/ /temp/
+
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t https://github.com/denysdovhan/spaceship-prompt \
     -a 'SPACESHIP_PROMPT_ADD_NEWLINE="true"' \
@@ -78,15 +81,12 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -p https://github.com/zsh-users/zsh-autosuggestions \
     -p https://github.com/zsh-users/zsh-completions
 
-COPY \
-    configuration/nodejs/ /temp/
-
 RUN \
     dos2unix ${HOME}/.bashrc &&\
     dos2unix ${HOME}/.zshrc &&\
     cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
     cat /tmp/banner.sh >> ${HOME}/.zshrc &&\
-    cat /tmp/env_zsh.txt >> ${HOME}/.zshrc
+    cat /temp/env_zsh.txt >> ${HOME}/.zshrc
 
 RUN \
 ### Creating Directories
