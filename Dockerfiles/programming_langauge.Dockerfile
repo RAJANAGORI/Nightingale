@@ -1,22 +1,16 @@
 FROM debian:latest
-# COPY \
-#     configuration/source /tmp/source
 
-COPY \
-    shells/node-installation-script.sh /temp/node-installation-script.sh
+COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
 
-RUN \
-    # cat /tmp/source >> /etc/apt/sources.list && \
-    apt-get update -y --fix-missing && \
-### Programming Language Support
-    apt-get -f --no-install-recommends install -y \
-    ## Essentials
+RUN apt-get update -y --fix-missing
+
+# Installing essential packages
+RUN apt-get -f --no-install-recommends install -y \
     software-properties-common \
     ca-certificates \
     build-essential \
     wget \
     curl \
-    ## Dev Essentials
     git \
     vim \
     nano \
@@ -31,13 +25,7 @@ RUN \
     autoconf \
     automake \
     dialog apt-utils \
-    # ## Database Support
-    # postgresql \
-    # postgresql-client \
-    # postgresql-contrib \
-    ## Essentials Library Support
     libantlr3-runtime-java \
-    libcurl4-openssl-dev \
     libcurl4-openssl-dev \
     libexpat1-dev \
     libguava-java \
@@ -61,39 +49,58 @@ RUN \
     linux-libc-dev \
     libev-* \
     libev4 \
-    #Installing Python3
+    libffi-dev \
+    openjdk-17-jre \
+    openjdk-17-jdk \
+    libbz2-dev \
+    libreadline-dev \
+    llvm \
+    libncurses5-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev 
+
+RUN \
+    wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz &&\
+    tar -xzf Python-3.10.12.tgz &&\
+    cd Python-3.10.12 &&\
+    ./configure --enable-optimizations &&\
+    make &&\
+    make install
+    
+RUN \
+    apt-get -f --no-install-recommends install -y \
+    python3-full \
     python3-pip \
     python3-venv \
     python3-dev \
-    build-essential \
-    libssl-dev \
-    libffi-dev &&\
-    python3 -m pip install --upgrade pip --break-system-packages &&\
-    #installing java
-    apt-get install -y --no-install-recommends -f \
-    default-jre-headless \
-    default-jdk-headless &&\
-    ## Installing Nokogiri to parse any HTML and XMl in RUBY
-    gem install nokogiri &&\
-    #removing the unnecessary packages
-# Installing go Language
-    mkdir -p /root/go
+    python3-openssl
+
+# Installing Python
+RUN python3 -m pip install --upgrade pip --break-system-packages
+RUN pip install setuptools==58.2.0
+
+# Installing Nokogiri for Ruby
+RUN gem install nokogiri
 
 # Install go and node
 WORKDIR /home
-RUN \ 
-    wget -q https://go.dev/dl/go1.19.1.linux-amd64.tar.gz -O go.tar.gz && \
+RUN wget -q https://go.dev/dl/go1.19.1.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
-    rm go.tar.gz &&\
-    # Install node
-    bash /temp/node-installation-script.sh && \
-    rm -rf /home/* &&\
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
+    rm go.tar.gz
+
+RUN chmod +x /temp/node-installation-script.sh &&\
+    /temp/node-installation-script.sh
+    
+# Cleanup
+RUN rm -rf /home/* && \
+    apt-get -y autoremove && \
+    apt-get -y clean && \
+    rm -rf /tmp/* && \
+    rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/apt/archives/*
 
+# Environment variables
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"

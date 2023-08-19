@@ -1,9 +1,9 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY \
-    shells/ /temp
+    configuration/nodejs/node-installation-script.sh /temp
 
 COPY \
     configuration/modules-installation/rms-install-modules.sh /temp/rms-install-module.sh
@@ -41,12 +41,14 @@ RUN \
     cd Mobile-Security-Framework-MobSF && \
     python3 -m venv venv &&\
     ./setup.sh &&\
-    cd .. && \
-    
+    cd ..
+
+RUN \
     # Installing RMS-Runtime-Mobile-Security
     chmod +x /temp/rms-install-module.sh && \
-    /temp/rms-install-module.sh && \
-
+    /temp/rms-install-module.sh 
+    
+RUN \
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\

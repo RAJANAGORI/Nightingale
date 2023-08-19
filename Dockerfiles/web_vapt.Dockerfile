@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM rajanagori/nightingale_programming_image:v1
+FROM ghcr.io/rajanagori/nightingale_programming_image:development
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
@@ -8,8 +8,8 @@ RUN \
     make \
     cmake \
     bundler \
-    unzip && \
-
+    unzip \
+    whatweb && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_web_vapt .gf 
@@ -26,14 +26,10 @@ RUN \
 WORKDIR ${TOOLS_WEB_VAPT}
 # git clonning of tools repository
 RUN \
-    # Git clone of SqlMap
-    git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git &&\
     # Git clone of HawkScan
     git clone --depth 1 https://github.com/c0dejump/HawkScan.git &&\
     #git clone of xsstrike
     git clone --depth 1 https://github.com/s0md3v/XSStrike.git &&\
-    #git clone dirsearch
-    git clone --depth 1  https://github.com/maurosoria/dirsearch.git && \
     #git clone arjun
     git clone --depth 1  https://github.com/s0md3v/Arjun.git && \
     # git clone massdns
@@ -47,59 +43,62 @@ RUN \
     #git clone jwt_tool
     git clone --depth 1 https://github.com/ticarpi/jwt_tool.git &&\
     #git clone whatweb
-    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git &&\
+    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git
 
 ### Installing Tools 
-
+RUN \
 ## Installing Arjun
     cd Arjun && \
     python3 setup.py install && \
-    cd .. && \
+    cd ..
 
+RUN \
 ## Installing HawkScan
     cd HawkScan && \
-    python3 setup.py install && \
-    cd .. && \
+    pip3 install -r requirements.txt && \
+    cd ..
 
+RUN \
 ## Installing LinkFinderd
     cd LinkFinder && \
-    python3 setup.py install &&\
-    cd .. && \
-
+    pip3 install -r requirements.txt &&\
+    cd ..
+    
+RUN \
 ## Installing Striker
     cd Striker && \
     pip3 install -r requirements.txt &&\
-    cd .. && \
+    cd ..
 
+RUN \
 ##  INstalling dirsearch
-    cd dirsearch && \
-    python3 setup.py install && \
-    cd .. && \
+    # cd dirsearch && \
+    pip3 install dirsearch
+    # cd ..
 
+RUN \
 ## installin jwt_tool
     cd jwt_tool && \
     pip3 install -r requirements.txt &&\
-    cd .. && \
+    cd ..
 
+RUN \
 ## INstalling Sublist3r
     cd Sublist3r && \
     python3 setup.py install &&\
-    cd .. && \
+    cd ..
 
+RUN \
 ## INstall XSStrike
     cd XSStrike && \
     pip3 install -r requirements.txt &&\
-    cd .. && \
-    
-# Installing WhatWeb
-    cd WhatWeb && \
-    make install && \
-    cd .. && \
+    cd ..
 
+RUN \
 ### Installing Amass 
-    wget --quiet https://github.com/OWASP/Amass/releases/download/v3.16.0/amass_linux_amd64.zip -O amass.zip &&\
+    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.1.0/amass_Linux_amd64.zip -O amass.zip &&\
     unzip amass.zip && \
-    mv amass_linux_amd64/amass /usr/local/bin && rm -rf amass_linux_amd64 amass.zip && \
+    mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip && \
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\
@@ -107,11 +106,3 @@ RUN \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home
-
-
-
-
-
-
-
-

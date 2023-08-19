@@ -2,70 +2,80 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ main ]
-    
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKERFILES_PATH: Dockerfiles
+  IMAGE_NAME: ${{ github.repository }}
+
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-    - name: docker login
+    - name: Github Login
       env:
-        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      run: | 
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        GITHUB_TOKEN: ${{secrets.TOKEN}}
+      run: |
+        echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
 
-    - name: docker build for programming language image  
-      run: docker build --no-cache . --file Dockerfiles/programming_langauge.Dockerfile --tag rajanagori/nightingale_programming_image:v1
+    # Build Docker images
+    - name: Build nightingale_programming_image
+      run: |
+        docker build . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:stable
+    # # Push Docker images
+    - name: Push nightingale_programming_image
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:stable"
 
-    - name: Pushing the docker image
-      run: docker push rajanagori/nightingale_programming_image:v1
-
-    - name: docker build for forensics image  
-      run: docker build --no-cache . --file Dockerfiles/forensics_and_redteam.Dockerfile --tag rajanagori/nightingale_forensic_and_red_teaming:v1.0
-
-    - name: Pushing the docker image
-      run: docker push rajanagori/nightingale_forensic_and_red_teaming:v1.0
-
-    - name: docker build for web image  
-      run: docker build --no-cache . --file Dockerfiles/web_vapt.Dockerfile --tag rajanagori/nightingale_web_vapt_image:v1.0
-
-    - name: Pushing the docker image
-      run: docker push rajanagori/nightingale_web_vapt_image:v1.0
-
-    - name: docker build for network image  
-      run: docker build --no-cache . --file Dockerfiles/network_vapt.Dockerfile --tag rajanagori/nightingale_network_vapt_image:v1.0
-
-    - name: Pushing the docker image
-      run: docker push rajanagori/nightingale_network_vapt_image:v1.0
+    - name: Build nightingale_forensic_and_red_teaming
+      run: |
+        docker build . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:stable
     
-    - name: docker build for osint image  
-      run: docker build --no-cache . --file Dockerfiles/osint_tools.Dockerfile --tag rajanagori/nightingale_osint_image:v1.1
+    - name: Push nightingale_forensic_and_red_teaming1
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:stable"
+    
+    - name: Build nightingale_web_vapt_image
+      run: |
+        docker build  . --file $DOCKERFILES_PATH/web_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:stable
+    
+    - name: Push nightingale_web_vapt_image
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:stable"
+    
+    - name: Build nightingale_network_vapt_image
+      run: |
+        docker build . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:stable
+    
+    - name: Push nightingale_network_vapt_image
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:stable"
+    
+    - name: Build nightingale_osint_image
+      run: |
+        docker build . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:stable
+    
+    - name: Push nightingale_osint_image
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:stable"
+    
+    - name: Build nightingale_mobile_vapt_image
+      run: |
+        docker build . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:stable
+    
+    - name: Push nightingale_mobile_vapt_image
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:stable"
+    
+    - name: Build nightingale_wordlist_image
+      run: |
+        docker build . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:stable
+    
+    - name: Push nightingale_wordlist_image
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:stable"
+    
+    - name: Build nightingale_stable_image
+      run: |
+        docker build . --no-cache --file Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale:stable
 
-    - name: Pushing the docker image
-      run: docker push rajanagori/nightingale_osint_image:v1.1
-
-    - name: docker build for mobile image
-      run: docker build --no-cache . --file Dockerfiles/mobile_vapt.Dockerfile --tag rajanagori/nightingale_mobile_vapt_image:v1.0
-
-    - name: Pushing the docker image
-      run: docker push rajanagori/nightingale_mobile_vapt_image:v1.0
-
-    - name: docker build for wordlist image
-      run: docker build --no-cache . --file Dockerfiles/wordlist.Dockerfile --tag rajanagori/nightingale_wordlist_image:v1.0
-
-    - name: Pushing the docker image
-      run: docker push rajanagori/nightingale_wordlist_image:v1.0
-
-    - name: Build the Docker image and push it to docker hub for Final Nightingale image
-      run: docker build --no-cache . --file Dockerfile --tag rajanagori/nightingale:latest
-
-    - name: Pushing the docker image
-      run: docker push rajanagori/nightingale:latest
+    - name: Push nightingale_stable_image
+      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale:stable"
