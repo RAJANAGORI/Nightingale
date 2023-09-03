@@ -36,6 +36,8 @@ jobs:
     # # Push Docker images
     - name: Push nightingale_programming_image
       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux-amd64"
+        with:
+          label: development
 
     # - name: Build nightingale_forensic_and_red_teaming
     #   run: |
@@ -109,6 +111,8 @@ jobs:
     # # Push Docker images
     - name: Push nightingale_programming_image
       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux-arm64"
+        with:
+          label: development
 
     # - name: Build nightingale_forensic_and_red_teaming
     #   run: |
