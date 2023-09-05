@@ -6,11 +6,13 @@ on:
     paths:
       - "architecture/amd64/Dockerfiles/*.Dockerfile"
       - "architecture/amd64/Dockerfile"
+      - ".github/workflows/multi-os-amd64.yaml"
   pull_request:
     branches: [development]
     paths:
       - "architecture/amd64/Dockerfiles/*.Dockerfile"
       - "architecture/amd64/Dockerfile"
+      - ".github/workflows/multi-os-amd64.yaml"
 
 env:
   DOCKER_REGISTRY: ghcr.io

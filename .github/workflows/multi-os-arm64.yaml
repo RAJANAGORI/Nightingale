@@ -6,11 +6,13 @@ on:
     paths:
       - "architecture/arm64/Dockerfiles/*.Dockerfile"
       - "architecture/arm64/Dockerfile"
+      - ".github/workflows/multi-os-arm64.yaml"
   pull_request:
     branches: [development]
     paths:
       - "architecture/arm64/Dockerfiles/*.Dockerfile"
       - "architecture/arm64/Dockerfile"
+      - ".github/workflows/multi-os-arm64.yaml"
 
 env:
   DOCKER_REGISTRY: ghcr.io
