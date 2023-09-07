@@ -91,3 +91,7 @@ jobs:
 
     - name: Push nightingale_development_image
       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale:development"
+
+    - name: Clean Docker build cache
+      run: |
+        docker builder prune -y

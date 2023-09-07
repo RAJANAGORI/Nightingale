@@ -98,3 +98,7 @@ jobs:
 
     # - name: Push nightingale_linux-amd64_image
     #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale:linux-amd64"
+
+    - name: Clean Docker build cache
+      run: |
+        docker builder prune -y
