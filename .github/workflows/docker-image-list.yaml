@@ -1,0 +1,41 @@
+name: List of images
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development]
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKERFILE: architecture/amd64
+  DOCKERFILES_PATH: architecture/amd64/Dockerfiles
+  IMAGE_NAME: ${{ github.repository }}\
+  # Get the short commit SHA
+  COMMIT_SHA: ${{ github.sha }}
+
+
+jobs:
+  amd64:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Github Login
+      env:
+        GITHUB_TOKEN: ${{secrets.TOKEN}}
+      run: |
+        echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
+    
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: List of images
+      run: |
+        docker images
+
+    # - name: List of images
+    #   run: |
+    #     docker buildx prune -f
