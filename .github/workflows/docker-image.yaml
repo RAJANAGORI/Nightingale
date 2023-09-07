@@ -6,11 +6,13 @@ on:
     paths:
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
+      - ".github/workflows/docker-image.yaml"
   pull_request:
     branches: [development]
     paths:
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
+      ".github/workflows/docker-image.yaml"
 
 env:
   DOCKER_REGISTRY: ghcr.io
