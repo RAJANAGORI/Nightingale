@@ -101,4 +101,4 @@ jobs:
 
     - name: Clean Docker build cache
       run: |
-        docker builder prune -y
+        docker buildx prune -f
