@@ -12,7 +12,7 @@ on:
     paths:
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
-      ".github/workflows/docker-image.yaml"
+      - ".github/workflows/docker-image.yaml"
 
 env:
   DOCKER_REGISTRY: ghcr.io
