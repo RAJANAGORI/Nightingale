@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [development]
 
+env:
+  DOCKER_REGISTRY: ghcr.io
+  IMAGE_NAME: nightingale_wordlist_image
+
 jobs:
   amd64:
     runs-on: ubuntu-latest
@@ -49,10 +53,41 @@ jobs:
     #       nightingale_mobile_vapt_image
     #       nightingale
     #       nightingale_programming_image
-    - name: Retention Policy for web vapt image
-      uses: actions/delete-package-versions@v4
-      with: 
-        package-name: 'nightingale_web_vapt_image'
-        package-type: 'container'
-        token: ${{secrets.TOKEN}}
-        min-versions-to-keep: 3
+    # - name: Retention Policy for web vapt image
+    #   uses: actions/delete-package-versions@v4
+    #   with: 
+    #     package-name: 'nightingale_web_vapt_image'
+    #     package-type: 'container'
+    #     token: ${{secrets.TOKEN}}
+    #     min-versions-to-keep: 3
+    - name: Fetch Docker Image Tags
+      id: fetch-tags
+      run: |
+        # Fetch all tags for the Docker image
+        TAGS=$(docker image ls "${DOCKER_REGISTRY}/${IMAGE_NAME}" --format "{{.Tag}}")
+        echo "::set-output name=tags::$TAGS"
+
+    - name: Apply Retention Policy
+      run: |
+        # Get the list of tags
+        TAGS=(${{ steps.fetch-tags.outputs.tags }})
+
+        # Loop through each tag and keep the latest 3 versions
+        for tag in "${TAGS[@]}"; do
+          # Fetch the list of image IDs for the given tag
+          IMAGE_IDS=$(docker image ls "${DOCKER_REGISTRY}/${IMAGE_NAME}:${tag}" --format "{{.ID}}")
+
+          # Sort the image IDs by creation date in descending order
+          SORTED_IDS=($(echo "${IMAGE_IDS[@]}" | tr ' ' '\n' | xargs -n1 docker image inspect --format='{{.Id}} {{.Created}}' | sort -r -k2 | cut -d ' ' -f1))
+
+          # Keep the latest 3 image IDs
+          IMAGES_TO_KEEP=("${SORTED_IDS[@]:0:3}")
+
+          # Remove all other image versions for the tag
+          for image_id in "${IMAGE_IDS[@]}"; do
+            if [[ ! " ${IMAGES_TO_KEEP[@]} " =~ " ${image_id} " ]]; then
+              docker rmi -f "${image_id}"
+            fi
+          done
+        done
+
