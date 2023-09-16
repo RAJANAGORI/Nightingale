@@ -65,7 +65,7 @@ jobs:
       run: |
         # Fetch all tags for the Docker image
         TAGS=$(docker image ls "${DOCKER_REGISTRY}/${IMAGE_NAME}" --format "{{.Tag}}")
-        echo "{name}={tags} >> "$GITHUB_OUTPUT"
+        echo "{name}={tags}" >> "$GITHUB_OUTPUT"
 
     - name: Apply Retention Policy
       run: |
