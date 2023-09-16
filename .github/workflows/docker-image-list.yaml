@@ -57,7 +57,7 @@ jobs:
       with: 
         owner: 'github'
         package-name: 'nightingale_web_vapt_image'
-        image-names: 'stable, linux-amd64, linux-arm64, unstable'
+        # image-names: 'stable, linux-amd64, linux-arm64, unstable'
         package-type: 'docker'
         token: ${{secrets.TOKEN}}
         min-versions-to-keep: 3
