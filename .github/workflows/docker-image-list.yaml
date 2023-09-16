@@ -37,7 +37,7 @@ jobs:
     #     keep-at-least: 3
     #     token: ${{secrets.TOKEN}}
     - name: Image and Container Retention Policy
-    - uses: smartsquaregmbh/delete-old-packages@v0.7.0
+      uses: smartsquaregmbh/delete-old-packages@v0.7.0
       with:
         type: docker
         rate-limit: true
