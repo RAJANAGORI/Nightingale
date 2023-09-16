@@ -36,20 +36,28 @@ jobs:
     #     image-names: stable, linux-amd64, linux-arm64, unstable
     #     keep-at-least: 3
     #     token: ${{secrets.TOKEN}}
-    - name: Image and Container Retention Policy
-      uses: smartsquaregmbh/delete-old-packages@v0.7.0
-      with:
-        type: docker
-        rate-limit: true
-        keep: 3
-        token: ${{secrets.TOKEN}}
-        names: |
-          nightingale_web_vapt_image
-          nightingale_wordlist_image
-          nightingale_network_vapt_image
-          nightingale_forensic_and_red_teaming
-          nightingale_osint_tools_image
-          nightingale_mobile_vapt_image
-          nightingale
-          nightingale_programming_image
-              
+    # - name: Image and Container Retention Policy
+    #   uses: smartsquaregmbh/delete-old-packages@v0.7.0
+    #   with:
+    #     type: docker
+    #     rate-limit: true
+    #     keep: 3
+    #     token: ${{secrets.TOKEN}}
+    #     names: |
+    #       nightingale_web_vapt_image
+    #       nightingale_wordlist_image
+    #       nightingale_network_vapt_image
+    #       nightingale_forensic_and_red_teaming
+    #       nightingale_osint_tools_image
+    #       nightingale_mobile_vapt_image
+    #       nightingale
+    #       nightingale_programming_image
+  - name: Retention Policy for web vapt image
+    uses: actions/delete-package-versions@v4
+    with: 
+      owner: 'github'
+      package-name: 'nightingale_web_vapt_image'
+      image-names: 'stable, linux-amd64, linux-arm64, unstable'
+      package-type: 'docker'
+      token: ${{secrets.TOKEN}}
+      min-versions-to-keep: 3
