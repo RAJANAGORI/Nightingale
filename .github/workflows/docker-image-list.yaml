@@ -1,4 +1,4 @@
-name: List of images
+name: Remove Docker Images
 
 on:
   push:
@@ -8,12 +8,6 @@ on:
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  DOCKERFILE: architecture/amd64
-  DOCKERFILES_PATH: architecture/amd64/Dockerfiles
-  IMAGE_NAME: ${{ github.repository }}\
-  # Get the short commit SHA
-  COMMIT_SHA: ${{ github.sha }}
-
 
 jobs:
   amd64:
@@ -32,10 +26,22 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     
-    - name: List of images
+    - name: List Docker Images
       run: |
         docker images
 
-    # - name: List of images
-    #   run: |
-    #     docker buildx prune -f
+    - name: Container Retention Policy
+      uses: snok/container-retention-policy@v2.1.2
+      with:
+        image-names: stable, linux-amd64, linux-arm64, unstable
+        keep-at-least: 3
+        token: ${{secrets.TOKEN}}
+    # - uses: smartsquaregmbh/delete-old-packages@v0.7.0
+    #   with:
+    #     organization: my-organization
+    #     type: docker
+    #     keep: 2
+    #     names: |
+    #       nightingale_web_vapt_image
+    #       nightingale_wordlist_image
+              
