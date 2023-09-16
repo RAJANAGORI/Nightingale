@@ -36,10 +36,13 @@ jobs:
     #     image-names: stable, linux-amd64, linux-arm64, unstable
     #     keep-at-least: 3
     #     token: ${{secrets.TOKEN}}
+    - name: Image and Container Retention Policy
     - uses: smartsquaregmbh/delete-old-packages@v0.7.0
       with:
         type: docker
-        keep: 2
+        rate-limit: true
+        keep: 3
+        token: ${{secrets.TOKEN}}
         names: |
           nightingale_web_vapt_image
           nightingale_wordlist_image
