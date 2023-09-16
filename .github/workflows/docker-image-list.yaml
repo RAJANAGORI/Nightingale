@@ -31,6 +31,25 @@ jobs:
       run: |
         docker images
 
+    - name: Delete old released images
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: ghcr.io/nightingale_wordlist_image
+          cut-off: One month ago UTC
+          keep-at-least: 3
+          filter-tags: "stable, linux-amd64, linux-arm64, unstable, development"
+          account-type: personal
+          token: ${{secrets.TOKEN}}
+      # - name: Delete old pre-release images
+      #   uses: snok/container-retention-policy@v2
+      #   with:
+      #     image-names: dev/*
+      #     cut-off: One week ago UTC
+      #     keep-at-least: 1
+      #     filter-tags: "rc*", "dev*"
+      #     account-type: personal
+      #     token: ${{ secrets.PAT }}
+
     # - name: Container Retention Policy
     #   uses: snok/container-retention-policy@v2.1.2
     #   with:
@@ -60,34 +79,34 @@ jobs:
     #     package-type: 'container'
     #     token: ${{secrets.TOKEN}}
     #     min-versions-to-keep: 3
-    - name: Fetch Docker Image Tags
-      id: fetch-tags
-      run: |
-        # Fetch all tags for the Docker image
-        TAGS=$(docker image ls "${DOCKER_REGISTRY}/${IMAGE_NAME}" --format "{{.Tag}}")
-        echo "{name}={tags}" >> "$GITHUB_OUTPUT"
+    # - name: Fetch Docker Image Tags
+    #   id: fetch-tags
+    #   run: |
+    #     # Fetch all tags for the Docker image
+    #     TAGS=$(docker image ls "${DOCKER_REGISTRY}/${IMAGE_NAME}" --format "{{.Tag}}")
+    #     echo "{name}={tags}" >> "$GITHUB_OUTPUT"
 
-    - name: Apply Retention Policy
-      run: |
-        # Get the list of tags
-        TAGS=(${{ steps.fetch-tags.outputs.tags }})
+    # - name: Apply Retention Policy
+    #   run: |
+    #     # Get the list of tags
+    #     TAGS=(${{ steps.fetch-tags.outputs.tags }})
 
-        # Loop through each tag and keep the latest 3 versions
-        for tag in "${GITHUB_OUTPUT[@]}"; do
-          # Fetch the list of image IDs for the given tag
-          IMAGE_IDS=$(docker image ls "${DOCKER_REGISTRY}/${IMAGE_NAME}:${tag}" --format "{{.ID}}")
+    #     # Loop through each tag and keep the latest 3 versions
+    #     for tag in "${GITHUB_OUTPUT[@]}"; do
+    #       # Fetch the list of image IDs for the given tag
+    #       IMAGE_IDS=$(docker image ls "${DOCKER_REGISTRY}/${IMAGE_NAME}:${tag}" --format "{{.ID}}")
 
-          # Sort the image IDs by creation date in descending order
-          SORTED_IDS=($(echo "${IMAGE_IDS[@]}" | tr ' ' '\n' | xargs -n1 docker image inspect --format='{{.Id}} {{.Created}}' | sort -r -k2 | cut -d ' ' -f1))
+    #       # Sort the image IDs by creation date in descending order
+    #       SORTED_IDS=($(echo "${IMAGE_IDS[@]}" | tr ' ' '\n' | xargs -n1 docker image inspect --format='{{.Id}} {{.Created}}' | sort -r -k2 | cut -d ' ' -f1))
 
-          # Keep the latest 3 image IDs
-          IMAGES_TO_KEEP=("${SORTED_IDS[@]:0:3}")
+    #       # Keep the latest 3 image IDs
+    #       IMAGES_TO_KEEP=("${SORTED_IDS[@]:0:3}")
 
-          # Remove all other image versions for the tag
-          for image_id in "${IMAGE_IDS[@]}"; do
-            if [[ ! " ${IMAGES_TO_KEEP[@]} " =~ " ${image_id} " ]]; then
-              docker rmi -f "${image_id}"
-            fi
-          done
-        done
+    #       # Remove all other image versions for the tag
+    #       for image_id in "${IMAGE_IDS[@]}"; do
+    #         if [[ ! " ${IMAGES_TO_KEEP[@]} " =~ " ${image_id} " ]]; then
+    #           docker rmi -f "${image_id}"
+    #         fi
+    #       done
+    #     done
 
