@@ -32,14 +32,14 @@ jobs:
         docker images
 
     - name: Delete old released images
-        uses: snok/container-retention-policy@v2
-        with:
-          image-names: ghcr.io/nightingale_wordlist_image
-          cut-off: One month ago UTC
-          keep-at-least: 3
-          filter-tags: "stable, linux-amd64, linux-arm64, unstable, development"
-          account-type: personal
-          token: ${{secrets.TOKEN}}
+      uses: snok/container-retention-policy@v2
+      with:
+        image-names: ghcr.io/nightingale_wordlist_image
+        cut-off: One month ago UTC
+        keep-at-least: 3
+        filter-tags: "stable, linux-amd64, linux-arm64, unstable, development"
+        account-type: personal
+        token: ${{secrets.TOKEN}}
       # - name: Delete old pre-release images
       #   uses: snok/container-retention-policy@v2
       #   with:
