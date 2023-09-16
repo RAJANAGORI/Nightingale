@@ -52,10 +52,7 @@ jobs:
     - name: Retention Policy for web vapt image
       uses: actions/delete-package-versions@v4
       with: 
-        owner: 'github'
         package-name: 'nightingale_web_vapt_image'
-        # image-names: 'stable, linux-amd64, linux-arm64, unstable'
         package-type: 'container'
         token: ${{secrets.TOKEN}}
         min-versions-to-keep: 3
-        num-old-versions-to-delete: 0
