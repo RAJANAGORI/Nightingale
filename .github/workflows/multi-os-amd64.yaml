@@ -1,0 +1,80 @@
+name: Multi OS docker images - amd64 
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "architecture/amd64/Dockerfiles/*.Dockerfile"
+      - "architecture/amd64/Dockerfile"
+      - ".github/workflows/multi-os-amd64.yaml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "architecture/amd64/Dockerfiles/*.Dockerfile"
+      - "architecture/amd64/Dockerfile"
+      - ".github/workflows/multi-os-amd64.yaml"
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKERFILE: architecture/amd64
+  DOCKERFILES_PATH: architecture/amd64/Dockerfiles
+  IMAGE_NAME: ${{ github.repository }}\
+
+
+jobs:
+  amd64:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Github Login
+      env:
+        GITHUB_TOKEN: ${{secrets.TOKEN}}
+      run: |
+        echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
+    
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Clean Docker build cache - amd64
+      run: |
+        docker buildx prune -f
+
+    # Build Docker images
+    - name: Build nightingale_programming_image
+      run: |
+        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=stable --label owner=RAJANAGROI  --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux-amd64
+  
+    - name: Build nightingale_forensic_and_red_teaming
+      run: |
+        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:linux-amd64
+
+    - name: Build nightingale_web_vapt_image
+      run: |
+        docker buildx build --push --platform linux/amd64  . --file $DOCKERFILES_PATH/web_vapt.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:linux-amd64
+    
+    - name: Build nightingale_network_vapt_image
+      run: |
+        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:linux-amd64
+
+    - name: Build nightingale_osint_image
+      run: |
+        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:linux-amd64
+
+    - name: Build nightingale_mobile_vapt_image
+      run: |
+        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:linux-amd64
+
+    - name: Build nightingale_wordlist_image
+      run: |
+        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:linux-amd64
+
+    - name: Build nightingale_linux-amd64_image
+      run: |
+        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILE/Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale:linux-amd64
+
+    - name: Clean Docker build cache - amd64
+      run: |
+        docker buildx prune -f

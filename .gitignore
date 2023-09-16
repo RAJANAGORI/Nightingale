@@ -18,5 +18,4 @@ data
 ldap_admin_password
 ldap_config_password
 backup_content.txt
-*.yaml
 export.ldif
