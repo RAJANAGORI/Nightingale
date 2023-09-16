@@ -30,18 +30,23 @@ jobs:
       run: |
         docker images
 
-    - name: Container Retention Policy
-      uses: snok/container-retention-policy@v2.1.2
-      with:
-        image-names: stable, linux-amd64, linux-arm64, unstable
-        keep-at-least: 3
-        token: ${{secrets.TOKEN}}
-    # - uses: smartsquaregmbh/delete-old-packages@v0.7.0
+    # - name: Container Retention Policy
+    #   uses: snok/container-retention-policy@v2.1.2
     #   with:
-    #     organization: my-organization
-    #     type: docker
-    #     keep: 2
-    #     names: |
-    #       nightingale_web_vapt_image
-    #       nightingale_wordlist_image
+    #     image-names: stable, linux-amd64, linux-arm64, unstable
+    #     keep-at-least: 3
+    #     token: ${{secrets.TOKEN}}
+    - uses: smartsquaregmbh/delete-old-packages@v0.7.0
+      with:
+        type: docker
+        keep: 2
+        names: |
+          nightingale_web_vapt_image
+          nightingale_wordlist_image
+          nightingale_network_vapt_image
+          nightingale_forensic_and_red_teaming
+          nightingale_osint_tools_image
+          nightingale_mobile_vapt_image
+          nightingale
+          nightingale_programming_image
               
