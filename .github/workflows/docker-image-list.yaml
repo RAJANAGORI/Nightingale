@@ -56,8 +56,8 @@ jobs:
       uses: actions/delete-package-versions@v4
       with: 
         owner: 'github'
-        package-name: 'ghcr.io/nightingale_web_vapt_image'
+        package-name: 'nightingale_web_vapt_image'
         # image-names: 'stable, linux-amd64, linux-arm64, unstable'
-        package-type: 'docker'
+        package-type: 'container'
         token: ${{secrets.TOKEN}}
         min-versions-to-keep: 3
