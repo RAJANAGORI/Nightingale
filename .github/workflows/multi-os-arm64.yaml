@@ -2,13 +2,13 @@ name: Multi OS docker images  - arm64
 
 on:
   push:
-    branches: [development]
+    branches: [main]
     paths:
       - "architecture/arm64/Dockerfiles/*.Dockerfile"
       - "architecture/arm64/Dockerfile"
       - ".github/workflows/multi-os-arm64.yaml"
   pull_request:
-    branches: [development]
+    branches: [main]
     paths:
       - "architecture/arm64/Dockerfiles/*.Dockerfile"
       - "architecture/arm64/Dockerfile"
