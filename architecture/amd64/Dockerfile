@@ -71,7 +71,7 @@ COPY \
     shells/banner.sh /tmp/banner.sh
 
 COPY \
-    configuration/nodejs/ /temp/
+    configuration/nodejs-env/ /temp/
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t https://github.com/denysdovhan/spaceship-prompt \
@@ -164,8 +164,9 @@ COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
 
 RUN \
-    wget -q https://apt.metasploit.com/pool/main/m/metasploit-framework/metasploit-framework_6.3.32%2B20230826102714~1rapid7-1_amd64.deb -O metasploit.deb &&\
-    dpkg -i metasploit.deb
+    curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+    chmod 755 msfinstall && \
+    ./msfinstall
 
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/ 
