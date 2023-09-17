@@ -1,6 +1,6 @@
 FROM --platform=linux/amd64 debian:latest
 
-COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
+COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
 RUN apt-get update -y --fix-missing
 
