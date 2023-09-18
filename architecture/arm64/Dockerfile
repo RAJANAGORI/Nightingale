@@ -164,9 +164,8 @@ COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
 
 RUN \
-    curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
-    chmod 755 msfinstall && \
-    ./msfinstall
+    wget -q https://github.com/RAJANAGORI/metasploit-multi-os/raw/main/metasploit-framework_6.3.35_arm64.deb -O metasploit.deb &&\
+    dpkg -i metasploit.deb
 
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/ 
