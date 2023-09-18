@@ -163,6 +163,7 @@ COPY configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
 
+#Install Metasploit for amd64
 RUN \
     wget -q https://github.com/RAJANAGORI/metasploit-multi-os/raw/main/metasploit-framework_6.3.35_amd64.deb -O metasploit.deb &&\
     dpkg -i metasploit.deb
