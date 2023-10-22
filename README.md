@@ -20,7 +20,7 @@
 - Docker community hands on #6
 - Blackhat Arsenal MEA 2022 (Shortlisted)
 - Blackhat Arsenal ASIA 2023
-
+- Blackhat Arsenal MEA 2023 (Shortlisted)
 ## Project Name: Nightingale
 ==================================================
 ## Docker for Pentesters: Pentesting Framework 
