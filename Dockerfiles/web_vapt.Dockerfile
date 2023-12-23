@@ -30,6 +30,8 @@ RUN \
     git clone --depth 1 https://github.com/c0dejump/HawkScan.git &&\
     #git clone of xsstrike
     git clone --depth 1 https://github.com/s0md3v/XSStrike.git &&\
+    #git clone arjun
+    git clone --depth 1  https://github.com/s0md3v/Arjun.git && \
     # git clone massdns
     git clone --depth 1 https://github.com/blechschmidt/massdns.git && \
     # git clone strike
