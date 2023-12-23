@@ -164,8 +164,6 @@ COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
 
 RUN \
-    # wget -q https://apt.metasploit.com/pool/main/m/metasploit-framework/metasploit-framework_6.3.32%2B20230826102714~1rapid7-1_amd64.deb -O metasploit.deb &&\
-    # dpkg -i metasploit.deb
     curl -fsSL https://apt.metasploit.com/metasploit-framework.gpg.key | gpg --dearmor | tee /usr/share/keyrings/metasploit.gpg > /dev/null &&\
     echo "deb [signed-by=/usr/share/keyrings/metasploit.gpg] https://apt.metasploit.com/ buster main" | tee /etc/apt/sources.list.d/metasploit.list &&\
     apt update &&\
