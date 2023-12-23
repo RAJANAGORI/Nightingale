@@ -63,7 +63,7 @@ RUN apt-get -f --no-install-recommends install -y \
 RUN \
     wget https://www.python.org/ftp/python/3.12.1/Python-3.12.1.tgz &&\
     tar -xzf Python-3.12.1.tgz &&\
-    cd Python-3.10.12 &&\
+    cd Python-3.12.1 &&\
     ./configure --enable-optimizations &&\
     make &&\
     make install
