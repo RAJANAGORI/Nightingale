@@ -49,6 +49,7 @@ RUN \
 RUN \
 ## Installing Arjun
     cd Arjun && \
+    apt-get install python3-distutils &&\
     python3 setup.py install && \
     cd ..
 
