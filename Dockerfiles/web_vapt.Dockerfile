@@ -46,7 +46,10 @@ RUN \
 ### Installing Tools 
 RUN \
 ## Installing Arjun
-    pip3 install arjun
+    cd Arjun && \
+    apt-get install python3-distutils &&\
+    python3 setup.py install && \
+    cd ..
 
 RUN \
 ## Installing HawkScan
