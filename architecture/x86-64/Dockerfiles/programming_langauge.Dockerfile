@@ -74,7 +74,8 @@ RUN \
     python3-pip \
     python3-venv \
     python3-dev \
-    python3-openssl
+    python3-openssl \
+    python3-distutils
 
 # Installing Python
 RUN python3 -m pip install --upgrade pip --break-system-packages
