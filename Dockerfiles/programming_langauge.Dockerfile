@@ -77,8 +77,8 @@ RUN \
     python3-openssl
 
 # Installing Python
-RUN python3 -m pip install --upgrade pip --break-system-packages
-RUN pip install setuptools==58.2.0
+RUN python3 -m pip install --upgrade pip && \
+    pip install setuptools==58.2.0 pipx
 
 # Installing Nokogiri for Ruby
 RUN gem install nokogiri
