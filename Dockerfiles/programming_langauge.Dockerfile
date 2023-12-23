@@ -61,8 +61,8 @@ RUN apt-get -f --no-install-recommends install -y \
     tk-dev 
 
 RUN \
-    wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz &&\
-    tar -xzf Python-3.10.12.tgz &&\
+    wget https://www.python.org/ftp/python/3.12.1/Python-3.12.1.tgz &&\
+    tar -xzf Python-3.12.1.tgz &&\
     cd Python-3.10.12 &&\
     ./configure --enable-optimizations &&\
     make &&\
@@ -85,7 +85,7 @@ RUN gem install nokogiri
 
 # Install go and node
 WORKDIR /home
-RUN wget -q https://go.dev/dl/go1.19.1.linux-amd64.tar.gz -O go.tar.gz && \
+RUN wget -q https://go.dev/dl/go1.21.5.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 

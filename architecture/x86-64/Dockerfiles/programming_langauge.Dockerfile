@@ -85,7 +85,7 @@ RUN gem install nokogiri
 
 # Install go and node
 WORKDIR /home
-RUN wget -q https://go.dev/dl/go1.21.5.darwin-arm64.tar.gz -O go.tar.gz && \
+RUN wget -q https://go.dev/dl/go1.21.5.darwin-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 
