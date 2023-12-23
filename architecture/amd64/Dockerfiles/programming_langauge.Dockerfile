@@ -61,9 +61,9 @@ RUN apt-get -f --no-install-recommends install -y \
     tk-dev 
 
 RUN \
-    wget https://www.python.org/ftp/python/3.12.1/Python-3.12.1.tgz &&\
-    tar -xzf Python-3.12.1.tgz &&\
-    cd Python-3.12.1 &&\
+    wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz &&\
+    tar -xzf Python-3.10.12.tgz &&\
+    cd Python-3.10.12 &&\
     ./configure --enable-optimizations &&\
     make &&\
     make install
