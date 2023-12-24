@@ -1,4 +1,4 @@
-name: Multi OS docker images  - x86-64 MAC OS
+name: Multi OS docker images  - x86-64 MAC OS 
 
 on:
   push:
