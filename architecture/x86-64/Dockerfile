@@ -1,7 +1,7 @@
 ## Taking Image from Docker Hub for Programming language support
 FROM ghcr.io/rajanagori/nightingale_programming_image:linux-arm64
 
-LABEL maintainer="Raja Nagori" \
+LABEL maintainer="Raja Nagori " \
     email="raja.nagori@owasp.org"
     
 ARG DEBIAN_FRONTEND=noninteractive
