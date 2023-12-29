@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 debian:latest
+FROM --platform=linux/amd64 debian:latest
 
 COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
 

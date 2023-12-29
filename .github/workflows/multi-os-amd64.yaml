@@ -1,4 +1,4 @@
-name: Multi OS docker images - amd64
+name: Multi OS docker images - amd64 
 
 on:
   push:
