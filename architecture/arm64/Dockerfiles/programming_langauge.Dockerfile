@@ -1,11 +1,10 @@
 FROM --platform=linux/arm64/v8 debian:latest
 
-COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
-
-RUN apt-get update -y --fix-missing
+COPY configuration/nodejs/node-installation-script.sh /home/node-installation-script.sh
 
 # Installing essential packages
-RUN apt-get -f --no-install-recommends install -y \
+RUN apt-get update -y --fix-missing &&\
+    apt-get -f --no-install-recommends install -y \
     software-properties-common \
     ca-certificates \
     build-essential \
@@ -90,8 +89,8 @@ RUN wget -q https://go.dev/dl/go1.21.5.darwin-arm64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 
-RUN chmod +x /temp/node-installation-script.sh &&\
-    /temp/node-installation-script.sh
+RUN chmod +x /home/node-installation-script.sh &&\
+   bash /home/node-installation-script.sh
     
 # Cleanup
 RUN rm -rf /home/* && \
