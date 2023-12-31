@@ -10,32 +10,35 @@ on:
     paths:
       - ".github/workflows/docker-image-list copy.yaml"
 
-env:
-  DOCKER_REGISTRY: ghcr.io
-  IMAGE_NAMES: |
-    nightingale_web_vapt_image
-    nightingale_wordlist_image
-    nightingale_network_vapt_image
-    nightingale_forensic_and_red_teaming
-    nightingale_osint_tools_image
-    nightingale_mobile_vapt_image
-    nightingale
-    nightingale_programming_image
-
 jobs:
   delete-images:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      
+
     - name: Delete Docker Images
       uses: actions/delete-package-versions@v4
       with:
         package-name: ${{ matrix.image-name }}
         package-type: 'container'
-        min-versions-to-keep: 3  # Adjust this value as needed
-        delete-only-untagged-versions: 'true'
+        min-versions-to-keep: 3
+        delete-only-untagged-versions: true
+        num-old-versions-to-delete: 1
+        ignore-versions: '^$'
+        delete-only-pre-release-versions: false
+        token: ${{secrets.TOKEN}}
 
       env:
+        DOCKER_REGISTRY: ghcr.io
+        IMAGE_NAMES: |
+          nightingale_web_vapt_image
+          nightingale_wordlist_image
+          nightingale_network_vapt_image
+          nightingale_forensic_and_red_teaming
+          nightingale_osint_tools_image
+          nightingale_mobile_vapt_image
+          nightingale
+          nightingale_programming_image
+
         GITHUB_TOKEN: ${{secrets.TOKEN}}
