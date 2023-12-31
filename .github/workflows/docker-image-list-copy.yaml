@@ -52,7 +52,7 @@ jobs:
       uses: snok/container-retention-policy@v2
       with:
         image-names: ${{ matrix.image-name }}
-        cut-off: One week ago
+        cut-off: ${{ steps.dateparser.outputs.cut_off }}
         keep-at-least: 3
         filter-tags: "development, linux_amd64_development, darwin_x86-64_development, darwin_amd64_development"
         account-type: personal
