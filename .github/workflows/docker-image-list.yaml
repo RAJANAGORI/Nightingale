@@ -24,9 +24,9 @@ jobs:
       run: |
         echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
     
-    # - name: List Docker Images
-    #   run: |
-    #     docker images
+    - name: List Docker Images
+      run: |
+        docker images
 
     - name: Delete old images
       run: |
@@ -37,7 +37,7 @@ jobs:
         cat /tmp/response.json | jq -r '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == "development" or .name == "linux_amd64_development" or .name == "darwin_x86-64_development" or .name == "darwin_amd64_development")) | .[].name' > /tmp/tags.txt
 
        # Sort the tags by published date in descending order
-        SORTED_TAGS=($(cat /tmp/tags.txt | xargs -n1 cat /tmp/response.json | jq -r --arg tag "$1" '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == $tag)) | .[0].publishedAt + " " + .[0].name' | sort -r -k1 | cut -d ' ' -f2))
+        SORTED_TAGS=($(cat /tmp/tags.txt | xargs -n1 cat /tmp/response.json | jq -r --arg tag "${{ matrix.image-name }}" '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == $tag)) | .[0].publishedAt + " " + .[0].name' | sort -r -k1 | cut -d ' ' -f2))
 
         # Keep the latest 3 tags
         TAGS_TO_KEEP=("${SORTED_TAGS[@]:0:3}")
