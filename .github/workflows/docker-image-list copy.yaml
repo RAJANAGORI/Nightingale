@@ -4,11 +4,11 @@ on:
   push:
     branches: [development]
     paths:
-      - ".github/workflows/docker-image-list copy.yaml"
+      - ".github/workflows/docker-image-list copy"
   pull_request:
     branches: [development]
     paths:
-      - ".github/workflows/docker-image-list copy.yaml"
+      - ".github/workflows/docker-image-list copy"
 
 jobs:
   delete-images:
@@ -40,5 +40,4 @@ jobs:
           nightingale_mobile_vapt_image
           nightingale
           nightingale_programming_image
-
         GITHUB_TOKEN: ${{secrets.TOKEN}}
