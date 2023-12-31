@@ -54,10 +54,8 @@ jobs:
 
     - name: Run Python code
       run: |
-        import dateparser
-        cut_off = dateparser.parse ('One week ago', settings={'TIMEZONE': 'UTC'})
-        print(f"::set-env name=CUT_OFF::{cut_off}")
-      shell: python
+        cut_off=$(date -u -d 'One week ago' '+%Y-%m-%dT%H:%M:%SZ')
+        echo "CUT_OFF=$cut_off" >> $GITHUB_ENV
 
     - name: Delete old images
       uses: snok/container-retention-policy@v2
@@ -65,6 +63,6 @@ jobs:
         image-names: ${{ matrix.image-name }}
         cut-off: ${{ env.CUT_OFF }}
         keep-at-least: 3
-        filter-tags: "stable, linux-amd64, linux-arm64, unstable, development"
+        filter-tags: "linux_amd64_development, darwin_x86-64_development, darwin_amd64_development, development"
         account-type: personal
         token: ${{secrets.TOKEN}}
