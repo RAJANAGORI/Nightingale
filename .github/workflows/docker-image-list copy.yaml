@@ -1,4 +1,4 @@
-name: Docker Image Delete
+name: Docker Image Delete 
 
 on:
   push:
