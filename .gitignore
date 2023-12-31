@@ -10,9 +10,13 @@ testing.Dockerfile
 configuration/postgres
 requirements.txt
 data/
-devsecops.docker-compose.yml
+devsecops.docker-compose.text
 docker-compose copy.yaml
 raja.docker-compose.yaml
+docker-compose.text
 review copy.py
 review.py
 shells/ttyd.sh
+export.text
+requirements.text
+
