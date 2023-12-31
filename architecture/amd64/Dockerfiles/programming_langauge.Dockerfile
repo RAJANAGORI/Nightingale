@@ -1,31 +1,15 @@
-FROM --platform=linux/amd64 debian:latest
+# Stage 1: Build Python 2 dependencies
+FROM --platform=linux/amd64 debian:buster-slim as python2-builder
 
 COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
 
 RUN apt-get update -y --fix-missing
 
-# Installing essential packages
+# Installing essential packages for Python 2
 RUN apt-get -f --no-install-recommends install -y \
     software-properties-common \
     ca-certificates \
     build-essential \
-    wget \
-    curl \
-    git \
-    vim \
-    nano \
-    make \
-    cmake \
-    ruby \
-    ruby-bundler \
-    ruby-dev \
-    ruby-full \
-    ftp \
-    bundler \
-    autoconf \
-    automake \
-    dialog apt-utils \
-    libantlr3-runtime-java \
     libcurl4-openssl-dev \
     libexpat1-dev \
     libguava-java \
@@ -58,50 +42,53 @@ RUN apt-get -f --no-install-recommends install -y \
     libncurses5-dev \
     libncursesw5-dev \
     xz-utils \
-    tk-dev 
+    tk-dev
 
-RUN \
-    wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz &&\
-    tar -xzf Python-3.10.12.tgz &&\
-    cd Python-3.10.12 &&\
-    ./configure --enable-optimizations &&\
-    make &&\
-    make install
-    
-RUN \
+# Stage 2: Build Python 3 dependencies
+FROM python:3.10.12-slim as python3-builder
+
+COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
+
+# Install essential build tools for Python 3
+RUN apt-get update -y --fix-missing && \
     apt-get -f --no-install-recommends install -y \
-    python3-full \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    python3-openssl \
-    python3-distutils
+    build-essential
 
-# Installing Python
-RUN python3 -m pip install --upgrade pip --break-system-packages
-RUN pip install setuptools==58.2.0
+# Stage 3: Build Ruby dependencies
+FROM ruby:3.0.3-slim as ruby-builder
 
-# Installing Nokogiri for Ruby
+# Install Nokogiri for Ruby
 RUN gem install nokogiri
 
-# Install go and node
+# Stage 4: Build Go dependencies
+FROM golang:1.17.2-alpine as go-builder
+
 WORKDIR /home
-RUN wget -q https://go.dev/dl/go1.21.5.linux-amd64.tar.gz -O go.tar.gz && \
-    tar -C /usr/local -xzf go.tar.gz && \
-    rm go.tar.gz
 
-RUN chmod +x /temp/node-installation-script.sh &&\
-    /temp/node-installation-script.sh
-    
-# Cleanup
-RUN rm -rf /home/* && \
-    apt-get -y autoremove && \
-    apt-get -y clean && \
-    rm -rf /tmp/* && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -rf /var/cache/apt/archives/*
+# Install additional dependencies for Go
+RUN apk add --no-cache wget libssl-dev
 
-# Environment variables
+# Set environment variable to disable cgo
+ENV CGO_ENABLED=0
+
+# Stage 5: Final image
+FROM debian:buster-slim
+
+# Copy only the necessary files and directories from the Python 2 image
+COPY --from=python2-builder /usr/local/ /usr/local/
+
+# Copy only the necessary files and directories from the Python 3 image
+COPY --from=python3-builder /usr/local/ /usr/local/
+COPY --from=python3-builder /temp/ /temp/
+
+# Copy only the necessary files and directories from the Ruby image
+COPY --from=ruby-builder /usr/local/ /usr/local/
+
+# Copy only the necessary files and directories from the Go image
+COPY --from=go-builder /usr/local/ /usr/local/
+COPY --from=go-builder /home/ /home/
+
+# Set environment variables for Go
 ENV GOROOT "/usr/local/go"
-ENV GOPATH "/root/go"
+ENV GOPATH "/home/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"

@@ -1,0 +1,384 @@
+++++++++compose+++++++++++
+version: '3'
+services:
+  openldap:
+    command: --loglevel debug
+    image: osixia/openldap:latest
+    container_name: openldap
+    restart: unless-stopped
+    hostname: openldap
+    ports: 
+      - "0.0.0.0:389:389"
+      - "0.0.0.0:636:636"
+    environment: 
+      - LDAP_ORGANISATION=local
+      - LDAP_DOMAIN=local.com
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=admin_pass
+      - LDAP_CONFIG_PASSWORD=config_pass
+      - LDAP_BASE_DN=dc=local,dc=com
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=user-ro
+      - LDAP_READONLY_USER_PASSWORD=ro_pass
+    networks:
+      - openldap
+  
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    restart: unless-stopped
+    hostname: phpldapadmin
+    ports: 
+      - "0.0.0.0:5000:80"
+    environment: 
+      - PHPLDAPADMIN_LDAP_HOSTS=openldap
+      - PHPLDAPADMIN_HTTPS=false
+    depends_on:
+      - openldap
+    networks:
+      - openldap
+
+  nightingale:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nightingale
+    restart: unless-stopped
+    # environment:
+    #   - LDAP_URI=ldap://openldap:389
+    #   - LDAP_BASE_DN=dc=local,dc=com
+    #   - LDAP_BIND_DN=cn=admin,dc=local,dc=com
+    #   - LDAP_BIND_PASSWORD=admin_pass
+    ports:
+      - "0.0.0.0:8080:7681"
+      - "0.0.0.0:8081:8081"
+    command: ttyd -p 7681 zsh
+    depends_on:
+      - openldap
+    networks:
+      - openldap
+
+  db:
+    image: postgres:13
+    hostname: postgresql
+    ports:
+      - "0.0.0.0:5432:5432"
+    container_name: postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: metasploit
+      POSTGRES_PASSWORD: metasploit
+      POSTGRES_DB: metasploit
+    volumes:
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+
+volumes:
+  postgresql:
+  postgresql_data:
+
+networks:
+  openldap:
+    driver: bridge
+++++++++++++++++++++++++++
+
+++++++++Dockerfile++++++++
+## Taking Image from Docker Hub for Programming language support
+FROM rajanagori/nightingale_programming_image:v1
+
+LABEL maintainer="Raja Nagori" \
+    email="raja.nagori@owasp.org"
+    
+ARG DEBIAN_FRONTEND=noninteractive
+
+# USER root
+
+RUN \
+    # cat /tmp/source >> /etc/apt/sources.list &&\
+#### Installing os tools and other dependencies.
+    apt-get -y update --fix-missing && \
+    apt-get -f --no-install-recommends install -y \
+    #### Operating system dependecies start
+    software-properties-common \
+    ca-certificates \
+    build-essential \
+    ### Operating System Tools start here 
+    locate \
+    snapd \
+    tree \
+    zsh \
+    figlet \
+    ### Compression Techniques starts
+    unzip \
+    p7zip-full \
+    ftp \
+    ### Dev Essentials start here
+    ssh \
+    git \
+    curl \
+    wget \
+    file \
+    ### Web Vapt tools using apt-get
+    dirb \
+    ## INstalling Network Tools using apt-get
+    nmap \
+    htop \
+    traceroute \
+    telnet \
+    net-tools \
+    iputils-ping \
+    tcpdump \
+    openvpn \
+    whois \
+    host \
+    tor \
+    john \
+    cewl \
+    hydra \
+    medusa \
+    figlet \
+    dnsutils \
+    # Some android architecture dependency
+    android-framework-res \
+    # installing Apktool and adb
+    adb \
+    apktool \
+    ## Installing tools using apt-get for forensics and objection install
+    exiftool \
+    steghide \
+    binwalk \
+    foremost \
+    dos2unix \
+    # postgresql \
+    # postgresql-client \
+    # postgresql-contrib \
+    libnss-ldap \
+    libpam-ldap \
+    ldap-utils \
+    nscd
+
+# COPY \
+#     configuration/ldap/libnss-ldap.conf /etc/libnss-ldap.conf
+## Banner shell and run shell file ##
+COPY \
+    shells/banner.sh /tmp/banner.sh
+
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
+    -t https://github.com/denysdovhan/spaceship-prompt \
+    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="true"' \
+    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="true"' \
+    -p git \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-completions
+
+RUN \
+    cat /tmp/banner.sh >> ${HOME}/.bashrc &&\
+    cat /tmp/banner.sh >> ${HOME}/.zshrc &&\
+    dos2unix ${HOME}/.bashrc &&\
+    dos2unix ${HOME}/.zshrc
+
+COPY \
+    shells/node-installation-script.sh /temp/node-installation-script.sh
+RUN \
+    dos2unix /temp/node-installation-script.sh && chmod +x /temp/node-installation-script.sh &&\
+### Creating Directories
+    cd /home &&\
+    mkdir -p tools_web_vapt tools_osint tools_mobile_vapt tools_network_vapt tools_red_teaming tools_forensics wordlist binaries .gf .shells
+
+## Environment for Directories
+ENV TOOLS_WEB_VAPT=/home/tools_web_vapt
+ENV BINARIES=/home/binaries
+ENV GREP_PATTERNS=/home/.gf
+ENV TOOLS_OSINT=/home/tools_osint
+ENV TOOLS_MOBILE_VAPT=/home/tools_mobile_vapt
+ENV TOOLS_NETWORK_VAPT=/home/tools_network_vapt
+ENV TOOLS_RED_TEAMING=/home/tools_red_teaming
+ENV TOOLS_FORENSICS=/home/tools_forensics
+ENV WORDLIST=/home/wordlist
+ENV METASPLOIT_CONFIG=/home/metasploit_config
+ENV METASPLOIT_TOOL=/home/metasploit
+ENV SHELLS=/home/.shells
+
+COPY \
+    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+RUN true
+COPY \
+    --from=rajanagori/nightingale_web_vapt_image:v1.0 ${GREP_PATTERNS} ${GREP_PATTERNS}
+RUN true
+COPY \
+    --from=rajanagori/nightingale_osint_image:v1.1 ${TOOLS_OSINT} ${TOOLS_OSINT}
+RUN true
+COPY \
+    --from=rajanagori/nightingale_mobile_vapt_image:v1.0 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+RUN true
+COPY \
+    --from=rajanagori/nightingale_network_vapt_image:v1.0 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+RUN true
+COPY \
+    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
+RUN true
+COPY \
+    --from=rajanagori/nightingale_forensic_and_red_teaming:v1.0 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+RUN true
+COPY \
+    --from=rajanagori/nightingale_wordlist_image:v1.0 ${WORDLIST} ${WORDLIST}
+RUN true
+
+COPY \
+    configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
+
+RUN \
+    dos2unix ${SHELLS}/python-install-modules.sh && chmod +x ${SHELLS}/python-install-modules.sh
+
+# RUN ${SHELLS}/python-install-modules.sh &&\
+#     /temp/node-installation-script.sh
+
+## All binaries will store here
+WORKDIR ${BINARIES}
+## INstallation stuff
+COPY \
+    binary/ ${BINARIES}
+    
+RUN \
+    chmod +x ${BINARIES}/* && \
+    dos2unix * &&\
+    mv ${BINARIES}/* /usr/local/bin/ && \
+    wget -L https://github.com/RAJANAGORI/Nightingale/blob/main/binary/ttyd -O ttyd && \
+    chmod +x ttyd
+
+# ## Installing metasploit
+# WORKDIR ${METASPLOIT_TOOL}
+# ### Installing Metasploit-framework start here
+# ## PosgreSQL DB
+# COPY configuration/msf-configuration/scripts/db.sql .
+
+# ## Startup script
+# COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
+# ## Installation of msf framework
+# RUN \
+#     curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+#     chmod 755 msfinstall && \
+#     ./msfinstall 
+# ## DB config
+# COPY ./configuration/msf-configuration/conf/database.yml /home/msfuser/.msf4/database.yml
+
+# RUN \
+#     groupadd -r nightingale &&\
+#     useradd -r -g nightingale nightingal &&\
+#     echo "nightingale:nightingale" | chpasswd &&\
+#     chsh -s /usr/sbin/nologin root
+
+# RUN \
+#     groupadd -r nightingale &&\
+#     useradd -g nightingale -d /home/nightingale nightingale &&\
+#     usermod -aG sudo nightingale &&\
+#     echo "nightingale:nightingale" | chpasswd &&\
+#     chsh -s /usr/sbin/nologin root &&\
+#     exit
+
+# CMD "./configuration/msf-configuration/scripts/init.sh" && "dpkg-reconfigure libnss-ldap"
+CMD ["dpkg-reconfigure libnss-ldap" && "dpkg-reconfigure libpam-ldap"]
+
+COPY configuration/ldap/ldap.sh /home/.ldap-files/ldap.sh
+# COPY configuration/ldap/libnss-ldap.conf /home/.ldap-files/libnss-ldap.conf
+
+RUN \
+    chmod +x /home/.ldap-files/ldap.sh &&\
+    dos2unix /home/.ldap-files/ldap.sh &&\
+    /home/.ldap-files/ldap.sh 
+    # cat /home/.ldap-files/libnss-ldap.conf | tee temp > /dev/null && mv temp /etc/libnss-ldap.conf
+
+# RUN \
+# # Download the Nginx source code
+#     mkdir /tmp/nginx-source && \
+#     cd /tmp/nginx-source && \
+#     curl -LO https://nginx.org/download/nginx-1.24.0.tar.gz && \
+#     tar -xzvf nginx-1.24.0.tar.gz && \
+#     cd nginx-1.24.0 &&\
+# # Configure Nginx with the ngx_http_auth_ldap_module
+#     cd /tmp/nginx-source/nginx-1.24.0 && \
+#     ./configure \
+#         --with-http_ssl_module \
+#         --add-module=./configuration/nginx/module.c &&\
+# # Build and install Nginx with the module
+#     make install &&\
+# # Cleanup
+#     rm -rf /tmp/nginx-source
+# # Copy your Nginx configuration files
+# COPY ./configuration/nginx/nginx.conf /etc/nginx/nginx.conf
+
+# RUN \
+#     dos2unix ./configuration/nginx/start-nginx.sh &&\
+#     chmod +x ./configuration/nginx/start-nginx.sh &&\
+#     ./configuration/nginx/start-nginx.sh
+
+### Working Directory of tools ends here
+WORKDIR /home/
+
+# Expose the service ports
+EXPOSE 5432
+EXPOSE 8080
+EXPOSE 8081
+EXPOSE 7681
+EXPOSE 8083
+
+RUN \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/*
+++++++++++++++++++++++++++
+
+++++++++++Ldap.sh+++++++++
+# ldap_base_dn="$(LDAP_BASE_DN)"
+# ldap_uri="$(LDAP_URI)"
+# ldap_bind_dn="$(LDAP_BIND_DN)"
+# ldap_bind_password="$(LDAP_BIND_PASSWORD)"
+LDAP_URI=ldap://openldap:389
+LDAP_BASE_DN=dc=local,dc=com
+LDAP_BIND_DN=cn=admin,dc=local,dc=com
+LDAP_BIND_PASSWORD=admin_pass
+
+# Update nsswitch.conf to use LDAP for passwd, group, shadow, hosts, and netgroup
+sed -i 's/^passwd:\s*files$/passwd:         files ldap compat/' /etc/nsswitch.conf
+sed -i 's/^group:\s*files$/group:         files ldap compat/' /etc/nsswitch.conf
+sed -i 's/^shadow:\s*files$/shadow:         files ldap compat/' /etc/nsswitch.conf
+sed -i 's/^netgroup:\s*nis$/netgroup:       nis/' /etc/nsswitch.conf
+
+# Update libnss-ldap.conf to use the correct LDAP server and base DN, and bind with admin credentials
+# sed -i 's/base dc=example,dc=net/base dc=local,dc=com/' /etc/libnss-ldap.conf
+# sed -i 's/uri ldapi:\/\/\//uri ldap:\/\/openldap:389/' /etc/libnss-ldap.conf
+# sed -i 's/\#binddn cn=proxyuser,dc=padl,dc=com/\binddn cn=admin,dc=local,dc=com/' /etc/libnss-ldap.conf
+# sed -i 's/\#bindpw secret/\bindpw admin_pass/' /etc/libnss-ldap.conf
+# sed -i 's/\#base dc=example,dc=net/\base dc=local,dc=com/' /etc/libnss-ldap.conf
+Update libnss-ldap.conf to use the correct LDAP server and base DN, and bind with admin credentials
+sed -i "s/base dc=example,dc=net/base ${LDAP_BASE_DN}/" /etc/libnss-ldap.conf
+sed -i "s#uri ldapi:///#uri ${LDAP_URI}#" /etc/libnss-ldap.conf
+sed -i "s/\#binddn cn=proxyuser,dc=padl,dc=com/binddn ${LDAP_BIND_DN}/" /etc/libnss-ldap.conf
+sed -i "s/\#bindpw secret/bindpw ${LDAP_BIND_PASSWORD}/" /etc/libnss-ldap.conf
+sed -i "s/\#base dc=example,dc=net/base ${LDAP_BASE_DN}/" /etc/libnss-ldap.conf
+
+# Update libnss-ldap.conf to use the correct LDAP server and base DN, and bind with admin credentials
+# sed -i "s/base dc=example,dc=net/base $ldap_base_dn/" /etc/libnss-ldap.conf
+# sed -i "s/uri ldapi:\/\/\//uri $ldap_uri/" /etc/libnss-ldap.conf
+# sed -i "s/\#binddn cn=proxyuser,dc=padl,dc=com/binddn $ldap_bind_dn/" /etc/libnss-ldap.conf
+# sed -i "s/\#bindpw secret/bindpw $ldap_bind_password/" /etc/libnss-ldap.conf
+# sed -i "s/\#base dc=example,dc=net/base $ldap_base_dn/" /etc/libnss-ldap.conf
+
+
+# Update common-auth to use nullok_secure for pam_unix.so
+sed -i 's/^\(auth\s*required\s*pam_unix.so\)/#\1/' /etc/pam.d/common-auth
+sed -i 's/pam_unix\.so nullok$/pam_unix.so nullok_secure try_first_pass/' /etc/pam.d/common-auth
+sed -i '$a auth sufficient pam_ldap.so' /etc/pam.d/common-auth
+
+#The common-account file specifically is used to manage the user account information, such as password aging and lockout policies, and to configure the use of external authentication sources like OpenLDAP.
+sed -i '$a account sufficient pam_ldap.so' /etc/pam.d/common-account
+# Update common-password to use sha512 instead of yescrypt for password hashing
+sed -i 's/^\(password\s*requisite\s*pam_cracklib.so\)/#\1/' /etc/pam.d/common-password
+sed -i 's/^\(password\s*\[success=1\s*default=ignore\]\s*pam_unix.so\)/#\1/' /etc/pam.d/common-password
+sed -i '$ a\password sufficient pam_ldap.so' /etc/pam.d/common-password
+
+# Add pam_mkhomedir.so to common-session to automatically create home directories on login
+sed -i '$ a\session  required  pam_mkhomedir.so umask=0022 skel=/etc/skel' /etc/pam.d/common-session
+++++++++++++++++++++++++++
