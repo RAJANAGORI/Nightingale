@@ -27,7 +27,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image-name: ${{ fromJson(env.IMAGE_NAMES) }}
+        image-name: [
+          nightingale_web_vapt_image,
+          nightingale_wordlist_image,
+          nightingale_network_vapt_image,
+          nightingale_forensic_and_red_teaming,
+          nightingale_osint_tools_image,
+          nightingale_mobile_vapt_image,
+          nightingale,
+          nightingale_programming_image
+        ]
     steps:
     - name: Github Login
       env:
