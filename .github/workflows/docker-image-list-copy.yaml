@@ -48,12 +48,23 @@ jobs:
       run: |
         docker images
         
+    - name: Install dateparser
+      run: |
+        pip install dateparser
+
+    - name: Run Python code
+      run: |
+        import dateparser
+        cut_off = dateparser.parse ('One week ago', settings={'TIMEZONE': 'UTC'})
+        print(f"::set-env name=CUT_OFF::{cut_off}")
+      shell: python
+
     - name: Delete old images
       uses: snok/container-retention-policy@v2
       with:
         image-names: ${{ matrix.image-name }}
-        cut-off: ${{ steps.dateparser.outputs.cut_off }}
+        cut-off: ${{ env.CUT_OFF }}
         keep-at-least: 3
-        filter-tags: "development, linux_amd64_development, darwin_x86-64_development, darwin_amd64_development"
+        filter-tags: "stable, linux-amd64, linux-arm64, unstable, development"
         account-type: personal
         token: ${{secrets.TOKEN}}
