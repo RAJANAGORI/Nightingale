@@ -24,9 +24,9 @@ jobs:
       run: |
         echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
     
-    - name: List Docker Images
-      run: |
-        docker images
+    # - name: List Docker Images
+    #   run: |
+    #     docker images
 
     - name: Delete old images
       run: |
