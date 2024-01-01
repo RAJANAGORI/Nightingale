@@ -19,6 +19,7 @@ ENV TOOLS_FORENSICS=/home/tools_forensics/
 WORKDIR ${TOOLS_RED_TEAMING}
 
 RUN \
+    pip3 install --user pipx &&\
     python3 -m pipx install impacket &&\
     pipx ensurepath
 
