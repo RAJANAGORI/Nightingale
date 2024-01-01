@@ -69,7 +69,14 @@ RUN gem install nokogiri
 # Stage 5: Build Go dependencies
 FROM golang:1.17.2-alpine as go-builder
 
-# Stage 6: Final stage
+# Stage 6: Java stage
+FROM base as java
+
+# Download and install the OpenJDK 17 DEB package from the Oracle website
+RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb && \
+    dpkg -i jdk-17_linux-x64_bin.deb
+
+# Stage 7: Final stage
 FROM --platform=linux/amd64 debian:buster-slim as nightingale-programming-multi-stage
 
 COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
@@ -108,8 +115,6 @@ RUN apt-get update -y --fix-missing &&\
     libev-* \
     libev4 \
     libffi-dev \
-    openjdk-17-jre \
-    openjdk-17-jdk \
     libbz2-dev \
     libreadline-dev \
     llvm \
@@ -126,6 +131,9 @@ COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 # Copy only the necessary files and directories from the Go image
 COPY --from=go-builder /usr/local/ /usr/local/
 COPY --from=go-builder /home/ /home/
+# Copy only the necessary files and directories from the Java image
+COPY --from=java /usr/lib/jvm /usr/lib/jvm
+COPY --from=java /usr/bin/java /usr/bin/java
 
 # Set the environment variables for Python 2 and Python 3
 ENV PATH "/opt/venv2/bin:/opt/venv3/bin:$PATH"
@@ -136,3 +144,6 @@ ENV PYTHON3 "/usr/bin/python3"
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/home/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
+
+# Set environment variable for Java
+ENV JAVA_HOME "/usr/lib/jvm/java-17-openjdk-amd64"
