@@ -93,7 +93,7 @@ RUN apt-get update -y --fix-missing &&\
     build-essential \
     libcurl4-openssl-dev \
     libexpat1-dev \
-    libguava-java \
+    # libguava-java \
     libiconv-hook1 \
     libiconv-hook-dev \
     libjson-c-dev \
@@ -101,15 +101,15 @@ RUN apt-get update -y --fix-missing &&\
     libpcap-dev \
     libpq-dev \
     libruby \
-    libsmali-java \
+    # libsmali-java \
     libsqlite3-dev \
     libssl-dev \
-    libstringtemplate-java \
+    # libstringtemplate-java \
     libwebsockets-dev \
     libwww-perl \
-    libxmlunit-java \
-    libxpp3-java \
-    libyaml-snake-java \
+    # libxmlunit-java \
+    # libxpp3-java \
+    # libyaml-snake-java \
     libz-dev \
     linux-libc-dev \
     libev-* \
