@@ -26,7 +26,9 @@ RUN \
     python3-distutils
 
 # Create a virtual environment for Python 3
-RUN python3 -m venv /opt/venv3
+RUN \
+    python3 -m venv /opt/venv3 &&\
+    pip3 install --user pipx
 # Activate the virtual environment
 ENV PATH "/opt/venv3/bin:$PATH"
 
@@ -37,7 +39,6 @@ RUN pip install setuptools==58.2.0
 
 # Stage 4: Build Ruby dependencies
 FROM ruby:3.0.3-slim as ruby-builder
-
 # Install Nokogiri for Ruby
 RUN gem install nokogiri
 
