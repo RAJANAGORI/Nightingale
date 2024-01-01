@@ -108,7 +108,13 @@ RUN apt-get update -y --fix-missing &&\
     libncurses5-dev \
     libncursesw5-dev \
     xz-utils \
-    tk-dev
+    tk-dev \
+    python3-full \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    python3-openssl \
+    python3-distutils
 
 # Copy only the necessary files and directories from the Python 2 and Python 3 stages
 # COPY --from=python2 /opt/venv2 /opt/venv2
