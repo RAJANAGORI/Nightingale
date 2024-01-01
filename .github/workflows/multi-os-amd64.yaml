@@ -49,59 +49,59 @@ jobs:
       run: |
         docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=development --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux_amd64_development
     
-    # Push Docker images with the same timestamp-based tag
-    - name: Push nightingale_programming_image
-      run: |
-        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux_amd64_development"
+    # # Push Docker images with the same timestamp-based tag
+    # - name: Push nightingale_programming_image
+    #   run: |
+    #     docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux_amd64_development"
 
     - name: Build nightingale_forensic_and_red_teaming
       run: |
         docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:linux_amd64_development
     
-    - name: Push nightingale_forensic_and_red_teaming1
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:linux_amd64_development"
+    # - name: Push nightingale_forensic_and_red_teaming1
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:linux_amd64_development"
     
     - name: Build nightingale_web_vapt_image
       run: |
         docker buildx build --push --platform linux/amd64  . --file $DOCKERFILES_PATH/web_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:linux_amd64_development
     
-    - name: Push nightingale_web_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:linux_amd64_development"
+    # - name: Push nightingale_web_vapt_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:linux_amd64_development"
     
     - name: Build nightingale_network_vapt_image
       run: |
         docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:linux_amd64_development
     
-    - name: Push nightingale_network_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:linux_amd64_development"
+    # - name: Push nightingale_network_vapt_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:linux_amd64_development"
     
     - name: Build nightingale_osint_image
       run: |
         docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:linux_amd64_development
     
-    - name: Push nightingale_osint_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:linux_amd64_development"
+    # - name: Push nightingale_osint_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:linux_amd64_development"
     
     - name: Build nightingale_mobile_vapt_image
       run: |
         docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:linux_amd64_development
     
-    - name: Push nightingale_mobile_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:linux_amd64_development"
+    # - name: Push nightingale_mobile_vapt_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:linux_amd64_development"
     
     - name: Build nightingale_wordlist_image
       run: |
         docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:linux_amd64_development
     
-    - name: Push nightingale_wordlist_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:linux_amd64_development"
+    # - name: Push nightingale_wordlist_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:linux_amd64_development"
     
     - name: Build nightingale_linux_amd64_development_image
       run: |
         docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILE/Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale:linux_amd64_development
 
-    - name: Push nightingale_linux_amd64_development_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale:linux_amd64_development"
+    # - name: Push nightingale_linux_amd64_development_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale:linux_amd64_development"
 
     - name: Clean Docker build cache - amd64
       run: |
