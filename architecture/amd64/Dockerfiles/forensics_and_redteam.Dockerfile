@@ -21,8 +21,7 @@ WORKDIR ${TOOLS_RED_TEAMING}
 
 RUN \
     python3 -m pipx install impacket &&\
-    pipx ensurepath &&\
-    eval "$(register-python-argcomplete pipx)"
+    pipx ensurepath
 
 RUN \
     # Cleaning Unwanted libraries 
