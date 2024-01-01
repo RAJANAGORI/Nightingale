@@ -114,7 +114,8 @@ RUN apt-get update -y --fix-missing &&\
     python3-venv \
     python3-dev \
     python3-openssl \
-    python3-distutils
+    python3-distutils \
+    pipx
 
 # Copy only the necessary files and directories from the Python 2 and Python 3 stages
 # COPY --from=python2 /opt/venv2 /opt/venv2

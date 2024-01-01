@@ -45,9 +45,9 @@ jobs:
         docker buildx prune -f
 
     # Build Docker images
-    - name: Build nightingale_programming_image
-      run: |
-        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=development --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux_amd64_development
+    # - name: Build nightingale_programming_image
+    #   run: |
+    #     docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=development --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux_amd64_development
     
     # # Push Docker images with the same timestamp-based tag
     # - name: Push nightingale_programming_image
