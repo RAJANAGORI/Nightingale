@@ -54,9 +54,9 @@ jobs:
     #   run: |
     #     docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:linux_amd64_development"
 
-    - name: Build nightingale_forensic_and_red_teaming
-      run: |
-        docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:linux_amd64_development
+    # - name: Build nightingale_forensic_and_red_teaming
+    #   run: |
+    #     docker buildx build --push --platform linux/amd64 . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:linux_amd64_development
     
     # - name: Push nightingale_forensic_and_red_teaming1
     #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:linux_amd64_development"

@@ -9,7 +9,8 @@ RUN \
     cmake \
     bundler \
     unzip \
-    whatweb && \
+    whatweb \
+    pipx && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_web_vapt .gf 
@@ -55,7 +56,7 @@ RUN \
 RUN \
 ## Installing HawkScan
     cd HawkScan && \
-    pip3 install -r requirements.txt && \
+    pip3 install -r requirements.txt --break-system-packages && \
     cd ..
 
 RUN \
