@@ -32,19 +32,19 @@ RUN \
 
 RUN \
     cd recon-ng && \
-    pip3 install -r REQUIREMENTS && --break-system-packages \
+    pip3 install -r REQUIREMENTS --break-system-packages &&\
     cd ..
 
 RUN \
 ## INstall Spiderfoot
     cd spiderfoot && \
-    pip3 install -r requirements.txt && --break-system-packages\
+    pip3 install -r requirements.txt  --break-system-packages &&\
     cd ..
-    
+
 RUN \
     cd metagoofil &&\
     python3 -m venv venv &&\
-    pip3 install -r requirements.txt && --break-system-packages\
+    pip3 install -r requirements.txt  --break-system-packages &&\
     cd ..
 
 RUN \
