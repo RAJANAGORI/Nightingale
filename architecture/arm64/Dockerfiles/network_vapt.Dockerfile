@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:linux-arm64
+FROM ghcr.io/rajanagori/nightingale_programming_image:darwin_arm64_development
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
@@ -8,7 +8,6 @@ RUN \
     make \
     cmake \
     bundler && \
-
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_network_vapt

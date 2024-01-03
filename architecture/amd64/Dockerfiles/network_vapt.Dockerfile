@@ -8,7 +8,6 @@ RUN \
     make \
     cmake \
     bundler && \
-
 ### Creating Directories
     cd /home &&\
     mkdir -p tools_network_vapt

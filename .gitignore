@@ -20,5 +20,7 @@ shells/ttyd.sh
 export.text
 requirements.text
 architecture/amd64/Dockerfiles/programming_langauge copy.text
+architecture/x86-64.bak
+.github/workflows/multi-os-mac_x86-64.txt
 
 
