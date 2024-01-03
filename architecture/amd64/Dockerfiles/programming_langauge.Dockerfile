@@ -16,7 +16,7 @@ FROM python:2.7-slim as python2
 FROM python:3.10.12-slim as python3
 RUN \
     apt-get update && \
-# Install Python 3 and related packages from the Debian repositories
+# Install Python 3 and related packages from the Debian repositories v
     apt-get -f --no-install-recommends install -y \
     python3-full \
     python3-pip \
