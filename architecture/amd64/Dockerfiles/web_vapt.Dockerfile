@@ -73,9 +73,7 @@ RUN \
 
 RUN \
 ##  INstalling dirsearch
-    # cd dirsearch && \
-    pip3 install dirsearch
-    # cd ..
+    pip3 install dirsearch --break-system-packages
 
 RUN \
 ## installin jwt_tool
