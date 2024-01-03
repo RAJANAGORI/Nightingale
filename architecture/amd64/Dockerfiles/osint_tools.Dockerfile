@@ -32,23 +32,24 @@ RUN \
 
 RUN \
     cd recon-ng && \
-    pip3 install -r REQUIREMENTS && \
+    pip3 install -r REQUIREMENTS && --break-system-packages \
     cd ..
 
 RUN \
 ## INstall Spiderfoot
     cd spiderfoot && \
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt && --break-system-packages\
     cd ..
+    
 RUN \
     cd metagoofil &&\
     python3 -m venv venv &&\
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt && --break-system-packages\
     cd ..
 
 RUN \
     cd theHarvester &&\
-    python3 -m pip install -r requirements/base.txt
+    python3 -m pip install -r requirements/base.txt --break-system-packages
 
 RUN \
     # Cleaning Unwanted libraries 
