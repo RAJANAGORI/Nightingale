@@ -1,59 +1,71 @@
 name: Docker Image delete
 
-on:
-  push:
-    branches: [development]
-    paths:
-      - ".github/workflows/docker-image-list.yaml"
-  pull_request:
-    branches: [development]
-    paths:
-      - ".github/workflows/docker-image-list.yaml"
-
-# env:
-#   DOCKER_REGISTRY: ghcr.io
-#   IMAGE_NAMES: "nightingale_web_vapt_image nightingale_wordlist_image nightingale_network_vapt_image nightingale_forensic_and_red_teaming nightingale_osint_tools_image nightingale_mobile_vapt_image nightingale nightingale_programming_image"
-
 env:
   DOCKER_REGISTRY: ghcr.io
-  IMAGE_NAMES: ["nightingale_web_vapt_image", "nightingale_wordlist_image", "nightingale_network_vapt_image", "nightingale_forensic_and_red_teaming", "nightingale_osint_tools_image", "nightingale_mobile_vapt_image", "nightingale", "nightingale_programming_image"]
+  IMAGE_NAMES: |
+    nightingale_web_vapt_image
+    nightingale_wordlist_image
+    nightingale_network_vapt_image
+    nightingale_forensic_and_red_teaming
+    nightingale_osint_tools_image
+    nightingale_mobile_vapt_image
+    nightingale
+    nightingale_programming_image
 
 jobs:
   amd64:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image-name: ${{ join(env.IMAGE_NAMES, ',') }}
+        image-name: ${{ fromJson(env.IMAGE_NAMES) }}
     steps:
     - uses: actions/checkout@v3
-    - name: Github Login
-      env:
-        GITHUB_TOKEN: ${{secrets.TOKEN}}
+    - name: GitHub Login
       run: |
-        echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
+        gh auth login --with-token < ${{secrets.TOKEN}}
     
-    - name: List Docker Images
-      run: |
-        docker images
-
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ matrix.image-name }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/${{ matrix.image-name }}:${{ github.sha }},${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/${{ matrix.image-name }}:${{ github.ref }},${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/${{ matrix.image-name }}:latest
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
+    
     - name: Delete old images
       run: |
         # Get the image tags from the GitHub package registry
-        curl -X POST -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: bearer ${{secrets.TOKEN}}" -d '{"query":"query {repository (owner:\"${{github.repository_owner}}\", name:\"${{github.repository}}\") {packages (names:[\"${{matrix.image-name}}\"], last:1) {nodes {versions (last:100) {nodes {id, name, publishedAt}}}}}}"}' -o /tmp/response.json --url https://api.github.com/graphql
-
+        RESPONSE=$(gh api graphql -f query="query {repository (owner:\"${{github.repository_owner}}\", name:\"${{github.repository}}\") {packages (names:[\"${{matrix.image-name}}\"], last:1) {nodes {versions (last:100) {nodes {id, name, publishedAt}}}}}}")
+        
         # Filter the tags by multiple tags
-        cat /tmp/response.json | jq -r '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == "development" or .name == "linux_amd64_development" or .name == "darwin_x86-64_development" or .name == "darwin_amd64_development")) | .[].name' > /tmp/tags.txt
-
+        TAGS=$(echo $RESPONSE | jq -r '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == "development" or .name == "linux_amd64_development" or .name == "darwin_x86-64_development" or .name == "darwin_amd64_development")) | .[].name')
+        
         # Sort the tags by published date in descending order
-        SORTED_TAGS=($(cat /tmp/tags.txt | xargs -n1 cat /tmp/response.json | jq -r --arg tag "${{ matrix.image-name }}" '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == $tag)) | .[0].publishedAt + " " + .[0].name' | sort -r -k1 | cut -d ' ' -f2))
-
+        SORTED_TAGS=($(echo $TAGS | xargs -n1 echo $RESPONSE | jq -r --arg tag "${{ matrix.image-name }}" '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == $tag)) | .[0].publishedAt + " " + .[0].name' | sort -r -k1 | cut -d ' ' -f2))
+        
         # Keep the latest 3 tags
         TAGS_TO_KEEP=("${SORTED_TAGS[@]:0:3}")
-
+        
         # Remove all other tags
         for tag in "${SORTED_TAGS[@]}"; do
           if [[ ! " ${TAGS_TO_KEEP[@]} " =~ " ${tag} " ]]; then
-            PACKAGE_VERSION_ID=$(cat /tmp/response.json | jq -r --arg tag "$tag" '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == $tag)) | .[0].id')
-            curl -X DELETE -s -H "Accept: application/vnd.github.package-deletes-preview+json" -H "Authorization: bearer ${{secrets.TOKEN}}" --url https://api.github.com/packages/${{github.repository_owner}}/${{github.repository}}/versions/$PACKAGE_VERSION_ID
+            PACKAGE_VERSION_ID=$(echo $RESPONSE | jq -r --arg tag "$tag" '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == $tag)) | .[0].id')
+            gh api -X DELETE -H "Accept: application/vnd.github.package-deletes-preview+json" /packages/${{github.repository_owner}}/${{github.repository}}/versions/$PACKAGE_VERSION_ID
           fi
         done
+    
+    - name: Docker Garbage Collection
+      uses: docker/gc@v0
