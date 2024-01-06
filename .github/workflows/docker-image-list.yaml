@@ -12,8 +12,8 @@ jobs:
         uses: actions-hub/docker/login@master
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{secrets.USERNAME}}
+          password: ${{secrets.TOKEN}}
       
       - name: List images in GitHub Packages
         uses: actions-hub/docker@master
