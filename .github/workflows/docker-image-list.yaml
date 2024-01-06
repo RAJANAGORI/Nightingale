@@ -9,19 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Login to GitHub Packages
-        uses: docker/login-action@v1
+        uses: actions-hub/docker/login@master
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: List images in GitHub Packages
-        uses: docker/cli@v2
+        uses: actions-hub/docker@master
         with:
           arguments: image ls --filter=reference=ghcr.io/${{ github.repository }}/*
 
       - name: Upload output as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions-hub/docker@master
         with:
           name: image-list
           path: /tmp/docker-image-list.txt
