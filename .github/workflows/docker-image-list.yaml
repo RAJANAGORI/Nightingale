@@ -16,7 +16,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: List images in GitHub Packages
-        uses: docker/cli@v1
+        uses: docker/cli@v2
         with:
           arguments: image ls --filter=reference=ghcr.io/${{ github.repository }}/*
 
