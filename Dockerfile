@@ -9,6 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 USER root
 
 RUN \
+    dpkg --configure -a &&\
 #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
     apt-get -f --no-install-recommends install -y \
@@ -64,7 +65,8 @@ RUN \
     dos2unix \
     postgresql \
     postgresql-client \
-    postgresql-contrib
+    postgresql-contrib &&\
+    dpkg --configure -a
 
 ## Banner shell and run shell file ##
 COPY \
@@ -185,7 +187,8 @@ RUN \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* &&\
+    mv /var/lib/dpkg/info/package_name.* /tmp
 
 ### Working Directory of tools ends here
 WORKDIR /home
