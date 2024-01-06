@@ -1,5 +1,15 @@
 name: Docker Image delete
 
+on:
+  push:
+    branches: [development]
+    paths:
+      - ".github/workflows/docker-image-list.yaml"
+  pull_request:
+    branches: [development]
+    paths:
+      - ".github/workflows/docker-image-list.yaml"
+
 env:
   DOCKER_REGISTRY: ghcr.io
   IMAGE_NAMES: |
