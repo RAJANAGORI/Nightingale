@@ -12,22 +12,14 @@ on:
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  IMAGE_NAMES: |
-    nightingale_web_vapt_image
-    nightingale_wordlist_image
-    nightingale_network_vapt_image
-    nightingale_forensic_and_red_teaming
-    nightingale_osint_tools_image
-    nightingale_mobile_vapt_image
-    nightingale
-    nightingale_programming_image
+  IMAGE_NAMES: "nightingale_web_vapt_image nightingale_wordlist_image nightingale_network_vapt_image nightingale_forensic_and_red_teaming nightingale_osint_tools_image nightingale_mobile_vapt_image nightingale nightingale_programming_image"
 
 jobs:
   amd64:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image-name: ${{ fromJson(env.IMAGE_NAMES) }}
+        image-name: ${{ split(' ', env.IMAGE_NAMES) }}
     steps:
     - uses: actions/checkout@v3
     - name: Github Login
