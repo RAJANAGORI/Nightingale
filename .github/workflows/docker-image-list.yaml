@@ -30,7 +30,7 @@ jobs:
       run: |
         docker images
 
-      - name: Delete old images
+    - name: Delete old images
       run: |
         # Get the image tags from the GitHub package registry
         curl -X POST -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: bearer ${{secrets.TOKEN}}" -d '{"query":"query {repository (owner:\"${{github.repository_owner}}\", name:\"${{github.repository}}\") {packages (names:[\"${{matrix.image-name}}\"], last:1) {nodes {versions (last:100) {nodes {id, name, publishedAt}}}}}}"}' -o /tmp/response.json --url https://api.github.com/graphql
@@ -47,6 +47,7 @@ jobs:
         # Remove all other tags
         for tag in "${SORTED_TAGS[@]}"; do
           if [[ ! " ${TAGS_TO_KEEP[@]} " =~ " ${tag} " ]]; then
-            curl -X DELETE -s -H "Accept: application/vnd.github.package-deletes-preview+json" -H "Authorization: bearer ${{secrets.TOKEN}}" --url https://api.github.com/graphql -d '{"query":"mutation {deletePackageVersion (input:{packageVersionId:\"$(cat /tmp/response.json | jq -r --arg tag $tag '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == $tag)) | .[0].id')\"}) {success}}"}'
+            PACKAGE_VERSION_ID=$(cat /tmp/response.json | jq -r --arg tag "$tag" '.data.repository.packages.nodes[0].versions.nodes | map(select(.name == $tag)) | .[0].id')
+            curl -X DELETE -s -H "Accept: application/vnd.github.package-deletes-preview+json" -H "Authorization: bearer ${{secrets.TOKEN}}" --url https://api.github.com/packages/${{github.repository_owner}}/${{github.repository}}/versions/$PACKAGE_VERSION_ID
           fi
         done
