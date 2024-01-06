@@ -16,10 +16,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: List images in GitHub Packages
-        uses: docker/cli-action@v1
+        uses: docker/cli@v1
         with:
           arguments: image ls --filter=reference=ghcr.io/${{ github.repository }}/*
-      
+
       - name: Upload output as artifact
         uses: actions/upload-artifact@v2
         with:
