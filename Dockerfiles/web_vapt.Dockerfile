@@ -9,7 +9,8 @@ RUN \
     cmake \
     bundler \
     unzip \
-    whatweb && \
+    whatweb \
+    pipx && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_web_vapt .gf 
@@ -49,38 +50,35 @@ RUN \
 RUN \
 ## Installing Arjun
     cd Arjun && \
-    apt-get install python3-distutils &&\
     python3 setup.py install && \
     cd ..
 
 RUN \
 ## Installing HawkScan
     cd HawkScan && \
-    pip3 install -r requirements.txt && \
+    pip3 install -r requirements.txt --break-system-packages && \
     cd ..
 
 RUN \
 ## Installing LinkFinderd
     cd LinkFinder && \
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
     
 RUN \
 ## Installing Striker
     cd Striker && \
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
 
 RUN \
 ##  INstalling dirsearch
-    # cd dirsearch && \
-    pip3 install dirsearch
-    # cd ..
+    pip3 install dirsearch --break-system-packages
 
 RUN \
 ## installin jwt_tool
     cd jwt_tool && \
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
 
 RUN \
@@ -92,7 +90,7 @@ RUN \
 RUN \
 ## INstall XSStrike
     cd XSStrike && \
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
 
 RUN \
