@@ -41,7 +41,6 @@ jobs:
       run: |
         docker build . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=development --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development
     
-    Push Docker images with the same timestamp-based tag
     - name: Push nightingale_programming_image
       run: |
         docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development"
