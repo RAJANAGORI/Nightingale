@@ -54,17 +54,17 @@ RUN \
     rm go.tar.gz
 
 # Stage 6: Java stage
-FROM base as java
+FROM openjdk:23-jdk-oracle as java
 
-# Download and install the OpenJDK 17 DEB package from the Oracle website
-RUN \
-    apt-get update && \
-    apt-get install -y --no-install-recommends ca-certificates &&\
-    wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb && \
-    dpkg -i jdk-17_linux-x64_bin.deb
+# # Download and install the OpenJDK 17 DEB package from the Oracle website
+# RUN \
+#     apt-get update && \
+#     apt-get install -y --no-install-recommends ca-certificates &&\
+#     wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb && \
+#     dpkg -i jdk-17_linux-x64_bin.deb
 
 # Stage 7: Final stage
-FROM --platform=linux/amd64 debian:stable-slim as nightingale-programming-multi-stage
+FROM debian:stable-slim as nightingale-programming-multi-stage
 
 COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
 
@@ -126,11 +126,11 @@ COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=go-builder /usr/local/ /usr/local/
 COPY --from=go-builder /home/ /home/
 # Copy only the necessary files and directories from the Java image
-COPY --from=java /usr/lib/jvm /usr/lib/jvm
-COPY --from=java /usr/bin/java /usr/bin/java
+COPY --from=java /usr/java/openjdk-23 /usr/java/openjdk-23
+# COPY --from=java /usr/bin/java /usr/bin/java
 
 # Set the environment variables for Python 2 and Python 3
-ENV PATH "/opt/venv2/bin:/opt/venv3/bin:$PATH"
+ENV PATH "/usr/java/openjdk-23/bin:/opt/venv2/bin:/opt/venv3/bin:$PATH"
 ENV PYTHON2 "/usr/local/bin/python2.7"
 ENV PYTHON3 "/usr/bin/python3"
 

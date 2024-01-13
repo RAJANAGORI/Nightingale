@@ -9,7 +9,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 USER root
 
 RUN \
-    dpkg --configure -a &&\
 #### Installing os tools and other dependencies.
     apt-get -y update --fix-missing && \
     apt-get -f --no-install-recommends install -y \
@@ -65,8 +64,7 @@ RUN \
     dos2unix \
     postgresql \
     postgresql-client \
-    postgresql-contrib &&\
-    dpkg --configure -a
+    postgresql-contrib
 
 ## Banner shell and run shell file ##
 COPY \
