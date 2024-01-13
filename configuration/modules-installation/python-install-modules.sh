@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Install Impacket
-cd "${TOOLS_RED_TEAMING}/impacket"
-python3 setup.py build && python3 setup.py install
+# # Install Impacket
+# cd "${TOOLS_RED_TEAMING}/impacket"
+# python3 setup.py build && python3 setup.py install
 
 # Create and activate MobSF virtual environment, and install MobSF
 cd "${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF"
