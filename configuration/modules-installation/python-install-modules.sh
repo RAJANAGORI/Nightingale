@@ -31,8 +31,8 @@ while read p; do pipx install "$p"; done < requirements.txt
 
 # Install jwt_tool
 cd "${TOOLS_WEB_VAPT}/jwt_tool"
-# pipx install -r requirements.txt 
-while read p; do pipx install "$p"; done < requirements.txt
+pipx install -r requirements.txt --break-system-packages
+# while read p; do pipx install "$p"; done < requirements.txt
 
 # Install Sublist3r
 cd "${TOOLS_WEB_VAPT}/Sublist3r"

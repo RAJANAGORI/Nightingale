@@ -60,17 +60,17 @@ RUN \
 RUN \
 ## Installing Striker
     cd Striker && \
-    while read p; do pipx install "$p"; done < requirements.txt &&\
+    while read p; do pipx install -f --include-deps "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \
 ##  INstalling dirsearch
-    pip3 install dirsearch
+    pipx install dirsearch
 
 RUN \
 ## installin jwt_tool
     cd jwt_tool && \
-    while read p; do pipx install "$p"; done < requirements.txt &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
 
 RUN \
