@@ -39,18 +39,20 @@ RUN \
 RUN \
 ## INstall Spiderfoot
     cd spiderfoot && \
-    while read p; do pipx install "$p"; done < requirements.txt  &&\
+    # while read p; do pipx install -f --include-deps "$p"; done < requirements.txt  &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
 
 RUN \
     cd metagoofil &&\
     python3 -m venv venv &&\
-    while read p; do pipx install "$p"; done < requirements.txt  &&\
+    while read p; do pipx install -f --include-deps "$p"; done < requirements.txt  &&\
     cd ..
 
 RUN \
     cd theHarvester &&\
-    while read p; do pipx install "$p"; done < requirements/base.txt
+    # while read p; do pipx install -f --include-deps "$p"; done < requirements/base.txt
+    pip3 install -r requirements/base.txt --break-system-packages
 
 RUN \
     # Cleaning Unwanted libraries 
