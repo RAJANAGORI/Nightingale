@@ -64,7 +64,8 @@ RUN \
     dos2unix \
     postgresql \
     postgresql-client \
-    postgresql-contrib
+    postgresql-contrib \
+    pipx
 
 ## Banner shell and run shell file ##
 COPY \

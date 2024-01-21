@@ -11,34 +11,37 @@ bash setup.sh
 
 # Install Arjun
 cd "${TOOLS_WEB_VAPT}/Arjun"
-python3 setup.py install --break-system-packages
+python3 setup.py install 
 
 # Install HawkScan
 cd "${TOOLS_WEB_VAPT}/HawkScan"
-python3 setup.py install --break-system-packages
+python3 setup.py install 
 
 # Install LinkFinder
 cd "${TOOLS_WEB_VAPT}/LinkFinder"
-python3 setup.py install --break-system-packages
+python3 setup.py install 
 
 # Install Striker
 cd "${TOOLS_WEB_VAPT}/Striker"
-pip3 install -r requirements.txt --break-system-packages
+# pipx install -r requirements.txt
+while read p; do pipx install "$p"; done < requirements.txt
 
 # # Install dirsearch
 # cd "${TOOLS_WEB_VAPT}/dirsearch"
 
 # Install jwt_tool
 cd "${TOOLS_WEB_VAPT}/jwt_tool"
-pip3 install -r requirements.txt --break-system-packages
+# pipx install -r requirements.txt 
+while read p; do pipx install "$p"; done < requirements.txt
 
 # Install Sublist3r
 cd "${TOOLS_WEB_VAPT}/Sublist3r"
-python3 setup.py install --break-system-packages
+python3 setup.py install 
 
 # Install XSStrike
 cd "${TOOLS_WEB_VAPT}/XSStrike"
-pip3 install -r requirements.txt --break-system-packages
+# pipx install -r requirements.txt 
+while read p; do pipx install "$p"; done < requirements.txt
 
 # # Install WhatWeb
 # cd "${TOOLS_WEB_VAPT}/WhatWeb"
@@ -46,7 +49,8 @@ pip3 install -r requirements.txt --break-system-packages
 
 # Install SpiderFoot
 cd "${TOOLS_OSINT}/spiderfoot"
-pip3 install -r requirements.txt --break-system-packages
+# pipx install -r requirements.txt 
+while read p; do pipx install "$p"; done < requirements.txt
 
 # Install ReconSpider
 cd "${TOOLS_OSINT}/reconspider"
@@ -55,15 +59,18 @@ python3 setup.py install
 
 # Install Recon-ng
 cd "${TOOLS_OSINT}/recon-ng"
-pip3 install -r REQUIREMENTS --break-system-packages
+# pipx install -r REQUIREMENTS
+while read p; do pipx install "$p"; done < REQUIREMENTS
 
 # Install Metagoofil
 cd "${TOOLS_OSINT}/metagoofil"
-pip3 install -r requirements.txt --break-system-packages
+# pipx install -r requirements.txt
+while read p; do pipx install "$p"; done < requirements.txt
 
 # Install theHarvester
 cd "${TOOLS_OSINT}/theHarvester"
-pip3 install -r requirements/base.txt --break-system-packages
+# pipx install -r requirements/base.txt
+while read p; do pipx install "$p"; done < requirements/base.txt
 
 # Install objection and octosuite from PyPI
-pip3 install objection octosuite dirsearch sqlmap
+pip install objection octosuite dirsearch sqlmap
