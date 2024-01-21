@@ -8,7 +8,7 @@ RUN \
     make \
     cmake \
     bundler \
-    pipx&& \
+    pipx && \
     # Creating Directories
     cd /home &&\
     mkdir -p tools_red_teaming tools_forensics

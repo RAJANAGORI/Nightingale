@@ -9,7 +9,8 @@ RUN \
     cmake \
     bundler \
     libxml2 \
-    libxslt1-dev && \
+    libxslt1-dev \
+    pipx && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_osint
@@ -32,24 +33,24 @@ RUN \
 
 RUN \
     cd recon-ng && \
-    pip3 install -r REQUIREMENTS --break-system-packages &&\
+    while read p; do pipx install "$p"; done < REQUIREMENTS &&\
     cd ..
 
 RUN \
 ## INstall Spiderfoot
     cd spiderfoot && \
-    pip3 install -r requirements.txt  --break-system-packages &&\
+    while read p; do pipx install "$p"; done < requirements.txt  &&\
     cd ..
 
 RUN \
     cd metagoofil &&\
     python3 -m venv venv &&\
-    pip3 install -r requirements.txt  --break-system-packages &&\
+    while read p; do pipx install "$p"; done < requirements.txt  &&\
     cd ..
 
 RUN \
     cd theHarvester &&\
-    python3 -m pip install -r requirements/base.txt --break-system-packages
+    while read p; do pipx install "$p"; done < requirements/base.txt
 
 RUN \
     # Cleaning Unwanted libraries 

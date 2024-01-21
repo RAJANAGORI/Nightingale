@@ -16,7 +16,8 @@ RUN \
     git \
     make \
     cmake \
-    bundler &&\
+    bundler \
+    pipx &&\
     bash /temp/node-installation-script.sh &&\
     # Creating Directories
     cd /home && \

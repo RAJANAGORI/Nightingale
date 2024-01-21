@@ -56,29 +56,29 @@ RUN \
 RUN \
 ## Installing HawkScan
     cd HawkScan && \
-    pip3 install -r requirements.txt --break-system-packages && \
+    while read p; do pipx install "$p"; done < requirements.txt && \
     cd ..
 
 RUN \
 ## Installing LinkFinderd
     cd LinkFinder && \
-    pip3 install -r requirements.txt --break-system-packages &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
     
 RUN \
 ## Installing Striker
     cd Striker && \
-    pip3 install -r requirements.txt --break-system-packages &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \
 ##  INstalling dirsearch
-    pip3 install dirsearch --break-system-packages
+    pip3 install dirsearch
 
 RUN \
 ## installin jwt_tool
     cd jwt_tool && \
-    pip3 install -r requirements.txt --break-system-packages &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \
@@ -90,7 +90,7 @@ RUN \
 RUN \
 ## INstall XSStrike
     cd XSStrike && \
-    pip3 install -r requirements.txt --break-system-packages &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \
