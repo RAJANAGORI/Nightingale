@@ -27,8 +27,6 @@ RUN \
 WORKDIR ${TOOLS_WEB_VAPT}
 # git clonning of tools repository
 RUN \
-    # Git clone of HawkScan
-    git clone --depth 1 https://github.com/c0dejump/HawkScan.git &&\
     #git clone of xsstrike
     git clone --depth 1 https://github.com/s0md3v/XSStrike.git &&\
     #git clone arjun
@@ -51,12 +49,6 @@ RUN \
 ## Installing Arjun
     cd Arjun && \
     python3 setup.py install && \
-    cd ..
-
-RUN \
-## Installing HawkScan
-    cd HawkScan && \
-    python3 -m pip install -r requirements.txt --break-system-packages && \
     cd ..
 
 RUN \
