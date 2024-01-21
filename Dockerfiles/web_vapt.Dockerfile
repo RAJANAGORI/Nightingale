@@ -56,7 +56,7 @@ RUN \
 RUN \
 ## Installing HawkScan
     cd HawkScan && \
-    python3 setup.py install && \
+    python3 -m pip install -r requirements.txt --break-system-packages && \
     cd ..
 
 RUN \
