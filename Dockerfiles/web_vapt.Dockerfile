@@ -56,7 +56,7 @@ RUN \
 RUN \
 ## Installing HawkScan
     cd HawkScan && \
-    while read p; do pipx install "$p"; done < requirements.txt && \
+    python3 setup.py install && \
     cd ..
 
 RUN \
