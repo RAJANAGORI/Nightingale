@@ -16,6 +16,7 @@ RUN \
     software-properties-common \
     ca-certificates \
     build-essential \
+    cmake \
     ### Operating System Tools start here 
     locate \
     snapd \
@@ -186,8 +187,7 @@ RUN \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
-    mv /var/lib/dpkg/info/package_name.* /tmp
+    rm -rf /var/lib/apt/lists/*
 
 ### Working Directory of tools ends here
 WORKDIR /home
