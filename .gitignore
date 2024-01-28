@@ -26,6 +26,9 @@ architecture/arm64/Dockerfiles/programming_langauge copy.txt
 architecture/amd64.bak
 .github/workflows/docker-image-list.txt
 .github/workflows/docker-image-list-copy.txt
+.github/workflows/multi-os-amd64.txt
+
+
 
 
 
