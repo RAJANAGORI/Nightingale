@@ -44,10 +44,10 @@ jobs:
       run: |
         docker buildx prune -f
       
-    # Build Docker images
-    - name: Build nightingale_programming_image
-      run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:arm64
+    # # Build Docker images
+    # - name: Build nightingale_programming_image
+    #   run: |
+    #     docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:arm64
     # # Push Docker images
     # - name: Push nightingale_programming_image
     #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:arm64"
