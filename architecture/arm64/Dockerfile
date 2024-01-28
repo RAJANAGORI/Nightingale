@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:darwin_arm64_development
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
@@ -108,28 +108,28 @@ ENV METASPLOIT_TOOL=/home/metasploit
 ENV SHELLS=/home/.shells
 
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:darwin_arm64_development ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:darwin_arm64_development ${GREP_PATTERNS} ${GREP_PATTERNS}
+    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64 ${GREP_PATTERNS} ${GREP_PATTERNS}
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_osint_tools_image:darwin_arm64_development ${TOOLS_OSINT} ${TOOLS_OSINT}
+    --from=ghcr.io/rajanagori/nightingale_osint_tools_image:arm64 ${TOOLS_OSINT} ${TOOLS_OSINT}
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:darwin_arm64_development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:arm64 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_network_vapt_image:darwin_arm64_development ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+    --from=ghcr.io/rajanagori/nightingale_network_vapt_image:arm64 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:darwin_arm64_development ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
+    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:darwin_arm64_development ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
 RUN true
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_wordlist_image:darwin_arm64_development ${WORDLIST} ${WORDLIST}
+    --from=ghcr.io/rajanagori/nightingale_wordlist_image:arm64 ${WORDLIST} ${WORDLIST}
 RUN true
 
 COPY \
