@@ -16,6 +16,7 @@ RUN \
     software-properties-common \
     ca-certificates \
     build-essential \
+    cmake \
     ### Operating System Tools start here 
     locate \
     snapd \
@@ -64,14 +65,15 @@ RUN \
     dos2unix \
     postgresql \
     postgresql-client \
-    postgresql-contrib
+    postgresql-contrib \
+    pipx
 
 ## Banner shell and run shell file ##
 COPY \
     shells/banner.sh /tmp/banner.sh
 
 COPY \
-    configuration/nodejs-env/ /temp/
+    configuration/nodejs/ /temp/
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t https://github.com/denysdovhan/spaceship-prompt \
@@ -164,8 +166,10 @@ COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 ## Installation of msf framework
 
 RUN \
-    wget -q https://github.com/RAJANAGORI/metasploit-multi-os/raw/main/metasploit-framework_6.3.35_amd64.deb -O metasploit.deb &&\
-    dpkg -i metasploit.deb
+    curl -fsSL https://apt.metasploit.com/metasploit-framework.gpg.key | gpg --dearmor | tee /usr/share/keyrings/metasploit.gpg > /dev/null &&\
+    echo "deb [signed-by=/usr/share/keyrings/metasploit.gpg] https://apt.metasploit.com/ buster main" | tee /etc/apt/sources.list.d/metasploit.list &&\
+    apt update &&\
+    apt install metasploit-framework
 
 ## DB config
 COPY ./configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/ 

@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:linux-arm64
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
@@ -9,7 +9,8 @@ RUN \
     cmake \
     bundler \
     libxml2 \
-    libxslt1-dev && \
+    libxslt1-dev \
+    pipx && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_osint
@@ -32,23 +33,26 @@ RUN \
 
 RUN \
     cd recon-ng && \
-    pip3 install -r REQUIREMENTS && \
+    while read p; do pipx install "$p"; done < REQUIREMENTS &&\
     cd ..
 
 RUN \
 ## INstall Spiderfoot
     cd spiderfoot && \
-    pip3 install -r requirements.txt &&\
+    # while read p; do pipx install -f --include-deps "$p"; done < requirements.txt  &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
+
 RUN \
     cd metagoofil &&\
     python3 -m venv venv &&\
-    pip3 install -r requirements.txt &&\
+    while read p; do pipx install -f --include-deps "$p"; done < requirements.txt  &&\
     cd ..
 
 RUN \
     cd theHarvester &&\
-    python3 -m pip install -r requirements/base.txt
+    # while read p; do pipx install -f --include-deps "$p"; done < requirements/base.txt
+    pip3 install -r requirements/base.txt --break-system-packages
 
 RUN \
     # Cleaning Unwanted libraries 
