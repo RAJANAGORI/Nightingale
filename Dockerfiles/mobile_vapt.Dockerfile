@@ -3,7 +3,7 @@ FROM ghcr.io/rajanagori/nightingale_programming_image:stable
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY \
-    configuration/nodejs/node-installation-script.sh /temp
+    configuration/nodejs-env/node-installation-script.sh /temp
 
 COPY \
     configuration/modules-installation/rms-install-modules.sh /temp/rms-install-module.sh
