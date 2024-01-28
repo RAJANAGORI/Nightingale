@@ -71,7 +71,7 @@ COPY \
     shells/banner.sh /tmp/banner.sh
 
 COPY \
-    configuration/nodejs/ /temp/
+    configuration/nodejs-env/ /temp/
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t https://github.com/denysdovhan/spaceship-prompt \
