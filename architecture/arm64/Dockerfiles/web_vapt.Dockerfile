@@ -9,7 +9,8 @@ RUN \
     cmake \
     bundler \
     unzip \
-    whatweb && \
+    whatweb \
+    pipx && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_web_vapt .gf 
@@ -53,33 +54,25 @@ RUN \
     cd ..
 
 RUN \
-## Installing HawkScan
-    cd HawkScan && \
-    pip3 install -r requirements.txt && \
-    cd ..
-
-RUN \
 ## Installing LinkFinderd
     cd LinkFinder && \
-    pip3 install -r requirements.txt &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
     
 RUN \
 ## Installing Striker
     cd Striker && \
-    pip3 install -r requirements.txt &&\
+    while read p; do pipx install -f --include-deps "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \
 ##  INstalling dirsearch
-    # cd dirsearch && \
-    pip3 install dirsearch
-    # cd ..
+    pipx install dirsearch
 
 RUN \
 ## installin jwt_tool
     cd jwt_tool && \
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
 
 RUN \
@@ -91,14 +84,14 @@ RUN \
 RUN \
 ## INstall XSStrike
     cd XSStrike && \
-    pip3 install -r requirements.txt &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \
 ### Installing Amass 
-    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.1.0/amass_Linux_amd64.zip -O amass.zip &&\
+    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.2.0/amass_Linux_arm64.zip -O amass.zip &&\
     unzip amass.zip && \
-    mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip && \
+    mv amass_Linux_arm64/amass /usr/local/bin && rm -rf amass_Linux_arm64 amass.zip && \
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\
