@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:linux-arm64
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
@@ -7,7 +7,8 @@ RUN \
     git \
     make \
     cmake \
-    bundler && \
+    bundler \
+    pipx && \
     # Creating Directories
     cd /home &&\
     mkdir -p tools_red_teaming tools_forensics
@@ -19,14 +20,8 @@ ENV TOOLS_FORENSICS=/home/tools_forensics/
 WORKDIR ${TOOLS_RED_TEAMING}
 
 RUN \
-    #Git clone of impacket toolkit
-    git clone --depth 1 https://github.com/SecureAuthCorp/impacket.git
-
-RUN \
-    #installing impact tool
-    cd impacket &&\
-    python3 setup.py build &&\
-    python3 setup.py install
+    python3 -m pipx install impacket &&\
+    pipx ensurepath
 
 RUN \
     # Cleaning Unwanted libraries 

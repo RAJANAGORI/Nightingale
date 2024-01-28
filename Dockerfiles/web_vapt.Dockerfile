@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:development
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
@@ -9,7 +9,8 @@ RUN \
     cmake \
     bundler \
     unzip \
-    whatweb && \
+    whatweb \
+    pipx && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_web_vapt .gf 
@@ -26,8 +27,6 @@ RUN \
 WORKDIR ${TOOLS_WEB_VAPT}
 # git clonning of tools repository
 RUN \
-    # Git clone of HawkScan
-    git clone --depth 1 https://github.com/c0dejump/HawkScan.git &&\
     #git clone of xsstrike
     git clone --depth 1 https://github.com/s0md3v/XSStrike.git &&\
     #git clone arjun
@@ -53,33 +52,25 @@ RUN \
     cd ..
 
 RUN \
-## Installing HawkScan
-    cd HawkScan && \
-    pip3 install -r requirements.txt && \
-    cd ..
-
-RUN \
 ## Installing LinkFinderd
     cd LinkFinder && \
-    pip3 install -r requirements.txt &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
     
 RUN \
 ## Installing Striker
     cd Striker && \
-    pip3 install -r requirements.txt &&\
+    while read p; do pipx install -f --include-deps "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \
 ##  INstalling dirsearch
-    # cd dirsearch && \
-    pip3 install dirsearch
-    # cd ..
+    pipx install dirsearch
 
 RUN \
 ## installin jwt_tool
     cd jwt_tool && \
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
 
 RUN \
@@ -91,7 +82,7 @@ RUN \
 RUN \
 ## INstall XSStrike
     cd XSStrike && \
-    pip3 install -r requirements.txt &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \

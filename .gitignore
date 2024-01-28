@@ -19,3 +19,22 @@ ldap_admin_password
 ldap_config_password
 backup_content.txt
 export.ldif
+requirements.txt
+data/
+devsecops.docker-compose.text
+docker-compose copy.yaml
+raja.docker-compose.yaml
+docker-compose.text
+review copy.py
+review.py
+shells/ttyd.sh
+export.text
+requirements.text
+architecture/amd64/Dockerfiles/programming_langauge copy.text
+architecture/x86-64.bak
+.github/workflows/multi-os-mac_x86-64.txt
+architecture/arm64/Dockerfiles/programming_langauge copy.txt
+architecture/amd64.bak
+.github/workflows/docker-image-list.txt
+.github/workflows/docker-image-list-copy.txt
+.github/workflows/multi-os-amd64.txt
