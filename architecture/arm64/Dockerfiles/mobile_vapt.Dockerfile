@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:darwin_arm64_development
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY \
