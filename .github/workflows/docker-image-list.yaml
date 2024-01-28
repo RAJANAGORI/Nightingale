@@ -1,8 +1,8 @@
-name: List Docker Images
+name: List and Clean Untagged Docker Images
 
 on:
   push:
-    branches: [ development ]
+    branches: [development]
 
 jobs:
   clean_untagged_images:
@@ -19,7 +19,8 @@ jobs:
         id: list_untagged_images
         run: |
           untagged_images=$(docker images -q --filter "dangling=true")
-          echo "::set-output name=untagged_images::$untagged_images"
+          echo "Untagged Docker Images:"
+          echo "$untagged_images"
 
       # - name: Delete Untagged Docker Images
       #   if: steps.list_untagged_images.outputs.untagged_images != ''
