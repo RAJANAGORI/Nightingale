@@ -56,12 +56,14 @@ RUN \
 # Stage 6: Java stage
 FROM base as java
 
+WORKDIR /home
 # Download and install the OpenJDK 17 DEB package from the Oracle website
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates &&\
-    wget https://download.oracle.com/java/17/latest/jdk-17_linux-aarch64_bin.deb && \
-    dpkg -i jdk-17_linux-aarch64_bin.deb
+    wget https://download.oracle.com/java/21/latest/jdk-21_linux-aarch64_bin.tar.gz &&\
+    tar -xzf jdk-21_linux-aarch64_bin.tar.gz
+
 
 # Stage 7: Final stage
 FROM --platform=linux/arm64/v8 debian:latest as nightingale-programming-multi-stage
@@ -75,6 +77,7 @@ RUN apt-get update -y --fix-missing &&\
     tar \
     make \
     gcc \
+    cmake \
     software-properties-common \
     ca-certificates \
     build-essential \
@@ -126,8 +129,7 @@ COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=go-builder /usr/local/ /usr/local/
 COPY --from=go-builder /home/ /home/
 # Copy only the necessary files and directories from the Java image
-COPY --from=java /usr/lib/jvm /usr/lib/jvm
-COPY --from=java /usr/bin/java /usr/bin/java
+COPY --from=java /home/jdk-21.0.2/ /usr/bin/java/
 
 # Set the environment variables for Python 2 and Python 3
 ENV PATH "/opt/venv2/bin:/opt/venv3/bin:$PATH"
@@ -140,4 +142,4 @@ ENV GOPATH "/home/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
 
 # Set environment variable for Java
-ENV JAVA_HOME "/usr/lib/jvm/jdk-17-oracle-aarch64"
+ENV JAVA_HOME "/usr/bin/java/"
