@@ -67,19 +67,19 @@ jobs:
     # - name: Push nightingale_osint_image
     #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:stable"
     
-    - name: Build nightingale_mobile_vapt_image
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:stable
+    # - name: Build nightingale_mobile_vapt_image
+    #   run: |
+    #     docker build . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:stable
     
-    - name: Push nightingale_mobile_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:stable"
+    # - name: Push nightingale_mobile_vapt_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:stable"
     
-    - name: Build nightingale_wordlist_image
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:stable
+    # - name: Build nightingale_wordlist_image
+    #   run: |
+    #     docker build . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --label branch=stable --label owner=RAJANAGROI --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:stable
     
-    - name: Push nightingale_wordlist_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:stable"
+    # - name: Push nightingale_wordlist_image
+    #   run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:stable"
     
     - name: Build nightingale_stable_image
       run: |
