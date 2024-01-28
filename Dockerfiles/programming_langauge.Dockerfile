@@ -66,7 +66,7 @@ FROM openjdk:23-jdk-oracle as java
 # Stage 7: Final stage
 FROM debian:stable-slim as nightingale-programming-multi-stage
 
-COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
+COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
 RUN apt-get update -y --fix-missing &&\
 # Installing essential Library
