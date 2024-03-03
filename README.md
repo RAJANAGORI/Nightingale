@@ -2,7 +2,9 @@
 
 ![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
 
-[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)
+[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory) 
+[![Docker Image CI](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml)
+[![Multi OS docker images  - arm64 MAC OS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)
 
 ![BlackHat Asia 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2022.svg)
 ![OWASP AppSec EU 2022 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
