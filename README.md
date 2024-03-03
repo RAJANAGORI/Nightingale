@@ -11,8 +11,6 @@
 ![BlackHat Asia 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2024.svg)
 ![OWASP AppSec EU 2022 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
 
-![](https://img.shields.io/github/followers/RAJANAGORI?style=social)
-![](https://img.shields.io/github/stars/RAJANAGORI?style=social)
 [![](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/) [![](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)
 ![profile count](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)
 [![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
@@ -24,6 +22,7 @@
 - Blackhat Arsenal MEA 2022 (Shortlisted)
 - Blackhat Arsenal ASIA 2023
 - Blackhat Arsenal MEA 2023 (Shortlisted)
+- Blackhat Arsenal ASIA 2024
 ## Project Name: Nightingale
 ==================================================
 ## Docker for Pentesters: Pentesting Framework 
