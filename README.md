@@ -7,6 +7,8 @@
 [![Multi OS docker images  - arm64 MAC OS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)
 
 ![BlackHat Asia 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2022.svg)
+![BlackHat Asia 2023](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2023.svg)
+![BlackHat Asia 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2024.svg)
 ![OWASP AppSec EU 2022 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
 
 ![](https://img.shields.io/github/followers/RAJANAGORI?style=social)
