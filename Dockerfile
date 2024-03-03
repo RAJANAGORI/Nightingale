@@ -187,7 +187,8 @@ RUN \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* &&\
+    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 ### Working Directory of tools ends here
 WORKDIR /home

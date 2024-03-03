@@ -107,3 +107,5 @@ pipx install octosuite
 pipx install dirsearch 
 pipx install sqlmap
 echo "Objection, octosuite, dirsearch, and sqlmap installation completed."
+
+echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc

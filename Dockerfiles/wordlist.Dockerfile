@@ -30,6 +30,7 @@ RUN \
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/* &&\
-    rm -rf /var/cache/apt/archives/*
+    rm -rf /var/cache/apt/archives/* &&\
+    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 WORKDIR /home
