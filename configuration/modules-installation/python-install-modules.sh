@@ -102,5 +102,8 @@ echo "theHarvester installation completed."
 
 # Install objection and octosuite from PyPI
 echo "Installing objection and octosuite..."
-pip3 install objection octosuite dirsearch sqlmap
+pipx install objection 
+pipx install octosuite 
+pipx install dirsearch 
+pipx install sqlmap
 echo "Objection, octosuite, dirsearch, and sqlmap installation completed."
