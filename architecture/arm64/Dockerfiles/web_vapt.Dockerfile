@@ -50,7 +50,7 @@ RUN \
 RUN \
 ## Installing Arjun
     cd Arjun && \
-    python3 setup.py install && \
+    pipx install arjun && \
     cd ..
 
 RUN \
@@ -78,7 +78,7 @@ RUN \
 RUN \
 ## INstalling Sublist3r
     cd Sublist3r && \
-    python3 setup.py install &&\
+    pipx install Sublist3r &&\
     cd ..
 
 RUN \
@@ -96,6 +96,7 @@ RUN \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* &&\
+    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 WORKDIR /home

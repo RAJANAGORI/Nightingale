@@ -56,17 +56,11 @@ RUN \
 # Stage 6: Java stage
 FROM openjdk:23-jdk-oracle as java
 
-# # Download and install the OpenJDK 17 DEB package from the Oracle website
-# RUN \
-#     apt-get update && \
-#     apt-get install -y --no-install-recommends ca-certificates &&\
-#     wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb && \
-#     dpkg -i jdk-17_linux-x64_bin.deb
 
 # Stage 7: Final stage
 FROM debian:stable-slim as nightingale-programming-multi-stage
 
-COPY configuration/nodejs/node-installation-script.sh /temp/node-installation-script.sh
+COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
 RUN apt-get update -y --fix-missing &&\
 # Installing essential Library

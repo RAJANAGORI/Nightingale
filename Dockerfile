@@ -73,7 +73,7 @@ COPY \
     shells/banner.sh /tmp/banner.sh
 
 COPY \
-    configuration/nodejs/ /temp/
+    configuration/nodejs-env/ /temp/
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t https://github.com/denysdovhan/spaceship-prompt \
@@ -187,7 +187,8 @@ RUN \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* &&\
+    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 ### Working Directory of tools ends here
 WORKDIR /home

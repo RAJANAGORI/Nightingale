@@ -2,29 +2,27 @@
 
 ![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
 
-[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)
+[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory) 
+[![Docker Image CI](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml)
+[![Multi OS docker images  - arm64 MAC OS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)
 
 ![BlackHat Asia 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2022.svg)
+![BlackHat Asia 2023](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2023.svg)
+![BlackHat Asia 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2024.svg)
 ![OWASP AppSec EU 2022 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
-[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6871/badge)](https://bestpractices.coreinfrastructure.org/projects/6871)
 
-![](https://img.shields.io/github/followers/RAJANAGORI?style=social)
-![](https://img.shields.io/github/stars/RAJANAGORI?style=social)
 [![](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/) [![](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)
 ![profile count](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)
 [![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
 
-### To run the Nightingale with OPENLdap, use the below command
-```
-docker-compose up -d
-```
 ### Conferences
 - Blackhat Arsenal ASIA 2022
 - OWAPS Global AppSec EU 2022
 - Docker community hands on #6
 - Blackhat Arsenal MEA 2022 (Shortlisted)
 - Blackhat Arsenal ASIA 2023
-
+- Blackhat Arsenal MEA 2023 (Shortlisted)
+- Blackhat Arsenal ASIA 2024
 ## Project Name: Nightingale
 ==================================================
 ## Docker for Pentesters: Pentesting Framework 
@@ -55,4 +53,4 @@ The Reason behind creating this Docker file is to make a platform-independent pe
 
 Please feel free to contribute to the tool
 
-For more information [Nightingale Wiki](http://nightingale-wiki.gitbook.io/nightingale/) 
+For more information [Nightingale Wiki](https://github.com/RAJANAGORI/Nightingale/wiki/1-%F0%9F%9A%80-Nightingale-Docker-for-Pentesters)

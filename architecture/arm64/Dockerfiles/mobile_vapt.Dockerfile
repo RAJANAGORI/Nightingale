@@ -3,7 +3,7 @@ FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY \
-    configuration/nodejs/node-installation-script.sh /temp
+    configuration/nodejs-env/node-installation-script.sh /temp
 
 COPY \
     configuration/modules-installation/rms-install-modules.sh /temp/rms-install-module.sh
@@ -54,6 +54,7 @@ RUN \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* &&\
+    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 WORKDIR /home
