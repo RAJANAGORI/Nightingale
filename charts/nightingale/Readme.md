@@ -17,7 +17,7 @@ helm repo update
 
 ## Install/Upgrade Chart
 ```
-helm upgrade --install nightingale nightingale -n nightingale --create-namespace
+helm upgrade --install nightingale nightingale/nightingale -n nightingale --create-namespace
 ```
 
 ## Values
