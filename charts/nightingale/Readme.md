@@ -20,6 +20,11 @@ helm repo update
 helm upgrade --install nightingale nightingale/nightingale -n nightingale --create-namespace
 ```
 
+## Install/Upgrade the chart using just one command
+```
+helm upgrade --install nightingale nightingale --repo https://rajanagori.github.io/Nightingale -n nightingale --create-namespace
+```
+
 ## Values
 | Key                         | Type   | Default                 |
 |-----------------------------|--------|-------------------------|
