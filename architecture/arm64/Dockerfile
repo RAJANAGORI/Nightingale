@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64 as part-1
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
@@ -64,7 +64,10 @@ RUN \
     dos2unix \
     postgresql \
     postgresql-client \
-    postgresql-contrib
+    postgresql-contrib \
+    pipx
+
+FROM part-1 as part-2
 
 ## Banner shell and run shell file ##
 COPY \
@@ -109,28 +112,22 @@ ENV SHELLS=/home/.shells
 
 COPY \
     --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
-RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64 ${GREP_PATTERNS} ${GREP_PATTERNS}
-RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_osint_tools_image:arm64 ${TOOLS_OSINT} ${TOOLS_OSINT}
-RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:arm64 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
-RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_network_vapt_image:arm64 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
-RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
-RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
-RUN true
 COPY \
     --from=ghcr.io/rajanagori/nightingale_wordlist_image:arm64 ${WORDLIST} ${WORDLIST}
-RUN true
+
+FROM part-2 as part-3
 
 COPY \
     configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
@@ -152,6 +149,8 @@ RUN \
     unzip 1.7.2.zip &&\
     cd ttyd-1.7.2 && mkdir build && cd build &&\
     cmake .. && make && make install
+
+FROM part-3 as part-4
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}
