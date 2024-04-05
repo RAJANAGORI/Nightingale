@@ -1,29 +1,27 @@
 #!/bin/bash
 
-# # Install Impacket
-# cd "${TOOLS_RED_TEAMING}/impacket"
-# python3 setup.py build && python3 setup.py install
-
-echo "Installing Impacket..."
-# Add echo statements to indicate the progress
-cd "${TOOLS_RED_TEAMING}/impacket"
-echo "Building Impacket..."
-python3 setup.py build && python3 setup.py install
-echo "Impacket installation completed."
-
-# Create and activate MobSF virtual environment, and install MobSF
+# Create and activate MobSF virtual environment
 echo "Setting up MobSF..."
 cd "${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF"
+chmod +x setup.sh
 echo "Creating virtual environment..."
 python3 -m venv venv
+echo "Activating virtual environment..."
+source venv/bin/activate
+
+# Install MobSF
 echo "Installing MobSF..."
-bash setup.sh
+./setup.sh
 echo "MobSF installation completed."
+
+# Exit the virtual environment
+echo "Exiting virtual environment..."
+deactivate
 
 # Install Arjun
 echo "Installing Arjun..."
 cd "${TOOLS_WEB_VAPT}/Arjun"
-python3 setup.py install 
+pipx install arjun 
 echo "Arjun installation completed."
 
 # Install HawkScan

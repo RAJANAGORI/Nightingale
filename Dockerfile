@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:stable
+FROM ghcr.io/rajanagori/nightingale_programming_image:development as part-1
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
@@ -68,6 +68,8 @@ RUN \
     postgresql-contrib \
     pipx
 
+FROM part-1 as part-2
+
 ## Banner shell and run shell file ##
 COPY \
     shells/banner.sh /tmp/banner.sh
@@ -110,29 +112,23 @@ ENV METASPLOIT_TOOL=/home/metasploit
 ENV SHELLS=/home/.shells
 
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
-RUN true
+    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${GREP_PATTERNS} ${GREP_PATTERNS}
-RUN true
+    --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${GREP_PATTERNS} ${GREP_PATTERNS}
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_osint_tools_image:stable ${TOOLS_OSINT} ${TOOLS_OSINT}
-RUN true
+    --from=ghcr.io/rajanagori/nightingale_osint_tools_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:stable ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
-RUN true
+    --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_network_vapt_image:stable ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
-RUN true
+    --from=ghcr.io/rajanagori/nightingale_network_vapt_image:development ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
-RUN true
+    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING} 
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
-RUN true
+    --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
 COPY \
-    --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable ${WORDLIST} ${WORDLIST}
-RUN true
+    --from=ghcr.io/rajanagori/nightingale_wordlist_image:development ${WORDLIST} ${WORDLIST}
+
+FROM part-2 as part-3
 
 COPY \
     configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
@@ -154,6 +150,8 @@ RUN \
     unzip 1.7.2.zip &&\
     cd ttyd-1.7.2 && mkdir build && cd build &&\
     cmake .. && make && make install
+
+FROM part-3 as part-4
 
 ## Installing metasploit
 WORKDIR ${METASPLOIT_TOOL}

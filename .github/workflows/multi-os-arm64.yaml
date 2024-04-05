@@ -47,11 +47,11 @@ jobs:
     # Build Docker images
     - name: Build nightingale_programming_image
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:arm64
+        docker buildx build --push --platform linux/arm64/v8 . --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:arm64
 
     - name: Build nightingale_forensic_and_red_teaming
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:arm64
+        docker buildx build --push --platform linux/arm64/v8 . --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:arm64
     
     - name: Build nightingale_web_vapt_image
       run: |
@@ -59,23 +59,23 @@ jobs:
     
     - name: Build nightingale_network_vapt_image
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:arm64
+        docker buildx build --push --platform linux/arm64/v8 . --file $DOCKERFILES_PATH/network_vapt.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:arm64
    
     - name: Build nightingale_osint_image
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:arm64
+        docker buildx build --push --platform linux/arm64/v8 . --file $DOCKERFILES_PATH/osint_tools.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:arm64
    
     - name: Build nightingale_mobile_vapt_image
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:arm64
+        docker buildx build --push --platform linux/arm64/v8 . --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:arm64
     
     - name: Build nightingale_wordlist_image
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:arm64
+        docker buildx build --push --platform linux/arm64/v8 . --file $DOCKERFILES_PATH/wordlist.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:arm64
     
     - name: Build nightingale_arm64_image
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILE/Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale:arm64
+        docker buildx build --push --platform linux/arm64/v8 . --file $DOCKERFILE/Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale:arm64
 
     - name: Clean Docker build cache - amd64
       run: |
