@@ -32,6 +32,8 @@ RUN \
     curl \
     wget \
     file \
+    nano \
+    vim \
     ### Web Vapt tools using apt-get
     dirb \
     ## INstalling Network Tools using apt-get
