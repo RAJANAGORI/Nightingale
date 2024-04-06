@@ -43,10 +43,10 @@ jobs:
     - name: Clean Docker build cache
       run: |
         docker buildx prune -f
-        
+
      # Clear apt cache    
     - name: Clear apt cache
-      run: apt-get clean
+      run: sudo apt-get clean
 
     # Build Docker images
     - name: Build nightingale_programming_image
