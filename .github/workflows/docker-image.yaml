@@ -30,6 +30,9 @@ jobs:
         GITHUB_TOKEN: ${{secrets.TOKEN}}
       run: |
         echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
+    # Clear apt cache    
+    - name: Clear apt cache
+      run: apt-get clean
 
     # Build Docker images
     - name: Build nightingale_programming_image
