@@ -1,0 +1,19 @@
+apiVersion: v1
+entries:
+  nightingale:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2024-04-07T19:23:02.337615677+05:30"
+    description: A Helm chart for Kubernetes
+    digest: 2a43ed45e8c2caf879fc8e0c8f782916349598c1c0da791c0343379659b34a35
+    home: https://github.com/RAJANAGORI/Nightingale
+    icon: https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png
+    maintainers:
+    - name: Raja Nagori
+    - name: Jinesh Nagori
+    name: nightingale
+    type: application
+    urls:
+    - https://jineshnagori.github.io/Nightingale/nightingale-0.0.1.tgz
+    version: 0.0.1
+generated: "2024-04-07T19:23:02.329284009+05:30"
