@@ -54,7 +54,7 @@ RUN \
     rm go.tar.gz
 
 # Stage 6: Java stage
-FROM base as java
+FROM openjdk:23-jdk-oracle as java
 
 WORKDIR /home
 # Download and install the OpenJDK 17 DEB package from the Oracle website
