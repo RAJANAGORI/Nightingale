@@ -58,7 +58,7 @@ FROM openjdk:23-jdk-oracle as java
 
 
 # Stage 7: Final stage
-FROM debian:stable-slim as nightingale-programming-multi-stage
+FROM debian:development-slim as nightingale-programming-multi-stage
 
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
