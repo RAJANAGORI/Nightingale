@@ -34,7 +34,7 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+      run: docker build . --file Dockerfiles/programming_langauge.Dockerfile --tag localbuild/testimage:latest
     - name: Run the Anchore Grype scan action
       uses: anchore/scan-action@v2
       id: scan
