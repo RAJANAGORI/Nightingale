@@ -13,12 +13,12 @@ name: Anchore Grype vulnerability scan
 
 on:
   push:
-    # branches: [ "main" ]
+    branches: [ "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    # branches: [ "main" ]
-  # schedule:
-  #   - cron: '25 8 * * 1'
+    branches: [ "main" ]
+  schedule:
+    - cron: '25 8 * * 1'
 
 permissions:
   contents: read
@@ -36,7 +36,7 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag localbuild/testimage:latest
     - name: Run the Anchore Grype scan action
-      uses: anchore/scan-action@v2
+      uses: anchore/scan-action@v3
       id: scan
       with:
         image: "localbuild/testimage:latest"
@@ -44,6 +44,6 @@ jobs:
         fail-build: true
         severity-cutoff: critical
     - name: Upload vulnerability report
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ steps.scan.outputs.sarif }}
