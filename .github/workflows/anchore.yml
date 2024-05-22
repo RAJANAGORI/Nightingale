@@ -18,7 +18,7 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
   # schedule:
-  #   - cron: '19 16 * * 1'
+  #   - cron: '40 19 * * 5'
 
 permissions:
   contents: read
@@ -30,18 +30,13 @@ jobs:
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     runs-on: self-hosted
-    # runs-on: ubuntu-latest
     steps:
     - name: Check out the code
       uses: actions/checkout@v4
-    - name: Set up Docker and build image
-      run: |
-        echo "raja" | sudo -S apt-get update -y --fix-missing
-        echo "raja" | sudo -S apt-get upgrade -y
-        echo "raja" | sudo -S apt-get install docker -y
-        echo "raja" | sudo -S docker build . --file Dockerfile --tag localbuild/testimage:latest
-    # - name: Build the Docker image
-    #   run: sudo apt-get update -y --fix-missing && sudo apt-get upgrade -y && sudo apt-get install docker && docker build . --file Dockerfile --tag localbuild/testimage:latest
+    - name: Update and Upgrade in WSL
+      run:  echo "raja" | sudo -S apt-get update --fix-missing -y && echo "raja" | sudo -S apt-get upgrade -y && echo "raja" | sudo -S apt-get install -y docker
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag localbuild/testimage:latest
     - name: Run the Anchore Grype scan action
       uses: anchore/scan-action@d5aa5b6cb9414b0c7771438046ff5bcfa2854ed7
       id: scan
