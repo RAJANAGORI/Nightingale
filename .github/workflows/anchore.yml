@@ -29,7 +29,7 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v4
     - name: Build the Docker image
-      run: sudo apt-get install docker -y && docker build . --file Dockerfile --tag localbuild/testimage:latest
+      run: echo "raja" | sudo -S apt-get install docker -y && sudo docker build . --file Dockerfile --tag localbuild/testimage:latest
     - name: Run the Anchore Grype scan action
       uses: anchore/scan-action@v3
       id: scan
