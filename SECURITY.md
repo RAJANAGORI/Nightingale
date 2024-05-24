@@ -19,7 +19,7 @@ At this time, only the following versions of **NIGHTINGALE** are supported:
 
 | Tag     | Supported                      |
 | ------- | ------------------------------ |
-| Latest  | Supports all security tools    |
+| Stable  | Supports all security tools    |
 
 ## Vulnerability Types
 
