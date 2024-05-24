@@ -40,7 +40,7 @@ jobs:
       id: scan
       with:
         image: "localbuild/testimage:latest"
-        grype-version: 0.77.4
+        grype-version: v0.77.4
         fail-build: true
         severity-cutoff: critical
     - name: Upload vulnerability report
