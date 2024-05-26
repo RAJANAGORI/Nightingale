@@ -11,7 +11,7 @@ Helm 3.7+
 
 ## Get Repository Info
 ```
-helm repo add nightingale https://rajanagori.github.io/Nightingale
+helm repo add nightingale https://nightingale.rajanagori.in
 helm repo update
 ```
 
@@ -22,7 +22,7 @@ helm upgrade --install nightingale nightingale/nightingale -n nightingale --crea
 
 ## Install/Upgrade the chart using just one command
 ```
-helm upgrade --install nightingale nightingale --repo https://rajanagori.github.io/Nightingale -n nightingale --create-namespace
+helm upgrade --install nightingale nightingale --repo https://nightingale.rajanagori.in -n nightingale --create-namespace
 ```
 
 ## Values

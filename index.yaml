@@ -14,6 +14,6 @@ entries:
     name: nightingale
     type: application
     urls:
-    - https://rajanagori.github.io/Nightingale/pkg/nightingale-0.0.1.tgz
+    - https://nightingale.rajanagori.in/pkg/nightingale-0.0.1.tgz
     version: 0.0.1
 generated: "2024-04-07T19:24:41.524921949+05:30"
