@@ -1,6 +1,6 @@
 # Security Policy
 
-Thank you for helping **NIGHTINGALE** stay secure. If you've identified a security vulnerability, please follow the reporting guidelines below to submit your finding. We aim to reply within **5** days of receiving your finding. If a finding is accepted, we aim to publish a patch within **10** days. If it is declined, we will reply to let you know.
+Thank you for helping **NIGHTINGALE** stay secure. If you've identified a security vulnerability, please follow the reporting guidelines below to submit your finding. We aim to reply ASAP of receiving your finding. If a finding is accepted, we aim to publish a patch within **20** days. If it is declined, we will reply to let you know.
 
 ## Reporting Guidelines
 
@@ -40,16 +40,6 @@ At this time, only the following versions of **NIGHTINGALE** are supported:
 
 ### 5. Insufficient Logging and Monitoring
 - Lack of adequate logging and monitoring to detect security breaches.
-
-## Security Best Practices
-
-To enhance the security of **NIGHTINGALE**, we adhere to the following best practices:
-
-1. **Regular Updates**: Keeping software and dependencies up-to-date.
-2. **Secure Coding Practices**: Adhering to secure coding standards.
-3. **Penetration Testing**: Regularly conducting penetration tests to identify potential vulnerabilities.
-4. **Security Training**: Providing ongoing security training for our development team.
-5. **Incident Response Plan**: Maintaining a robust incident response plan to quickly address security incidents.
 
 ## Contact and Further Information
 
