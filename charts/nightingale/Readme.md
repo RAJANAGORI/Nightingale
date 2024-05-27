@@ -9,20 +9,9 @@ Let's Open Feathers in the Cloud: Nightingale Meets Kubernetes!
 Kubernetes 1.19+
 Helm 3.7+
 
-## Get Repository Info
-```
-helm repo add nightingale https://nightingale.rajanagori.in
-helm repo update
-```
-
 ## Install/Upgrade Chart
 ```
-helm upgrade --install nightingale nightingale/nightingale -n nightingale --create-namespace
-```
-
-## Install/Upgrade the chart using just one command
-```
-helm upgrade --install nightingale nightingale --repo https://nightingale.rajanagori.in -n nightingale --create-namespace
+helm upgrade --install nightingale oci://ghcr.io/rajanagori/nightingale/nightingale --version 0.0.1 -n nightingale --create-namespace
 ```
 
 ## Values
