@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Function to install a tool using pipx and a requirements file
+install_tool_with_pipx() {
+    local tool_dir=$1
+    local requirements_file=$2
+    echo "Installing $(basename $tool_dir)..."
+    cd "$tool_dir"
+    while read -r p; do pipx install "$p"; done < "$requirements_file"
+    echo "$(basename $tool_dir) installation completed."
+}
+
 # Create and activate MobSF virtual environment
 echo "Setting up MobSF..."
 cd "${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF"
@@ -21,54 +31,38 @@ deactivate
 # Install Arjun
 echo "Installing Arjun..."
 cd "${TOOLS_WEB_VAPT}/Arjun"
-pipx install arjun 
+pipx install arjun
 echo "Arjun installation completed."
 
 # Install HawkScan
 echo "Installing HawkScan..."
 cd "${TOOLS_WEB_VAPT}/HawkScan"
-python3 setup.py install 
+python3 setup.py install
 echo "HawkScan installation completed."
 
 # Install LinkFinder
 echo "Installing LinkFinder..."
 cd "${TOOLS_WEB_VAPT}/LinkFinder"
-python3 setup.py install 
+python3 setup.py install
 echo "LinkFinder installation completed."
 
 # Install Striker
-echo "Installing Striker..."
-cd "${TOOLS_WEB_VAPT}/Striker"
-# pipx install -r requirements.txt
-while read p; do pipx install "$p"; done < requirements.txt
-echo "Striker installation completed."
+install_tool_with_pipx "${TOOLS_WEB_VAPT}/Striker" "requirements.txt"
 
 # Install jwt_tool
-echo "Installing jwt_tool..."
-cd "${TOOLS_WEB_VAPT}/jwt_tool"
-pipx install -r requirements.txt --break-system-packages
-# while read p; do pipx install "$p"; done < requirements.txt
-echo "jwt_tool installation completed."
+install_tool_with_pipx "${TOOLS_WEB_VAPT}/jwt_tool" "requirements.txt"
 
 # Install Sublist3r
 echo "Installing Sublist3r..."
 cd "${TOOLS_WEB_VAPT}/Sublist3r"
-python3 setup.py install 
+python3 setup.py install
 echo "Sublist3r installation completed."
 
 # Install XSStrike
-echo "Installing XSStrike..."
-cd "${TOOLS_WEB_VAPT}/XSStrike"
-# pipx install -r requirements.txt 
-while read p; do pipx install "$p"; done < requirements.txt
-echo "XSStrike installation completed."
+install_tool_with_pipx "${TOOLS_WEB_VAPT}/XSStrike" "requirements.txt"
 
 # Install SpiderFoot
-echo "Installing SpiderFoot..."
-cd "${TOOLS_OSINT}/spiderfoot"
-# pipx install -r requirements.txt 
-while read p; do pipx install "$p"; done < requirements.txt
-echo "SpiderFoot installation completed."
+install_tool_with_pipx "${TOOLS_OSINT}/spiderfoot" "requirements.txt"
 
 # Install ReconSpider
 echo "Installing ReconSpider..."
@@ -78,33 +72,25 @@ python3 setup.py install
 echo "ReconSpider installation completed."
 
 # Install Recon-ng
-echo "Installing Recon-ng..."
-cd "${TOOLS_OSINT}/recon-ng"
-# pipx install -r REQUIREMENTS
-while read p; do pipx install "$p"; done < REQUIREMENTS
-echo "Recon-ng installation completed."
+install_tool_with_pipx "${TOOLS_OSINT}/recon-ng" "REQUIREMENTS"
 
 # Install Metagoofil
-echo "Installing Metagoofil..."
-cd "${TOOLS_OSINT}/metagoofil"
-# pipx install -r requirements.txt
-while read p; do pipx install "$p"; done < requirements.txt
-echo "Metagoofil installation completed."
+install_tool_with_pipx "${TOOLS_OSINT}/metagoofil" "requirements.txt"
 
 # Install theHarvester
-echo "Installing theHarvester..."
-cd "${TOOLS_OSINT}/theHarvester"
-# pipx install -r requirements/base.txt
-while read p; do pipx install "$p"; done < requirements/base.txt
-echo "theHarvester installation completed."
+install_tool_with_pipx "${TOOLS_OSINT}/theHarvester" "requirements/base.txt"
 
-# Install objection and octosuite from PyPI
-echo "Installing objection and octosuite..."
-pipx install objection 
-pipx install octosuite 
-pipx install dirsearch 
+# Install objection, octosuite, dirsearch, sqlmap, and frida-tools from PyPI
+echo "Installing objection, octosuite, dirsearch, sqlmap, and frida-tools..."
+pipx install objection
+pipx install octosuite
+pipx install dirsearch
 pipx install sqlmap
 pipx install frida-tools
-echo "Objection, octosuite, dirsearch, and sqlmap installation completed."
+echo "objection, octosuite, dirsearch, sqlmap, and frida-tools installation completed."
 
-echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
+# Add pipx binaries to PATH
+echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+source ~/.bashrc
+
+echo "All tools installed successfully!"
