@@ -1,8 +1,9 @@
-## Taking Image from Docker Hub for Programming language support
+# Stage 1: Base Image with Dependencies
 FROM ghcr.io/rajanagori/nightingale_programming_image:development
-## Installing tools using apt-get for web vapt
-RUN \
-    apt-get update -y && \
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Update and install necessary tools
+RUN apt-get update -y && \
     apt-get -f --no-install-recommends install -y \
     git \
     make \
@@ -11,55 +12,46 @@ RUN \
     libxml2 \
     libxslt1-dev \
     pipx && \
-### Creating Directories
-    cd /home && \
-    mkdir -p tools_osint
+    # Create directories for tools
+    mkdir -p /home/tools_osint
 
-ENV TOOLS_OSINT=/home/tools_osint/
+ENV TOOLS_OSINT=/home/tools_osint
 
+# Set working directory
 WORKDIR ${TOOLS_OSINT}
 
-# git clonning of the tools
-RUN \
-    # Git clone of recon-ng
-    git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
-    #Git clone Spiderfoot
+# Clone tools repository
+RUN git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
     git clone --depth 1 https://github.com/smicallef/spiderfoot.git && \
-    #Git clon metagoofil
-    git clone --depth 1 https://github.com/opsdisk/metagoofil &&\
-    #Git clone of theharvester
+    git clone --depth 1 https://github.com/opsdisk/metagoofil && \
     git clone --depth 1 https://github.com/laramies/theHarvester
-### INstalling tools
 
-RUN \
-    cd recon-ng && \
-    while read p; do pipx install "$p"; done < REQUIREMENTS &&\
+# Install recon-ng requirements
+RUN cd recon-ng && \
+    while read p; do pipx install "$p"; done < REQUIREMENTS && \
     cd ..
 
-RUN \
-## INstall Spiderfoot
-    cd spiderfoot && \
-    # while read p; do pipx install -f --include-deps "$p"; done < requirements.txt  &&\
-    pip3 install -r requirements.txt --break-system-packages &&\
+# Install Spiderfoot requirements
+RUN cd spiderfoot && \
+    pip3 install -r requirements.txt --break-system-packages && \
     cd ..
 
-RUN \
-    cd metagoofil &&\
-    python3 -m venv venv &&\
-    while read p; do pipx install -f --include-deps "$p"; done < requirements.txt  &&\
+# Install metagoofil requirements
+RUN cd metagoofil && \
+    python3 -m venv venv && \
+    while read p; do pipx install -f --include-deps "$p"; done < requirements.txt && \
     cd ..
 
-RUN \
-    cd theHarvester &&\
-    # while read p; do pipx install -f --include-deps "$p"; done < requirements/base.txt
-    pip3 install -r requirements/base.txt --break-system-packages
+# Install theHarvester requirements
+RUN cd theHarvester && \
+    pip3 install -r requirements/base.txt --break-system-packages && \
+    cd ..
 
-RUN \
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
+# Clean up unnecessary files and libraries
+RUN apt-get -y autoremove && \
+    apt-get -y clean && \
+    rm -rf /tmp/* /var/lib/apt/lists/* && \
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
+# Set final working directory
 WORKDIR /home
