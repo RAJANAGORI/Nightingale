@@ -1,4 +1,4 @@
-name: Anchore Grype vulnerability scan
+name: Anchore Grype vulnerability scan 
 
 on:
   push:
