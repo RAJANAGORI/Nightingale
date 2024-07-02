@@ -87,7 +87,7 @@ RUN \
 
 RUN \
 ### Installing Amass 
-    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.1.0/amass_Linux_amd64.zip -O amass.zip &&\
+    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.2.0/amass_Linux_amd64.zip -O amass.zip &&\
     unzip amass.zip && \
     mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip && \
     # Cleaning Unwanted libraries 
