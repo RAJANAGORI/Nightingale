@@ -17,7 +17,6 @@ RUN apt-get update -y --fix-missing && \
     locate \
     snapd \
     tree \
-    zsh \
     figlet \
     unzip \
     p7zip-full \
