@@ -3,15 +3,9 @@ name: Trivy Scan
 on:
   push:
     branches: [ main ]
-    paths:
-      - "Dockerfiles/*.Dockerfile"
-      - "Dockerfile"
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ main ]
-    paths:
-      - "Dockerfiles/*.Dockerfile"
-      - "Dockerfile"
   schedule:
     - cron: '0 23 * * 0'
 
