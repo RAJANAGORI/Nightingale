@@ -3,11 +3,17 @@ name: Anchore Grype vulnerability scan
 on:
   push:
     branches: [ "development" ]
+    paths:
+      - "Dockerfiles/*.Dockerfile"
+      - "Dockerfile"
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "development" ]
-  # schedule:
-  #   - cron: '25 8 * * 1'
+    paths:
+      - "Dockerfiles/*.Dockerfile"
+      - "Dockerfile"
+  schedule:
+    - cron: '0 23 * * 0'
 
 # permissions:
 #   contents: read
