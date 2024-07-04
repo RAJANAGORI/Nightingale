@@ -67,7 +67,7 @@ COPY shells/banner.sh /temp/banner.sh
 COPY configuration/nodejs-env/ /temp/
 
 RUN dos2unix ${HOME}/.bashrc && \
-    cat /tmp/banner.sh >> ${HOME}/.bashrc && \
+    cat /temp/banner.sh >> ${HOME}/.bashrc && \
     mkdir -p /home/tools_web_vapt /home/tools_osint /home/tools_mobile_vapt /home/tools_network_vapt \
     /home/tools_red_teaming /home/tools_forensics /home/wordlist /home/binaries /home/.gf /home/.shells
 
