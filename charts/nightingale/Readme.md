@@ -63,5 +63,5 @@ helm upgrade --install nightingale nightingale --repo https://rajanagori.github.
 
 ## Uninstall Chart
 ```
-helm uninstall nightinfgale -n nightingale
+helm uninstall nightingale -n nightingale
 ```
