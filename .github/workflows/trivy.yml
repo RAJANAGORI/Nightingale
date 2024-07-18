@@ -37,7 +37,7 @@ jobs:
           sudo apt-get install -y wget
           wget https://github.com/aquasecurity/trivy/releases/download/v0.29.2/trivy_0.29.2_Linux-64bit.deb
           sudo dpkg -i trivy_0.29.2_Linux-64bit.deb
-          trivy clean --java-db 
+          trivy --cache-dir ${HOME}/.cache/trivy
 
       # - name: Clean Trivy Java database
       #   run: trivy clean --java-db
@@ -50,6 +50,10 @@ jobs:
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL'
+
+      - name: Generate SBOM
+        run: |
+          trivy sbom --format spdx-json --output sbom.json ghcr.io/rajanagori/nightingale:stable
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
