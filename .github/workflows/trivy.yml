@@ -25,7 +25,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # Specify the desired Node.js version here
+          node-version: '14' # Specify the desired Node.js version here
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.29.2/trivy_0.29.2_Linux-64bit.deb
+          sudo dpkg -i trivy_0.29.2_Linux-64bit.deb
 
       - name: Clean Trivy Java database
         run: trivy clean --java-db
