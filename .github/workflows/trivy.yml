@@ -2,9 +2,13 @@ name: Trivy Scan
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
+    paths:
+      - ".github/workflows/trivy.yml"
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
+    paths:
+      - ".github/workflows/trivy.yml"
   schedule:
     - cron: '0 23 * * 0'
 
@@ -33,9 +37,10 @@ jobs:
           sudo apt-get install -y wget
           wget https://github.com/aquasecurity/trivy/releases/download/v0.29.2/trivy_0.29.2_Linux-64bit.deb
           sudo dpkg -i trivy_0.29.2_Linux-64bit.deb
+          trivy clean --java-db 
 
-      - name: Clean Trivy Java database
-        run: trivy clean --java-db
+      # - name: Clean Trivy Java database
+      #   run: trivy clean --java-db
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
