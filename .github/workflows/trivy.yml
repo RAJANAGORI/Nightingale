@@ -43,13 +43,8 @@ jobs:
       #   run: trivy clean --java-db
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'ghcr.io/rajanagori/nightingale:stable'
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL'
+        run: |
+          trivy image --skip-dirs /home/wordlist --format template --template "@/contrib/sarif.tpl" --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable
 
       - name: Generate SBOM
         run: |
