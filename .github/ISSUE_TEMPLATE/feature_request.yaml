@@ -1,0 +1,54 @@
+name: Tool Addition Request
+description: "Suggest or request adding a new tool to the OWASP Nightingale project"
+title: "[TOOL REQUEST]: "
+labels: ["enhancement", "tool request"]
+assignees:
+  - RAJANAGORI
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new tool for Nightingale! Please provide the following details to help us evaluate your request.
+  
+  - type: input
+    id: tool_name
+    attributes:
+      label: Tool Name
+      description: "Enter the name of the tool you are suggesting."
+      placeholder: "Enter the tool name"
+    validations:
+      required: true
+
+  - type: input
+    id: github_repo
+    attributes:
+      label: GitHub Repository
+      description: "Provide the link to the tool's GitHub repository."
+      placeholder: "https://github.com/user/tool"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: Additional Information
+      description: "Include any extra details like language, license, or key features."
+      placeholder: "Add any additional information here"
+  
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose of the Tool
+      description: "Describe what the tool does and why it should be included in Nightingale."
+      placeholder: "Explain the purpose and benefits of the tool"
+    validations:
+      required: true
+
+  # - type: checkboxes
+  #   id: code_of_conduct
+  #   attributes:
+  #     label: Code of Conduct
+  #     description: By submitting this issue, you agree to follow our [Code of Conduct](../CODE_OF_CONDUCT.md)
+  #     options:
+  #       - label: I agree to follow this project's Code of Conduct
+  #         required: true
