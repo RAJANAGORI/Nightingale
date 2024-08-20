@@ -1,5 +1,5 @@
 name: Tool Addition Request
-description: "Suggest or request adding a new tool to the OWASP Nightingale project"
+description: "Suggest or request adding a new tool to the Nightingale project"
 title: "[TOOL REQUEST]: "
 labels: ["enhancement", "tool request"]
 assignees:
