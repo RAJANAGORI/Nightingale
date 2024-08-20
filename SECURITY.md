@@ -1,19 +1,38 @@
 # Security Policy
- 
-Thank you for helping **NIGHTINGALE** stay secure. If you've identified a security vulnerability, please follow the reporting guidelines below to submit your finding. We aim to reply within **5** days of receiving your finding. If a finding is accepted, we aim to publish a patch within **10** days. If it is declined, we will reply to let you know.
- 
+
+Thank you for contributing to the security of **NIGHTINGALE**. We appreciate your help in identifying and addressing security vulnerabilities. Please follow the guidelines below to report any security issues. We are committed to responding promptly and transparently.
+
 ## Reporting Guidelines
- 
-Email **raja.nagori@owasp.org** with the following information:
-1. Name / affiliation
-2. Vulnerability description
-3. Steps to reproduce the issue
-4. Current public knowledge of this vulnerability (e.g. related CVE, security advisory, etc.)
- 
+
+To report a security vulnerability, please email **security@rajanagori.in** with the following information:
+
+- **Name / Affiliation**: Your name and organizational affiliation (if applicable).
+- **Vulnerability Description**: A detailed description of the vulnerability, including its nature and potential impact.
+- **Steps to Reproduce**: Clear and concise steps to reproduce the issue.
+- **Current Public Knowledge**: Any existing information related to the vulnerability, such as CVEs, security advisories, or known issues.
+
+### Response Time
+
+- **Acknowledgment**: We aim to acknowledge receipt of your report within **5** business days.
+- **Assessment**: Our team will assess the report and communicate the status within **5** business days of acknowledgment.
+- **Patch Release**: If the vulnerability is confirmed, we strive to release a patch within **10** business days.
+
+### Urgent or Severe Vulnerabilities
+
+If you believe the vulnerability poses an immediate risk, please include this information in your report, and we will prioritize it accordingly.
+
+### Disclosure
+
+We will work with you to ensure a responsible disclosure process. If a report is declined, we will provide an explanation.
+
 ## Supported Versions
- 
-At this time, only the following versions of **NIGHTINGALE** are supported:
- 
-| Tag | Supported          |
-| ------- | ------------------ |
-| Latest   | Support all security tools |
+
+As of now, **NIGHTINGALE** supports the following versions:
+
+| Tag    | Supported                     |
+|--------|-------------------------------|
+| Stable | Supports all security tools   |
+
+**Note:** Older versions may not receive security updates or support. Please upgrade to the latest version to benefit from the latest security patches and features.
+
+For any additional questions or concerns, feel free to contact us at **security@rajanagori.in**.
