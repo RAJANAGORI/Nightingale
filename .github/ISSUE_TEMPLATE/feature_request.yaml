@@ -28,6 +28,20 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: "Which section of the security testing domain do your requested tools fit into?"
+      options:
+        - Forensics and Redteam
+        - Mobile VAPT
+        - Network VAPT
+        - OSINT
+        - Web VAPT
+    validations:
+      required: true
+
   - type: textarea
     id: additional_info
     attributes:
