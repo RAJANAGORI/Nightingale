@@ -21,6 +21,7 @@ tools=(
     "github.com/tomnomnom/qsreplace@latest"
     "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
     "github.com/tomnomnom/waybackurls@latest"
+    "github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest"
 )
 
 # Loop through the tools and install each one

@@ -42,7 +42,10 @@ RUN \
     #git clone jwt_tool
     git clone --depth 1 https://github.com/ticarpi/jwt_tool.git &&\
     #git clone whatweb
-    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git
+    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git &&\
+    #Install git leaks
+    git clone --depth 1 https://github.com/gitleaks/gitleaks.git
+
 
 ### Installing Tools 
 RUN \
@@ -96,6 +99,15 @@ RUN \
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/* &&\
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
-    
 
+RUN \
+### Installing Trufflehog
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+
+RUN \
+## Installing Git leaks
+    cd gitleaks &&\
+    make build
+    
 WORKDIR /home
