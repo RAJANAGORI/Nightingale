@@ -34,6 +34,7 @@ declare -A TOOLS=(
     ["go_qsreplace"]="go list -m github.com/tomnomnom/qsreplace | grep qsreplace"
     ["go_subfinder"]="go list -m github.com/projectdiscovery/subfinder/v2 | grep subfinder"
     ["go_waybackurls"]="go list -m github.com/tomnomnom/waybackurls | grep waybackurls"
+    ["go_interactsh"]="go list -m github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest | grep interactsh"
 )
 
 # Function to check if a tool is already installed
@@ -123,6 +124,7 @@ list_tools() {
     echo "    - dirsearch"
     echo "    - sqlmap"
     echo "    - frida-tools"
+    echo "    - detect-secrets"
     echo "  go tools:"
     echo "    - amass"
     echo "    - assetfinder"
@@ -136,6 +138,7 @@ list_tools() {
     echo "    - qsreplace"
     echo "    - subfinder"
     echo "    - waybackurls"
+    echo "    - Interactsh"
 }
 
 # Main script logic

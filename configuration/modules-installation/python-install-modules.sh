@@ -87,7 +87,8 @@ pipx install octosuite
 pipx install dirsearch
 pipx install sqlmap
 pipx install frida-tools
-echo "objection, octosuite, dirsearch, sqlmap, and frida-tools installation completed."
+pipx install detect-secrets
+echo "objection, octosuite, dirsearch, sqlmap, detect-secrets, and frida-tools installation completed."
 
 # Add pipx binaries to PATH
 echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc

@@ -112,7 +112,9 @@ RUN chmod +x ${BINARIES}/* && \
     wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
     unzip 1.7.2.zip && \
     cd ttyd-1.7.2 && mkdir build && cd build && \
-    cmake .. && make && make install
+    cmake .. && make && make install &&\
+    ## Install tools using curl or wget 
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
 # Stage 4: Setup Metasploit
 FROM modules as metasploit
