@@ -44,7 +44,9 @@ RUN \
     #git clone whatweb
     git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git &&\
     #Install git leaks
-    git clone --depth 1 https://github.com/gitleaks/gitleaks.git
+    git clone --depth 1 https://github.com/gitleaks/gitleaks.git &&\
+    # Install Ghauri
+    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git
 
 
 ### Installing Tools 
@@ -73,7 +75,7 @@ RUN \
 RUN \
 ## installin jwt_tool
     cd jwt_tool && \
-    pip3 install -r requirements.txt --break-system-packages &&\
+    pip3 install -r requirements.txt &&\
     cd ..
 
 RUN \
@@ -109,5 +111,11 @@ RUN \
 ## Installing Git leaks
     cd gitleaks &&\
     make build
+
+RUN \
+    ## Installing Ghauri
+    cd ghauri &&\
+    while read p; do pipx install --include-deps "$p"; done < requirements.txt &&\
+    python3 setup.py install
     
 WORKDIR /home

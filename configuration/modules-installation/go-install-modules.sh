@@ -22,6 +22,8 @@ tools=(
     "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
     "github.com/tomnomnom/waybackurls@latest"
     "github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest"
+    "github.com/projectdiscovery/katana/cmd/katana@latest"
+    "github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"
 )
 
 # Loop through the tools and install each one
