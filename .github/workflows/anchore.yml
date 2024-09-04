@@ -39,7 +39,7 @@ jobs:
       id: scan
       with:
         image: "localbuild/testimage:latest"
-        grype-version: 0.77.4
+        grype-version: 0.80.0
         fail-build: true
         severity-cutoff: high  # Adjusted from "critical" to "high"
 
