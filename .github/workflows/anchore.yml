@@ -40,7 +40,6 @@ jobs:
         image: "localbuild/testimage:latest"
         grype-version: 0.80.0
         fail-build: true
-        severity-cutoff: critical
 
     - name: Upload vulnerability report
       uses: github/codeql-action/upload-sarif@v2
