@@ -75,7 +75,7 @@ RUN \
 RUN \
 ## installin jwt_tool
     cd jwt_tool && \
-    pip3 install -r requirements.txt &&\
+    while read p; do pipx install "$p"; done < requirements.txt &&\
     cd ..
 
 RUN \
