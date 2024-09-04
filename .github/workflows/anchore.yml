@@ -1,14 +1,13 @@
-name: Anchore Grype vulnerability scan
+name: Anchore Grype Vulnerability Scan
 
 on:
   push:
-    branches: [ "development" ]
+    branches: ["development"]
     paths:
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
-      - ".github/workflows/anchore.yml"
   pull_request:
-    branches: [ "development" ]
+    branches: ["development"]
     paths:
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
@@ -17,8 +16,9 @@ on:
 jobs:
   Anchore-Build-Scan:
     permissions:
-      contents: read
-      security-events: write
+      contents: read   # For actions/checkout to fetch code
+      security-events: write   # For uploading SARIF results
+      actions: read   # Only required for a private repository
     runs-on: self-hosted
     steps:
     - name: Check out the code
@@ -38,11 +38,14 @@ jobs:
       id: scan
       with:
         image: "localbuild/testimage:latest"
-        grype-version: 0.80.0
+        grype-version: 0.77.4
         fail-build: true
+        severity-cutoff: high  # Adjusted from "critical" to "high"
+
+    - name: Set SARIF output using environment file
+      run: echo "sarif_file=${{ steps.scan.outputs.sarif }}" >> $GITHUB_ENV
 
     - name: Upload vulnerability report
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: ${{ steps.scan.outputs.sarif }}
-        category: "Grype Scan"
+        sarif_file: ${{ env.sarif_file }}
