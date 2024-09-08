@@ -135,7 +135,7 @@ jobs:
         TAG_PREFIX="v1."
         
         # Fetch the list of tags from the Docker registry
-        RESPONSE=$(curl -s https://ghcr.io/v2/rajanagori/nightingale/tags/list)
+        RESPONSE=$(curl -s -u ${{ secrets.USERNAME }}:${{ secrets.TOKEN }} https://ghcr.io/v2/rajanagori/nightingale/tags/list)
         
         # Print the raw response for debugging
         echo "Raw response: $RESPONSE"
