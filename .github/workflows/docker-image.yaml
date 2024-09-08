@@ -134,14 +134,20 @@ jobs:
         # Define the prefix for version tags
         TAG_PREFIX="v1."
         
-        # Fetch the list of tags from the Docker registry
+        # Fetch the list of tags from the Docker registry with authentication
         RESPONSE=$(curl -s -u ${{ secrets.USERNAME }}:${{ secrets.TOKEN }} https://ghcr.io/v2/rajanagori/nightingale/tags/list)
         
         # Print the raw response for debugging
         echo "Raw response: $RESPONSE"
         
-        # Extract tags, handle cases where 'tags' might be null or not present
-        TAGS=$(echo "$RESPONSE" | jq -r '.tags // [] | select(startswith("v1.")) | sort')
+        # Check if the response contains errors
+        if echo "$RESPONSE" | jq -e '.errors' >/dev/null; then
+          echo "Error fetching tags: $(echo $RESPONSE | jq -r '.errors[] | .message')"
+          exit 1
+        fi
+        
+        # Extract tags, handling cases where 'tags' might be null or not present
+        TAGS=$(echo "$RESPONSE" | jq -r '.tags // [] | map(select(startswith("'"$TAG_PREFIX"'")) | sort)')
         
         # Print the extracted tags for debugging
         echo "Filtered tags: $TAGS"
@@ -166,7 +172,11 @@ jobs:
         
         # Export the new version tag and commit hash as environment variables
         echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
-        echo "COMMIT_HASH=$(echo 82db2b583e1676bc5dd97a2680e7de317953b447 | cut -c1-7)" >> $GITHUB_ENV
+        echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+        
+    - name: Get Commit Hash
+      id: commit
+      run: echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
 
     # Build and Push Docker images with version and commit hash tags
     - name: Build and Push nightingale_programming_image
