@@ -118,57 +118,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
-    # - name: Github Login
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.TOKEN }}
-    #   run: |
-    #     echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
 
-    - name: Github Ghrc.io login
-      uses: docker/login-action@v1
-      with:
-        registry: ${ DOCKER_REGISTRY }
-        username: ${{ secrets.TOKEN }}
-        password: ${{ secrets.USERNAME }}
+    - name: Github Login
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
 
-    
     - name: Clear apt cache
       run: sudo apt-get clean
 
     - name: Calculate Version Tag
       id: version
       run: |
-        # Define the prefix for version tags
         TAG_PREFIX="v1."
-        
-        # Fetch the list of tags from the Docker registry
-        RESPONSE=$(curl -s -u ${{ secrets.USERNAME }}:${{ secrets.TOKEN }} https://ghcr.io/v2/rajanagori/nightingale/tags/list)
-        
-        # Extract tags
-        TAGS=$(echo "$RESPONSE" | jq -r '.tags // [] | map(select(startswith("'"$TAG_PREFIX"'")) | sort)')
-        
-        # Get the latest tag
-        LAST_TAG=$(echo "$TAGS" | jq -r 'last // empty')
-        
-        # Increment the version number
-        if [ -z "$LAST_TAG" ]; then
-          VERSION=1
+        TAG_URL="https://ghcr.io/v2/rajanagori/nightingale/tags/list"
+        LATEST_TAG=$(curl -s $TAG_URL | jq -r '[.tags[] | select(startswith("v1."))] | sort | last')
+        if [ -z "$LATEST_TAG" ]; then
+          VERSION_TAG="${TAG_PREFIX}1.0.0"
         else
-          VERSION=$(echo "$LAST_TAG" | awk -F'.' '{print $3+1}')
+          MAJOR_MINOR=$(echo $LATEST_TAG | awk -F. '{print $1 "." $2}')
+          PATCH=$(echo $LATEST_TAG | awk -F. '{print $3}')
+          PATCH=$((PATCH + 1))
+          VERSION_TAG="${MAJOR_MINOR}.${PATCH}"
         fi
-        
-        # Construct the new version tag
-        VERSION_TAG="${TAG_PREFIX}${VERSION}.0"
-        
-        # Export the new version tag
         echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
 
-    # Build and Push Docker images with version and commit hash tags
+    - name: Get Commit Hash
+      id: commit
+      run: echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
+    # Build and Push Docker images with development, version, and commit hash tags
     - name: Build and Push nightingale_programming_image
       run: |
-        VERSION_TAG=${{ env.VERSION_TAG }}
-        COMMIT_HASH=${{ env.COMMIT_HASH }}
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
         docker build . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile \
           --label branch=development --label owner=RAJANAGORI \
           --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development \
@@ -180,8 +163,8 @@ jobs:
     
     - name: Build and Push nightingale_forensic_and_red_teaming
       run: |
-        VERSION_TAG=${{ env.VERSION_TAG }}
-        COMMIT_HASH=${{ env.COMMIT_HASH }}
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
         docker build . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile \
           --label branch=development --label owner=RAJANAGORI \
           --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development \
@@ -193,8 +176,8 @@ jobs:
     
     - name: Build and Push nightingale_web_vapt_image
       run: |
-        VERSION_TAG=${{ env.VERSION_TAG }}
-        COMMIT_HASH=${{ env.COMMIT_HASH }}
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
         docker build . --no-cache --file $DOCKERFILES_PATH/web_vapt.Dockerfile \
           --label branch=development --label owner=RAJANAGORI \
           --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development \
@@ -206,8 +189,8 @@ jobs:
     
     - name: Build and Push nightingale_network_vapt_image
       run: |
-        VERSION_TAG=${{ env.VERSION_TAG }}
-        COMMIT_HASH=${{ env.COMMIT_HASH }}
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
         docker build . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile \
           --label branch=development --label owner=RAJANAGORI \
           --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development \
@@ -219,8 +202,8 @@ jobs:
     
     - name: Build and Push nightingale_osint_image
       run: |
-        VERSION_TAG=${{ env.VERSION_TAG }}
-        COMMIT_HASH=${{ env.COMMIT_HASH }}
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
         docker build . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile \
           --label branch=development --label owner=RAJANAGORI \
           --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development \
@@ -232,8 +215,8 @@ jobs:
     
     - name: Build and Push nightingale_mobile_vapt_image
       run: |
-        VERSION_TAG=${{ env.VERSION_TAG }}
-        COMMIT_HASH=${{ env.COMMIT_HASH }}
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
         docker build . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile \
           --label branch=development --label owner=RAJANAGORI \
           --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:development \
@@ -245,8 +228,8 @@ jobs:
     
     - name: Build and Push nightingale_wordlist_image
       run: |
-        VERSION_TAG=${{ env.VERSION_TAG }}
-        COMMIT_HASH=${{ env.COMMIT_HASH }}
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
         docker build . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile \
           --label branch=development --label owner=RAJANAGORI \
           --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:development \
@@ -258,8 +241,8 @@ jobs:
     
     - name: Build and Push nightingale_development_image
       run: |
-        VERSION_TAG=${{ env.VERSION_TAG }}
-        COMMIT_HASH=${{ env.COMMIT_HASH }}
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
         docker build . --no-cache --file Dockerfile \
           --label branch=development --label owner=RAJANAGORI \
           --tag $DOCKER_REGISTRY/rajanagori/nightingale:development \
