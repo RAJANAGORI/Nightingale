@@ -110,6 +110,8 @@ env:
   DOCKER_REGISTRY: ghcr.io
   DOCKERFILES_PATH: Dockerfiles
   IMAGE_NAME: ${{ github.repository }}
+  ACTIONS_RUNNER_DEBUG: true      # Enable runner-level debug logs
+  ACTIONS_STEP_DEBUG: true        # Enable step-level debug logs
 
 jobs:
   build:
@@ -121,6 +123,7 @@ jobs:
         GITHUB_TOKEN: ${{secrets.TOKEN}}
       run: |
         echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
+
     # Clear apt cache    
     - name: Clear apt cache
       run: sudo apt-get clean
@@ -138,6 +141,12 @@ jobs:
         VERSION_TAG="${TAG_PREFIX}${VERSION}.0"
         echo "::set-output name=tag::$VERSION_TAG"
 
+    - name: Get Commit Hash
+      id: vars
+      run: |
+        echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+        echo "VERSION_TAG=${{ steps.version.outputs.tag }}" >> $GITHUB_ENV
+        
     # Extract the current commit hash
     - name: Get Commit Hash
       id: commit
