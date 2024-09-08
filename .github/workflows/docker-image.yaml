@@ -127,25 +127,41 @@ jobs:
     - name: Clear apt cache
       run: sudo apt-get clean
 
+    - name: Check Docker Tags
+      run: |
+        curl -s https://ghcr.io/v2/rajanagori/nightingale/tags/list | jq .
+
+    - name: Determine Version Series
+      id: series
+      run: |
+        BASE_PREFIX="v"
+        TAGS=$(curl -s https://ghcr.io/v2/rajanagori/nightingale/tags/list | jq -r ".tags[] | select(startswith(\"${BASE_PREFIX}\"))" || echo "[]")
+        PREFIX=$(echo "$TAGS" | grep -oP "${BASE_PREFIX}\d+\.\d+" | sort -V | tail -n 1)
+        if [ -z "$PREFIX" ]; then
+          PREFIX="${BASE_PREFIX}1.0"
+        fi
+        echo "VERSION_PREFIX=$PREFIX" >> $GITHUB_ENV
+
     - name: Calculate Version Tag
       id: version
       run: |
-        TAG_PREFIX="v1."
-        TAG_URL="https://ghcr.io/v2/rajanagori/nightingale/tags/list"
-        LATEST_TAG=$(curl -s $TAG_URL | jq -r '[.tags[] | select(startswith("v1."))] | sort | last')
+        PREFIX=${{ env.VERSION_PREFIX }}
+        TAG_PREFIX="${PREFIX}."
+        TAGS=$(curl -s https://ghcr.io/v2/rajanagori/nightingale/tags/list | jq -r ".tags[] | select(startswith(\"${PREFIX}\"))" || echo "[]")
+        LATEST_TAG=$(echo "$TAGS" | sort -V | tail -n 1)
         if [ -z "$LATEST_TAG" ]; then
-          VERSION_TAG="${TAG_PREFIX}1.0.0"
+          NEXT_VERSION="0"
         else
-          MAJOR_MINOR=$(echo $LATEST_TAG | awk -F. '{print $1 "." $2}')
-          PATCH=$(echo $LATEST_TAG | awk -F. '{print $3}')
-          PATCH=$((PATCH + 1))
-          VERSION_TAG="${MAJOR_MINOR}.${PATCH}"
+          NEXT_VERSION=$(echo $LATEST_TAG | awk -F '.' '{print $3+1}')
         fi
-        echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+        VERSION_TAG="${TAG_PREFIX}${NEXT_VERSION}"
+        echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
 
     - name: Get Commit Hash
-      id: commit
-      run: echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      id: vars
+      run: |
+        echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
 
     # Build and Push Docker images with development, version, and commit hash tags
     - name: Build and Push nightingale_programming_image
