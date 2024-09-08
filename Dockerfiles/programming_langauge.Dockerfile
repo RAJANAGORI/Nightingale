@@ -23,6 +23,7 @@ RUN apt-get update && \
     python3-venv \
     python3-dev \
     python3-openssl \
+    pipx \
     python3-distutils && \
     pip install --upgrade pip && \
     pip install setuptools==58.2.0 && \
@@ -89,13 +90,14 @@ RUN apt-get update -y --fix-missing && \
     libncursesw5-dev \
     xz-utils \
     tk-dev \
-    python3-full \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    python3-openssl \
-    python3-distutils \
     pipx
+    # python3-full \
+    # python3-pip \
+    # python3-venv \
+    # python3-dev \
+    # python3-openssl \
+    # python3-distutils \
+    # pipx
 
 # Copy necessary files from other stages
 COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
