@@ -1,3 +1,95 @@
+# name: Docker Image CI
+
+# on:
+#   push:
+#     branches: [development]
+#     paths:
+#       - "Dockerfiles/*.Dockerfile"
+#       - "Dockerfile"
+#       - ".github/workflows/docker-image.yaml"
+#   pull_request:
+#     branches: [development]
+#     paths:
+#       - "Dockerfiles/*.Dockerfile"
+#       - "Dockerfile"
+#       - ".github/workflows/docker-image.yaml"
+
+# env:
+#   DOCKER_REGISTRY: ghcr.io
+#   DOCKERFILES_PATH: Dockerfiles
+#   IMAGE_NAME: ${{ github.repository }}
+
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Github Login
+#       env:
+#         GITHUB_TOKEN: ${{secrets.TOKEN}}
+#       run: |
+#         echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
+#     # Clear apt cache    
+#     - name: Clear apt cache
+#       run: sudo apt-get clean
+
+#     # Build Docker images
+#     - name: Build nightingale_programming_image
+#       run: |
+#         docker build . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development
+#     # # Push Docker images
+#     - name: Push nightingale_programming_image
+#       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development"
+
+#     - name: Build nightingale_forensic_and_red_teaming
+#       run: |
+#         docker build . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development
+    
+#     - name: Push nightingale_forensic_and_red_teaming1
+#       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development"
+    
+#     - name: Build nightingale_web_vapt_image
+#       run: |
+#         docker build  . --no-cache --file $DOCKERFILES_PATH/web_vapt.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development
+    
+#     - name: Push nightingale_web_vapt_image
+#       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development"
+    
+#     - name: Build nightingale_network_vapt_image
+#       run: |
+#         docker build . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development
+    
+#     - name: Push nightingale_network_vapt_image
+#       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development"
+    
+#     - name: Build nightingale_osint_image
+#       run: |
+#         docker build . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development
+    
+#     - name: Push nightingale_osint_image
+#       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development"
+    
+#     - name: Build nightingale_mobile_vapt_image
+#       run: |
+#         docker build . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:development
+    
+#     - name: Push nightingale_mobile_vapt_image
+#       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:development"
+    
+#     - name: Build nightingale_wordlist_image
+#       run: |
+#         docker build . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:development
+    
+#     - name: Push nightingale_wordlist_image
+#       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:development"
+    
+#     - name: Build nightingale_development_image
+#       run: |
+#         docker build . --no-cache --file Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale:development
+
+#     - name: Push nightingale_development_image
+#       run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale:development"
 name: Docker Image CI
 
 on:
@@ -19,7 +111,6 @@ env:
   DOCKERFILES_PATH: Dockerfiles
   IMAGE_NAME: ${{ github.repository }}
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,59 +125,125 @@ jobs:
     - name: Clear apt cache
       run: sudo apt-get clean
 
-    # Build Docker images
-    - name: Build nightingale_programming_image
+    # Calculate the version tag (incrementing from v1.1.0)
+    - name: Calculate Version Tag
+      id: version
       run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=optimize/code-reduction --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development
-    # # Push Docker images
-    - name: Push nightingale_programming_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development"
+        # Get the latest tag from the registry (if available)
+        TAG_PREFIX="v1."
+        VERSION=$(curl -s https://ghcr.io/v2/rajanagori/nightingale/tags/list | jq -r '[.tags[] | select(startswith("v1."))] | sort | last' | awk -F'.' '{print $3+1}')
+        if [ -z "$VERSION" ]; then
+          VERSION=1
+        fi
+        VERSION_TAG="${TAG_PREFIX}${VERSION}.0"
+        echo "::set-output name=tag::$VERSION_TAG"
 
-    - name: Build nightingale_forensic_and_red_teaming
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development
-    
-    - name: Push nightingale_forensic_and_red_teaming1
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development"
-    
-    - name: Build nightingale_web_vapt_image
-      run: |
-        docker build  . --no-cache --file $DOCKERFILES_PATH/web_vapt.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development
-    
-    - name: Push nightingale_web_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development"
-    
-    - name: Build nightingale_network_vapt_image
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development
-    
-    - name: Push nightingale_network_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development"
-    
-    - name: Build nightingale_osint_image
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development
-    
-    - name: Push nightingale_osint_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development"
-    
-    - name: Build nightingale_mobile_vapt_image
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:development
-    
-    - name: Push nightingale_mobile_vapt_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:development"
-    
-    - name: Build nightingale_wordlist_image
-      run: |
-        docker build . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:development
-    
-    - name: Push nightingale_wordlist_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:development"
-    
-    - name: Build nightingale_development_image
-      run: |
-        docker build . --no-cache --file Dockerfile --label branch=development --label owner=RAJANAGORI --tag $DOCKER_REGISTRY/rajanagori/nightingale:development
+    # Extract the current commit hash
+    - name: Get Commit Hash
+      id: commit
+      run: echo "::set-output name=hash::${{ github.sha }}"
 
-    - name: Push nightingale_development_image
-      run: docker push "$DOCKER_REGISTRY/rajanagori/nightingale:development"
+    # Build and Push Docker images with development, version, and commit hash tags
+    - name: Build and Push nightingale_programming_image
+      run: |
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
+        docker build . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile \
+          --label branch=development --label owner=RAJANAGORI \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:$VERSION_TAG \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:$COMMIT_HASH
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:development"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:$VERSION_TAG"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_programming_image:$COMMIT_HASH"
+    
+    - name: Build and Push nightingale_forensic_and_red_teaming
+      run: |
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
+        docker build . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile \
+          --label branch=development --label owner=RAJANAGORI \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:$VERSION_TAG \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:$COMMIT_HASH
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:development"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:$VERSION_TAG"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:$COMMIT_HASH"
+    
+    - name: Build and Push nightingale_web_vapt_image
+      run: |
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
+        docker build . --no-cache --file $DOCKERFILES_PATH/web_vapt.Dockerfile \
+          --label branch=development --label owner=RAJANAGORI \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:$VERSION_TAG \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:$COMMIT_HASH
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:development"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:$VERSION_TAG"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:$COMMIT_HASH"
+    
+    - name: Build and Push nightingale_network_vapt_image
+      run: |
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
+        docker build . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile \
+          --label branch=development --label owner=RAJANAGORI \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:$VERSION_TAG \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:$COMMIT_HASH
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:development"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:$VERSION_TAG"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:$COMMIT_HASH"
+    
+    - name: Build and Push nightingale_osint_image
+      run: |
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
+        docker build . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile \
+          --label branch=development --label owner=RAJANAGORI \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:$VERSION_TAG \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:$COMMIT_HASH
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:development"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:$VERSION_TAG"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:$COMMIT_HASH"
+    
+    - name: Build and Push nightingale_mobile_vapt_image
+      run: |
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
+        docker build . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile \
+          --label branch=development --label owner=RAJANAGORI \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:development \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:$VERSION_TAG \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:$COMMIT_HASH
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:development"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:$VERSION_TAG"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:$COMMIT_HASH"
+    
+    - name: Build and Push nightingale_wordlist_image
+      run: |
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
+        docker build . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile \
+          --label branch=development --label owner=RAJANAGORI \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:development \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:$VERSION_TAG \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:$COMMIT_HASH
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:development"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:$VERSION_TAG"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:$COMMIT_HASH"
+    
+    - name: Build and Push nightingale_development_image
+      run: |
+        VERSION_TAG=${{ steps.version.outputs.tag }}
+        COMMIT_HASH=${{ steps.commit.outputs.hash }}
+        docker build . --no-cache --file Dockerfile \
+          --label branch=development --label owner=RAJANAGORI \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale:development \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale:$VERSION_TAG \
+          --tag $DOCKER_REGISTRY/rajanagori/nightingale:$COMMIT_HASH
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale:development"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale:$VERSION_TAG"
+        docker push "$DOCKER_REGISTRY/rajanagori/nightingale:$COMMIT_HASH"
