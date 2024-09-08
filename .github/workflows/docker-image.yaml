@@ -131,23 +131,42 @@ jobs:
     - name: Calculate Version Tags
       id: version
       run: |
-        # Get the latest tag from the registry (if available)
+        # Define the prefix for version tags
         TAG_PREFIX="v1."
-        TAGS=$(curl -s https://ghcr.io/v2/rajanagori/nightingale/tags/list | jq -r '[.tags[] | select(startswith("v1."))] | sort')
-        LAST_TAG=$(echo "$TAGS" | jq -r 'last')
+        
+        # Fetch the list of tags from the Docker registry
+        RESPONSE=$(curl -s https://ghcr.io/v2/rajanagori/nightingale/tags/list)
+        
+        # Print the raw response for debugging
+        echo "Raw response: $RESPONSE"
+        
+        # Extract tags, handle cases where 'tags' might be null or not present
+        TAGS=$(echo "$RESPONSE" | jq -r '.tags // [] | select(startswith("v1.")) | sort')
+        
+        # Print the extracted tags for debugging
+        echo "Filtered tags: $TAGS"
+        
+        # Get the latest tag from the sorted list
+        LAST_TAG=$(echo "$TAGS" | jq -r 'last // empty')
+        
+        # Print the last tag for debugging
+        echo "Last tag: $LAST_TAG"
         
         # Get the next version number
         if [ -z "$LAST_TAG" ]; then
+          # If no tags are found, start with version 1
           VERSION=1
         else
+          # Extract the current version number and increment it
           VERSION=$(echo "$LAST_TAG" | awk -F'.' '{print $3+1}')
         fi
         
+        # Construct the new version tag
         VERSION_TAG="${TAG_PREFIX}${VERSION}.0"
         
-        # Export the tags to environment variables
+        # Export the new version tag and commit hash as environment variables
         echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
-        echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+        echo "COMMIT_HASH=$(echo 82db2b583e1676bc5dd97a2680e7de317953b447 | cut -c1-7)" >> $GITHUB_ENV
 
     # Build and Push Docker images with version and commit hash tags
     - name: Build and Push nightingale_programming_image
