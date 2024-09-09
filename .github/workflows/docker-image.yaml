@@ -123,10 +123,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
 
-    - name: Set Image Name to Lowercase
+    - name: Set Username to Lowercase
       run: |
-        IMAGE_NAME_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        echo "IMAGE_NAME=$IMAGE_NAME_LOWER" >> $GITHUB_ENV
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+    
 
     - name: Clear apt cache
       run: sudo apt-get clean
