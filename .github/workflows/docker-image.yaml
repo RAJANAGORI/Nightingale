@@ -180,10 +180,11 @@ jobs:
           IFS=":" read -r IMAGE_NAME DOCKERFILE_PATH <<< "$IMAGE"
           docker build . --no-cache --file $DOCKERFILE_PATH \
             --label branch=development --label owner=RAJANAGORI \
-            --tag $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}/$IMAGE_NAME:development \
-            --tag $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}/$IMAGE_NAME:${{ env.VERSION_TAG }} \
-            --tag $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}/$IMAGE_NAME:${{ env.COMMIT_HASH }}
-          docker push "$DOCKER_REGISTRY/${{ env.IMAGE_NAME }}/$IMAGE_NAME:development"
-          docker push "$DOCKER_REGISTRY/${{ env.IMAGE_NAME }}/$IMAGE_NAME:${{ env.VERSION_TAG }}"
-          docker push "$DOCKER_REGISTRY/${{ env.IMAGE_NAME }}/$IMAGE_NAME:${{ env.COMMIT_HASH }}"
+            --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:development \
+            --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:${{ env.VERSION_TAG }} \
+            --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:${{ env.COMMIT_HASH }}
+          docker push "$DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:development"
+          docker push "$DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:${{ env.VERSION_TAG }}"
+          docker push "$DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:${{ env.COMMIT_HASH }}"
         done
+
