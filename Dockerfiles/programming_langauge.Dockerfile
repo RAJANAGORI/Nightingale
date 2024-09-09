@@ -101,7 +101,7 @@ RUN apt-get update -y --fix-missing && \
 
 # Copy necessary files from other stages
 COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
-COPY --from=python3 /usr/bin/python3 /usr/bin/python3
+COPY --from=python3 /usr/bin/python* /usr/bin/python*
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
 COPY --from=java /usr/java/openjdk-23 /usr/java/openjdk-23
