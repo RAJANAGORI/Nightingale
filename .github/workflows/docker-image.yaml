@@ -109,9 +109,8 @@ on:
 env:
   DOCKER_REGISTRY: ghcr.io
   DOCKERFILES_PATH: Dockerfiles
-  IMAGE_NAME: ${{ github.repository }}
-  ACTIONS_RUNNER_DEBUG: true      # Enable runner-level debug logs
-  ACTIONS_STEP_DEBUG: true        # Enable step-level debug logs
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
 
 jobs:
   build:
@@ -124,6 +123,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
 
+    - name: Set Image Name to Lowercase
+      run: |
+        IMAGE_NAME_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        echo "IMAGE_NAME=$IMAGE_NAME_LOWER" >> $GITHUB_ENV
+
     - name: Clear apt cache
       run: sudo apt-get clean
 
@@ -131,7 +135,12 @@ jobs:
       id: series
       run: |
         BASE_PREFIX="v"
-        TAGS=$(curl -s https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list | jq -r ".tags[] | select(startswith(\"${BASE_PREFIX}\"))" || echo "[]")
+        TAGS=$(curl -s https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list)
+        if echo "$TAGS" | jq . > /dev/null 2>&1; then
+          TAGS=$(echo "$TAGS" | jq -r ".tags[] | select(startswith(\"${BASE_PREFIX}\"))")
+        else
+          TAGS="[]"
+        fi
         PREFIX=$(echo "$TAGS" | grep -oP "${BASE_PREFIX}\d+\.\d+" | sort -V | tail -n 1)
         if [ -z "$PREFIX" ]; then
           PREFIX="${BASE_PREFIX}1.0"
@@ -167,7 +176,7 @@ jobs:
           "nightingale_osint_tools_image:$DOCKERFILES_PATH/osint_tools.Dockerfile"
           "nightingale_mobile_vapt_image:$DOCKERFILES_PATH/mobile_vapt.Dockerfile"
           "nightingale_wordlist_image:$DOCKERFILES_PATH/wordlist.Dockerfile"
-          "nightingale:$DOCKERFILE"
+          "nightingale:Dockerfile"
         )
         
         for IMAGE in "${IMAGES[@]}"; do
