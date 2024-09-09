@@ -135,23 +135,19 @@ jobs:
       id: series
       run: |
         BASE_PREFIX="v"
-        TAGS=$(curl -s https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list)
-        if echo "$TAGS" | jq . > /dev/null 2>&1; then
-          TAGS=$(echo "$TAGS" | jq -r ".tags[] | select(startswith(\"${BASE_PREFIX}\"))")
-        else
-          TAGS="[]"
-        fi
-        PREFIX=$(echo "$TAGS" | grep -oP "${BASE_PREFIX}\d+\.\d+" | sort -V | tail -n 1)
+        TAGS=$(curl -s https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list | tr ',' '\n' | grep "\"$BASE_PREFIX" | tr -d '\"')
+        PREFIX=$(echo "$TAGS" | grep -oP "$BASE_PREFIX\d+\.\d+" | sort -V | tail -n 1)
         if [ -z "$PREFIX" ]; then
           PREFIX="${BASE_PREFIX}1.0"
         fi
         echo "VERSION_PREFIX=$PREFIX" >> $GITHUB_ENV
+        echo "::set-output name=version_prefix::$PREFIX"
 
     - name: Calculate Version Tag
       id: version
       run: |
-        TAG_PREFIX="${{ env.VERSION_PREFIX }}."
-        TAGS=$(curl -s https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list | jq -r ".tags[] | select(startswith(\"${TAG_PREFIX}\"))" || echo "[]")
+        TAG_PREFIX="${{ steps.series.outputs.version_prefix }}."
+        TAGS=$(curl -s https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list | tr ',' '\n' | grep "\"$TAG_PREFIX" | tr -d '\"')
         LATEST_TAG=$(echo "$TAGS" | sort -V | tail -n 1)
         if [ -z "$LATEST_TAG" ]; then
           NEXT_VERSION="0"
