@@ -75,7 +75,7 @@ RUN \
 RUN \
 ## installin jwt_tool
     cd jwt_tool && \
-    pip3 install -r requirements.txt &&\
+    pip3 install -r requirements.txt --break-system-packages &&\
     cd ..
 
 RUN \
