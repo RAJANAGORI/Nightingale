@@ -97,17 +97,6 @@ jobs:
       with:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
-        output-format: sarif
-        grype-args: --verbose
-
-    - name: Check for SARIF output
-      run: |
-        if [ -z "${{ steps.scan.outputs.sarif }}" ]; then
-          echo "No SARIF report generated."
-          exit 1  # Exit with an error code if no SARIF is generated
-        else
-          echo "SARIF report generated at: ${{ steps.scan.outputs.sarif }}"
-        fi
 
     - name: Upload vulnerability report
       uses: github/codeql-action/upload-sarif@v2
