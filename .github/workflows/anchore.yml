@@ -93,7 +93,7 @@ jobs:
 
     - name: Run the Anchore Grype scan action
       id: scan
-      uses: anchore/scan-action@v4
+      uses: anchore/scan-action@v2
       with:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
