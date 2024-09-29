@@ -74,7 +74,7 @@ jobs:
         df -h
         docker --version
     
-    # Build Docker image
+    # Build Docker image 
     - name: Build the Docker image
       run: |
         echo "Building Docker image..."
