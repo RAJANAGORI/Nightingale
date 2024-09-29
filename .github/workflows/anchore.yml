@@ -66,13 +66,6 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v4
 
-    # Docker login (if pulling from Docker Hub)
-    # - name: Log in to Docker Hub
-    #   uses: docker/login-action@v2
-    #   with:
-    #     username: ${{ secrets.DOCKER_USERNAME }}
-    #     password: ${{ secrets.DOCKER_PASSWORD }}
-
     # Print environment and available disk space for debugging
     - name: Print environment details and disk space
       run: |
@@ -104,17 +97,20 @@ jobs:
       with:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
-        fail-build: false  # Continue the workflow even if critical vulnerabilities are found
-        severity-cutoff: critical
 
-    # Check scan results and handle output
-    - name: Handle scan results
+   - name: Check for SARIF output
       run: |
-        if [[ -n "${{ steps.scan.outputs.sarif }}" ]]; then
-          echo "SARIF report generated."
+        if [ -z "${{ steps.scan.outputs.sarif }}" ]; then
+          echo "No SARIF report generated."
+          exit 1  # Exit with an error code if no SARIF is generated
         else
-          echo "No SARIF file generated."
+          echo "SARIF report generated at: ${{ steps.scan.outputs.sarif }}"
         fi
+
+    - name: Upload vulnerability report
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif }}
 
     # Additional cleanup
     - name: Final cleanup
