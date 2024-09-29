@@ -65,22 +65,28 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v4
 
-    # Debugging environment variables
+    # Print environment details for debugging
     - name: Print environment details
       run: |
         echo "Running on $(uname -a)"
         echo "Current directory: $(pwd)"
         echo "Listing files in root directory:"
         ls -la /
+    
+    # Print details of the repository contents for debugging
+    - name: List repository files
+      run: |
+        echo "Listing files in repository directory:"
+        ls -la .
 
-    # Add dependencies needed for Docker image build and log installed packages
+    # Install dependencies needed for Docker image build
     - name: Install dependencies
       run: |
-        sudo apt-get update && sudo apt-get install -y wget unzip cmake build-essential
+        sudo apt-get update && sudo apt-get install -y wget unzip cmake build-essential libjson-c-dev
         echo "Installed packages:"
         dpkg --get-selections | grep -v deinstall
 
-    # Build Docker image with detailed logging and error tracing
+    # Build Docker image with detailed logging
     - name: Build the Docker image
       run: |
         echo "Building Docker image..."
@@ -98,9 +104,8 @@ jobs:
         grype-version: 0.77.4
         fail-build: true
         severity-cutoff: critical
-      continue-on-error: false
 
-    # Debugging: Show Grype results directory
+    # Debugging: Show Grype scan results
     - name: Show Grype scan results
       run: |
         echo "Listing Grype scan results:"
