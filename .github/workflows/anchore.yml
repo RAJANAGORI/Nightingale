@@ -98,15 +98,27 @@ jobs:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
 
-    - name: Check SARIF output
-      run: |
-        echo "SARIF Output: ${{ steps.scan.outputs.sarif }}"
-        ls -alh
-
     - name: Upload vulnerability report
-      uses: github/codeql-action/upload-sarif@v3
+      uses: actions/upload-artifact@v3
       with:
-        sarif_file: ${{ steps.scan.outputs.sarif }}
+        name: vulnerabilities-report
+        path: vulnerabilities.json
+
+    - name: Convert JSON to SARIF
+      run: |
+        # Make sure you have a conversion script or tool
+        # Assuming you have a script called convert_json_to_sarif.py
+        if command -v python3 &> /dev/null; then
+          python3 convert_json_to_sarif.py vulnerabilities.json output.sarif
+        else
+          echo "Python is not installed. Please install Python to convert JSON to SARIF."
+          exit 1
+        fi
+
+    - name: Upload SARIF report
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: output.sarif
 
     # Additional cleanup
     - name: Final cleanup
