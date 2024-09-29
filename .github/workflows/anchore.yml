@@ -106,14 +106,35 @@ jobs:
 
     - name: Convert JSON to SARIF
       run: |
-        # Make sure you have a conversion script or tool
-        # Assuming you have a script called convert_json_to_sarif.py
-        if command -v python3 &> /dev/null; then
-          python3 convert_json_to_sarif.py vulnerabilities.json output.sarif
-        else
-          echo "Python is not installed. Please install Python to convert JSON to SARIF."
-          exit 1
-        fi
+        echo "Converting vulnerabilities.json to SARIF..."
+        json_content=$(cat vulnerabilities.json)
+        sarif_output='{
+          "version": "2.1.0",
+          "runs": [
+            {
+              "tool": {
+                "driver": {
+                  "name": "Anchore Grype",
+                  "version": "0.77.4"
+                }
+              },
+              "results": []
+            }
+          ]
+        }'
+
+        echo "$json_content" | jq -c '.vulnerabilities[]' | while IFS= read -r vulnerability; do
+          sarif_result='{}'
+          
+          for key in $(echo "$vulnerability" | jq -r 'keys[]'); do
+            value=$(echo "$vulnerability" | jq -r --arg key "$key" '.[$key]')
+            sarif_result=$(echo "$sarif_result" | jq --arg key "$key" --arg value "$value" '.[$key] = $value')
+          done
+
+          sarif_output=$(echo "$sarif_output" | jq --argjson result "$sarif_result" '.runs[0].results += [$result]')
+        done
+        
+        echo "$sarif_output" > output.sarif
 
     - name: Upload SARIF report
       uses: github/codeql-action/upload-sarif@v2
