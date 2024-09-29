@@ -97,6 +97,8 @@ jobs:
       with:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
+        output-format: sarif
+        grype-args: --verbose
 
     - name: Check for SARIF output
       run: |
