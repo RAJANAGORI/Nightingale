@@ -98,7 +98,7 @@ jobs:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
 
-   - name: Check for SARIF output
+    - name: Check for SARIF output
       run: |
         if [ -z "${{ steps.scan.outputs.sarif }}" ]; then
           echo "No SARIF report generated."
