@@ -96,7 +96,7 @@ jobs:
       uses: anchore/scan-action@v4
       with:
         image: "localbuild/testimage:latest"
-        grype-version: 0.81.0
+        grype-version: 0.77.4
 
     - name: Check SARIF output
       run: |
