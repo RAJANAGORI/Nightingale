@@ -57,45 +57,48 @@ on:
 jobs:
   Anchore-Build-Scan:
     permissions:
-      contents: read # Needed for actions/checkout to fetch the code
-      security-events: write # For uploading vulnerability results
+      contents: read
+      security-events: write
     runs-on: ubuntu-latest
 
     steps:
+    # Check out the code
     - name: Check out the code
       uses: actions/checkout@v4
 
-    # Print environment details for debugging
-    - name: Print environment details
+    # Docker login (if pulling from Docker Hub)
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Print environment and available disk space for debugging
+    - name: Print environment details and disk space
       run: |
         echo "Running on $(uname -a)"
         echo "Current directory: $(pwd)"
-        echo "Listing files in root directory:"
-        ls -la /
+        df -h
+        docker --version
     
-    # Print details of the repository contents for debugging
-    - name: List repository files
-      run: |
-        echo "Listing files in repository directory:"
-        ls -la .
-
-    # Install dependencies needed for Docker image build
-    - name: Install dependencies
-      run: |
-        sudo apt-get update && sudo apt-get install -y wget unzip cmake build-essential libjson-c-dev
-        echo "Installed packages:"
-        dpkg --get-selections | grep -v deinstall
-
-    # Build Docker image with detailed logging
+    # Build Docker image
     - name: Build the Docker image
       run: |
         echo "Building Docker image..."
         docker build . --file Dockerfile --tag localbuild/testimage:latest
         echo "Docker build finished with exit code $?"
-        echo "Listing images to ensure the build was successful:"
+        echo "Listing Docker images:"
         docker images
 
-    # Run the Anchore Grype scan action
+    # Clean up unused Docker images to free up space
+    - name: Clean up Docker
+      run: |
+        echo "Cleaning up Docker to free up space..."
+        docker system prune -f
+        echo "Disk space after cleanup:"
+        df -h
+
+    # Run Anchore Grype scan
     - name: Run the Anchore Grype scan action
       uses: anchore/scan-action@v2
       id: scan
@@ -105,14 +108,16 @@ jobs:
         fail-build: true
         severity-cutoff: critical
 
-    # Debugging: Show Grype scan results
-    - name: Show Grype scan results
-      run: |
-        echo "Listing Grype scan results:"
-        ls -la ${{ steps.scan.outputs.sarif }}
-
-    # Upload the SARIF vulnerability report to GitHub's security tab
+    # Upload SARIF vulnerability report
     - name: Upload vulnerability report
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: ${{ steps.scan.outputs.sarif }}
+
+    # Additional cleanup
+    - name: Final cleanup
+      run: |
+        echo "Cleaning up unused containers and images..."
+        docker system prune -f
+        echo "Final disk space:"
+        df -h
