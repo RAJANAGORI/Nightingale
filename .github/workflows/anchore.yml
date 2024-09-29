@@ -93,13 +93,18 @@ jobs:
 
     - name: Run the Anchore Grype scan action
       id: scan
-      uses: anchore/scan-action@v2
+      uses: anchore/scan-action@v4
       with:
         image: "localbuild/testimage:latest"
-        grype-version: 0.77.4
+        grype-version: 0.81.0
+
+    - name: Check SARIF output
+      run: |
+        echo "SARIF Output: ${{ steps.scan.outputs.sarif }}"
+        ls -alh
 
     - name: Upload vulnerability report
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ steps.scan.outputs.sarif }}
 
