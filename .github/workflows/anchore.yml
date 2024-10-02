@@ -208,11 +208,11 @@ jobs:
         vulnerabilities=$(jq -c '.matches[]' vulnerabilities.json)
 
         # Initialize an array for SARIF results
-        sarif_results=""
+        sarif_results=()
 
         # Loop through each vulnerability
         while IFS= read -r vulnerability; do
-          # Initialize an empty SARIF result object
+          # Initialize fields from the current vulnerability
           vulnerability_id=$(echo "$vulnerability" | jq -r '.vulnerability.id')
           severity=$(echo "$vulnerability" | jq -r '.vulnerability.severity')
           description=$(echo "$vulnerability" | jq -r '.vulnerability.description // "No description provided"')
@@ -253,14 +253,11 @@ jobs:
           done
 
           # Append the dynamically created SARIF result to the SARIF results array
-          sarif_results="${sarif_results},$sarif_result"
+          sarif_results+=("$sarif_result")  # Append to the array
         done <<< "$vulnerabilities"
 
-        # Format the results array properly for JSON
-        sarif_results="[${sarif_results:1}]"
-
         # Finalize the SARIF output with the collected results
-        sarif_output=$(echo "$sarif_output" | jq --argjson results "$sarif_results" '.runs[0].results = $results')
+        sarif_output=$(echo "$sarif_output" | jq --argjson results "$(printf '%s\n' "${sarif_results[@]}" | jq -s '.')" '.runs[0].results = $results')
 
         # Save the SARIF output to a file
         echo "$sarif_output" > output.sarif
