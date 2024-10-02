@@ -76,15 +76,12 @@ jobs:
           ]
         }'
 
-        # Extract vulnerabilities into an array
-        vulnerabilities=$(jq -c '.matches[]' vulnerabilities.json)
+        # Create a temporary file for SARIF results
+        sarif_results_temp=$(mktemp)
 
-        # Initialize an array for SARIF results
-        sarif_results=""
-
-        # Loop through each vulnerability
-        while IFS= read -r vulnerability; do
-          # Initialize an empty SARIF result object
+        # Read vulnerabilities one by one and convert them to SARIF format
+        jq -c '.matches[]' vulnerabilities.json | while IFS= read -r vulnerability; do
+          # Extract fields
           vulnerability_id=$(echo "$vulnerability" | jq -r '.vulnerability.id')
           severity=$(echo "$vulnerability" | jq -r '.vulnerability.severity')
           description=$(echo "$vulnerability" | jq -r '.vulnerability.description // "No description provided"')
@@ -113,29 +110,21 @@ jobs:
             }'
           )
 
-          # Add any additional fields dynamically
-          echo "$vulnerability" | jq -c 'to_entries[]' | while IFS= read -r field; do
-            key=$(echo "$field" | jq -r '.key')
-            value=$(echo "$field" | jq -r '.value')
-
-            # Skip known fields to avoid redundancy
-            if [[ "$key" != "vulnerability" && "$key" != "artifact" ]]; then
-              sarif_result=$(echo "$sarif_result" | jq --arg key "$key" --arg value "$value" '.customProperties[$key] = $value')
-            fi
-          done
-
-          # Append the dynamically created SARIF result to the SARIF results array
-          sarif_results="${sarif_results},$sarif_result"
-        done <<< "$vulnerabilities"
+          # Append to the temporary SARIF result file
+          echo "$sarif_result" >> "$sarif_results_temp"
+        done
 
         # Format the results array properly for JSON
-        sarif_results="[${sarif_results:1}]"
+        sarif_results="[ $(cat "$sarif_results_temp" | paste -sd, -) ]"
 
         # Finalize the SARIF output with the collected results
         sarif_output=$(echo "$sarif_output" | jq --argjson results "$sarif_results" '.runs[0].results = $results')
 
         # Save the SARIF output to a file
         echo "$sarif_output" > output.sarif
+
+        # Clean up temporary file
+        rm "$sarif_results_temp"
 
     - name: Check SARIF file
       run: |
