@@ -279,7 +279,6 @@ jobs:
       with:
         sarif_file: output.sarif
 
-    # Additional cleanup
     - name: Final cleanup
       run: |
         echo "Cleaning up unused containers and images..."
