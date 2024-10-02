@@ -104,10 +104,91 @@ jobs:
         name: vulnerabilities-report
         path: vulnerabilities.json
 
+    # - name: Convert JSON to SARIF dynamically
+    #   run: |
+    #     echo "Starting conversion of vulnerabilities.json to SARIF..."
+
+    #     sarif_output='{
+    #       "version": "2.1.0",
+    #       "runs": [
+    #         {
+    #           "tool": {
+    #             "driver": {
+    #               "name": "Anchore Grype",
+    #               "version": "0.77.4"
+    #             }
+    #           },
+    #           "results": []
+    #         }
+    #       ]
+    #     }'
+
+    #     # Loop through each vulnerability and map all keys dynamically into a SARIF result
+    #     jq -c '.matches[]' vulnerabilities.json | while IFS= read -r vulnerability; do
+
+    #       # Initialize an empty SARIF result object
+    #       sarif_result='{
+    #         "ruleId": "",
+    #         "level": "",
+    #         "message": { "text": "" },
+    #         "locations": []
+    #       }'
+
+    #       # Dynamically build the SARIF result based on the fields in vulnerabilities.json
+    #       echo "$vulnerability" | jq -c 'to_entries[]' | while IFS= read -r field; do
+    #         key=$(echo "$field" | jq -r '.key')
+    #         value=$(echo "$field" | jq -r '.value')
+            
+    #         # Handle SARIF-specific fields like ruleId, message, and locations
+    #         case "$key" in
+    #           "vulnerability")
+    #             vulnerability_id=$(echo "$value" | jq -r '.id')
+    #             severity=$(echo "$value" | jq -r '.severity')
+    #             description=$(echo "$value" | jq -r '.description // "No description provided"')
+
+    #             # Set ruleId and severity
+    #             sarif_result=$(echo "$sarif_result" | jq --arg id "$vulnerability_id" --arg sev "$severity" '.ruleId = $id | .level = ($sev | ascii_downcase)')
+
+    #             # Set message
+    #             sarif_result=$(echo "$sarif_result" | jq --arg desc "$description" '.message.text = $desc')
+    #             ;;
+
+    #           "artifact")
+    #             package_name=$(echo "$value" | jq -r '.name')
+    #             package_version=$(echo "$value" | jq -r '.version')
+
+    #             # Add location based on the package name and version
+    #             location=$(jq -n --arg pkg "$package_name" --arg ver "$package_version" '{
+    #               "physicalLocation": {
+    #                 "artifactLocation": {
+    #                   "uri": "\($pkg):\($ver)"
+    #                 }
+    #               }
+    #             }')
+
+    #             # Append the location to the SARIF result
+    #             sarif_result=$(echo "$sarif_result" | jq --argjson loc "$location" '.locations += [$loc]')
+    #             ;;
+
+    #           # If there are any additional fields, dynamically add them under a custom property
+    #           *)
+    #             sarif_result=$(echo "$sarif_result" | jq --arg key "$key" --arg value "$value" '.customProperties[$key] = $value')
+    #             ;;
+    #         esac
+    #       done
+
+    #       # Append the dynamically created SARIF result to the SARIF output
+    #       sarif_output=$(echo "$sarif_output" | jq --argjson result "$sarif_result" '.runs[0].results += [$result]')
+    #     done
+
+    #     # Save the SARIF output to a file
+    #     echo "$sarif_output" > output.sarif
+
     - name: Convert JSON to SARIF dynamically
       run: |
         echo "Starting conversion of vulnerabilities.json to SARIF..."
 
+        # Initialize the SARIF output structure
         sarif_output='{
           "version": "2.1.0",
           "runs": [
@@ -123,66 +204,75 @@ jobs:
           ]
         }'
 
-        # Loop through each vulnerability and map all keys dynamically into a SARIF result
-        jq -c '.matches[]' vulnerabilities.json | while IFS= read -r vulnerability; do
+        # Extract vulnerabilities into an array
+        vulnerabilities=$(jq -c '.matches[]' vulnerabilities.json)
 
+        # Initialize an array for SARIF results
+        sarif_results=""
+
+        # Loop through each vulnerability
+        while IFS= read -r vulnerability; do
           # Initialize an empty SARIF result object
-          sarif_result='{
-            "ruleId": "",
-            "level": "",
-            "message": { "text": "" },
-            "locations": []
-          }'
+          vulnerability_id=$(echo "$vulnerability" | jq -r '.vulnerability.id')
+          severity=$(echo "$vulnerability" | jq -r '.vulnerability.severity')
+          description=$(echo "$vulnerability" | jq -r '.vulnerability.description // "No description provided"')
+          package_name=$(echo "$vulnerability" | jq -r '.artifact.name')
+          package_version=$(echo "$vulnerability" | jq -r '.artifact.version')
 
-          # Dynamically build the SARIF result based on the fields in vulnerabilities.json
+          # Construct the SARIF result for the current vulnerability
+          sarif_result=$(jq -n \
+            --arg id "$vulnerability_id" \
+            --arg sev "$severity" \
+            --arg desc "$description" \
+            --arg pkg "$package_name" \
+            --arg ver "$package_version" '
+            {
+              "ruleId": $id,
+              "level": ($sev | ascii_downcase),
+              "message": { "text": $desc },
+              "locations": [{
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "\($pkg):\($ver)"
+                  }
+                }
+              }},
+              "customProperties": {}
+            }
+          ')
+
+          # Add any additional fields dynamically
           echo "$vulnerability" | jq -c 'to_entries[]' | while IFS= read -r field; do
             key=$(echo "$field" | jq -r '.key')
             value=$(echo "$field" | jq -r '.value')
-            
-            # Handle SARIF-specific fields like ruleId, message, and locations
-            case "$key" in
-              "vulnerability")
-                vulnerability_id=$(echo "$value" | jq -r '.id')
-                severity=$(echo "$value" | jq -r '.severity')
-                description=$(echo "$value" | jq -r '.description // "No description provided"')
 
-                # Set ruleId and severity
-                sarif_result=$(echo "$sarif_result" | jq --arg id "$vulnerability_id" --arg sev "$severity" '.ruleId = $id | .level = ($sev | ascii_downcase)')
-
-                # Set message
-                sarif_result=$(echo "$sarif_result" | jq --arg desc "$description" '.message.text = $desc')
-                ;;
-
-              "artifact")
-                package_name=$(echo "$value" | jq -r '.name')
-                package_version=$(echo "$value" | jq -r '.version')
-
-                # Add location based on the package name and version
-                location=$(jq -n --arg pkg "$package_name" --arg ver "$package_version" '{
-                  "physicalLocation": {
-                    "artifactLocation": {
-                      "uri": "\($pkg):\($ver)"
-                    }
-                  }
-                }')
-
-                # Append the location to the SARIF result
-                sarif_result=$(echo "$sarif_result" | jq --argjson loc "$location" '.locations += [$loc]')
-                ;;
-
-              # If there are any additional fields, dynamically add them under a custom property
-              *)
-                sarif_result=$(echo "$sarif_result" | jq --arg key "$key" --arg value "$value" '.customProperties[$key] = $value')
-                ;;
-            esac
+            # Skip known fields to avoid redundancy
+            if [[ "$key" != "vulnerability" && "$key" != "artifact" ]]; then
+              sarif_result=$(echo "$sarif_result" | jq --arg key "$key" --arg value "$value" '.customProperties[$key] = $value')
+            fi
           done
 
-          # Append the dynamically created SARIF result to the SARIF output
-          sarif_output=$(echo "$sarif_output" | jq --argjson result "$sarif_result" '.runs[0].results += [$result]')
-        done
+          # Append the dynamically created SARIF result to the SARIF results array
+          sarif_results="${sarif_results},$sarif_result"
+        done <<< "$vulnerabilities"
+
+        # Format the results array properly for JSON
+        sarif_results="[${sarif_results:1}]"
+
+        # Finalize the SARIF output with the collected results
+        sarif_output=$(echo "$sarif_output" | jq --argjson results "$sarif_results" '.runs[0].results = $results')
 
         # Save the SARIF output to a file
         echo "$sarif_output" > output.sarif
+
+    - name: Check SARIF file
+      run: |
+        if [ -f output.sarif ]; then
+          echo "SARIF file exists:"
+          cat output.sarif
+        else
+          echo "SARIF file does not exist."
+        fi
 
     - name: Upload SARIF report
       uses: github/codeql-action/upload-sarif@v2
