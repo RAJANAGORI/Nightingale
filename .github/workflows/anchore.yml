@@ -94,13 +94,13 @@ jobs:
           # Construct the SARIF result for the current vulnerability
           sarif_result=$(jq -n \
             --arg id "$vulnerability_id" \
-            --arg sev "$severity" \
+            --arg sev "$(echo "$severity" | tr '[:upper:]' '[:lower:]')" \
             --arg desc "$description" \
             --arg pkg "$package_name" \
             --arg ver "$package_version" '
             {
               "ruleId": $id,
-              "level": ($sev | ascii_downcase),
+              "level": $sev,
               "message": { "text": $desc },
               "locations": [{
                 "physicalLocation": {
@@ -108,10 +108,10 @@ jobs:
                     "uri": "\($pkg):\($ver)"
                   }
                 }
-              }},
+              }],
               "customProperties": {}
-            }
-          ')
+            }'
+          )
 
           # Add any additional fields dynamically
           echo "$vulnerability" | jq -c 'to_entries[]' | while IFS= read -r field; do
