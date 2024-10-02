@@ -82,7 +82,6 @@ jobs:
         echo "Docker build finished with exit code $?"
         echo "Listing Docker images:"
         docker images
-
     # Clean up unused Docker images to free up space
     - name: Clean up Docker
       run: |
@@ -90,7 +89,6 @@ jobs:
         docker system prune -f
         echo "Disk space after cleanup:"
         df -h
-
     - name: Run the Anchore Grype scan action
       id: scan
       uses: anchore/scan-action@v2
@@ -104,85 +102,109 @@ jobs:
         name: vulnerabilities-report
         path: vulnerabilities.json
 
-    # - name: Convert JSON to SARIF dynamically
-    #   run: |
-    #     echo "Starting conversion of vulnerabilities.json to SARIF..."
+    # name: Anchore Grype vulnerability scan 
 
-    #     sarif_output='{
-    #       "version": "2.1.0",
-    #       "runs": [
-    #         {
-    #           "tool": {
-    #             "driver": {
-    #               "name": "Anchore Grype",
-    #               "version": "0.77.4"
-    #             }
-    #           },
-    #           "results": []
-    #         }
-    #       ]
-    #     }'
+# on:
+#   push:
+#     branches: [ "main" ]
+#     paths:
+#       - ".github/workflows/anchore.yml"
+#   pull_request:
+#     # The branches below must be a subset of the branches above
+#     branches: [ "main" ]
+#     paths:
+#       - ".github/workflows/anchore.yml"
+#   # schedule:
+#   #   - cron: '0 23 * * 0'
 
-    #     # Loop through each vulnerability and map all keys dynamically into a SARIF result
-    #     jq -c '.matches[]' vulnerabilities.json | while IFS= read -r vulnerability; do
+# # permissions:
+# #   contents: read
 
-    #       # Initialize an empty SARIF result object
-    #       sarif_result='{
-    #         "ruleId": "",
-    #         "level": "",
-    #         "message": { "text": "" },
-    #         "locations": []
-    #       }'
+# jobs:
+#   Anchore-Build-Scan:
+#     permissions:
+#       contents: read # for actions/checkout to fetch code
+#       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+#       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Check out the code
+#       uses: actions/checkout@v4
+#     - name: Build the Docker image
+#       run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+#     - name: Run the Anchore Grype scan action
+#       uses: anchore/scan-action@v2
+#       id: scan
+#       with:
+#         image: "localbuild/testimage:latest"
+#         grype-version: 0.77.4
+#         fail-build: true
+#         severity-cutoff: critical
+#     - name: Upload vulnerability report
+#       uses: github/codeql-action/upload-sarif@v2
+#       with:
+#         sarif_file: ${{ steps.scan.outputs.sarif }}
 
-    #       # Dynamically build the SARIF result based on the fields in vulnerabilities.json
-    #       echo "$vulnerability" | jq -c 'to_entries[]' | while IFS= read -r field; do
-    #         key=$(echo "$field" | jq -r '.key')
-    #         value=$(echo "$field" | jq -r '.value')
-            
-    #         # Handle SARIF-specific fields like ruleId, message, and locations
-    #         case "$key" in
-    #           "vulnerability")
-    #             vulnerability_id=$(echo "$value" | jq -r '.id')
-    #             severity=$(echo "$value" | jq -r '.severity')
-    #             description=$(echo "$value" | jq -r '.description // "No description provided"')
 
-    #             # Set ruleId and severity
-    #             sarif_result=$(echo "$sarif_result" | jq --arg id "$vulnerability_id" --arg sev "$severity" '.ruleId = $id | .level = ($sev | ascii_downcase)')
+name: Anchore Grype Vulnerability Scan
 
-    #             # Set message
-    #             sarif_result=$(echo "$sarif_result" | jq --arg desc "$description" '.message.text = $desc')
-    #             ;;
+on:
+  push:
+    branches: [ "debug-anchore-grype" ]
+    paths:
+      - ".github/workflows/anchore.yml"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - ".github/workflows/anchore.yml"
 
-    #           "artifact")
-    #             package_name=$(echo "$value" | jq -r '.name')
-    #             package_version=$(echo "$value" | jq -r '.version')
+jobs:
+  Anchore-Build-Scan:
+    permissions:
+      contents: read
+      security-events: write
+    runs-on: ubuntu-latest
 
-    #             # Add location based on the package name and version
-    #             location=$(jq -n --arg pkg "$package_name" --arg ver "$package_version" '{
-    #               "physicalLocation": {
-    #                 "artifactLocation": {
-    #                   "uri": "\($pkg):\($ver)"
-    #                 }
-    #               }
-    #             }')
+    steps:
+    # Check out the code
+    - name: Check out the code
+      uses: actions/checkout@v4
 
-    #             # Append the location to the SARIF result
-    #             sarif_result=$(echo "$sarif_result" | jq --argjson loc "$location" '.locations += [$loc]')
-    #             ;;
+    # Print environment and available disk space for debugging
+    - name: Print environment details and disk space
+      run: |
+        echo "Running on $(uname -a)"
+        echo "Current directory: $(pwd)"
+        df -h
+        docker --version
+    
+    # Build Docker image 
+    - name: Build the Docker image
+      run: |
+        echo "Building Docker image..."
+        docker build . --file Dockerfile --tag localbuild/testimage:latest
+        echo "Docker build finished with exit code $?"
+        echo "Listing Docker images:"
+        docker images
+    # Clean up unused Docker images to free up space
+    - name: Clean up Docker
+      run: |
+        echo "Cleaning up Docker to free up space..."
+        docker system prune -f
+        echo "Disk space after cleanup:"
+        df -h
+    - name: Run the Anchore Grype scan action
+      id: scan
+      uses: anchore/scan-action@v2
+      with:
+        image: "localbuild/testimage:latest"
+        grype-version: 0.77.4
 
-    #           # If there are any additional fields, dynamically add them under a custom property
-    #           *)
-    #             sarif_result=$(echo "$sarif_result" | jq --arg key "$key" --arg value "$value" '.customProperties[$key] = $value')
-    #             ;;
-    #         esac
-    #       done
-
-    #       # Append the dynamically created SARIF result to the SARIF output
-    #       sarif_output=$(echo "$sarif_output" | jq --argjson result "$sarif_result" '.runs[0].results += [$result]')
-    #     done
-
-    #     # Save the SARIF output to a file
-    #     echo "$sarif_output" > output.sarif
+    - name: Upload vulnerability report
+      uses: actions/upload-artifact@v3
+      with:
+        name: vulnerabilities-report
+        path: vulnerabilities.json
 
     - name: Convert JSON to SARIF dynamically
       run: |
@@ -208,11 +230,11 @@ jobs:
         vulnerabilities=$(jq -c '.matches[]' vulnerabilities.json)
 
         # Initialize an array for SARIF results
-        sarif_results=()
+        sarif_results=""
 
         # Loop through each vulnerability
         while IFS= read -r vulnerability; do
-          # Initialize fields from the current vulnerability
+          # Initialize an empty SARIF result object
           vulnerability_id=$(echo "$vulnerability" | jq -r '.vulnerability.id')
           severity=$(echo "$vulnerability" | jq -r '.vulnerability.severity')
           description=$(echo "$vulnerability" | jq -r '.vulnerability.description // "No description provided"')
@@ -253,11 +275,14 @@ jobs:
           done
 
           # Append the dynamically created SARIF result to the SARIF results array
-          sarif_results+=("$sarif_result")  # Append to the array
+          sarif_results="${sarif_results},$sarif_result"
         done <<< "$vulnerabilities"
 
+        # Format the results array properly for JSON
+        sarif_results="[${sarif_results:1}]"
+
         # Finalize the SARIF output with the collected results
-        sarif_output=$(echo "$sarif_output" | jq --argjson results "$(printf '%s\n' "${sarif_results[@]}" | jq -s '.')" '.runs[0].results = $results')
+        sarif_output=$(echo "$sarif_output" | jq --argjson results "$sarif_results" '.runs[0].results = $results')
 
         # Save the SARIF output to a file
         echo "$sarif_output" > output.sarif
@@ -270,12 +295,12 @@ jobs:
         else
           echo "SARIF file does not exist."
         fi
-
     - name: Upload SARIF report
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: output.sarif
 
+    # Additional cleanup
     - name: Final cleanup
       run: |
         echo "Cleaning up unused containers and images..."
