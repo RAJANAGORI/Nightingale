@@ -124,9 +124,7 @@ jobs:
         }'
 
         # Loop through each vulnerability and map all keys dynamically into a SARIF result
-        echo "Reading vulnerabilities from vulnerabilities.json..."
         jq -c '.matches[]' vulnerabilities.json | while IFS= read -r vulnerability; do
-          echo "Processing vulnerability: $vulnerability"
 
           # Initialize an empty SARIF result object
           sarif_result='{
@@ -141,16 +139,12 @@ jobs:
             key=$(echo "$field" | jq -r '.key')
             value=$(echo "$field" | jq -r '.value')
             
-            echo "Found field: $key with value: $value"
-
             # Handle SARIF-specific fields like ruleId, message, and locations
             case "$key" in
               "vulnerability")
                 vulnerability_id=$(echo "$value" | jq -r '.id')
                 severity=$(echo "$value" | jq -r '.severity')
                 description=$(echo "$value" | jq -r '.description // "No description provided"')
-
-                echo "Setting ruleId: $vulnerability_id, level: $severity, description: $description"
 
                 # Set ruleId and severity
                 sarif_result=$(echo "$sarif_result" | jq --arg id "$vulnerability_id" --arg sev "$severity" '.ruleId = $id | .level = ($sev | ascii_downcase)')
@@ -162,8 +156,6 @@ jobs:
               "artifact")
                 package_name=$(echo "$value" | jq -r '.name')
                 package_version=$(echo "$value" | jq -r '.version')
-
-                echo "Adding location for package: $package_name version: $package_version"
 
                 # Add location based on the package name and version
                 location=$(jq -n --arg pkg "$package_name" --arg ver "$package_version" '{
@@ -180,23 +172,17 @@ jobs:
 
               # If there are any additional fields, dynamically add them under a custom property
               *)
-                echo "Adding custom property: $key with value: $value"
                 sarif_result=$(echo "$sarif_result" | jq --arg key "$key" --arg value "$value" '.customProperties[$key] = $value')
                 ;;
             esac
           done
-
-          echo "Constructed SARIF result: $sarif_result"
 
           # Append the dynamically created SARIF result to the SARIF output
           sarif_output=$(echo "$sarif_output" | jq --argjson result "$sarif_result" '.runs[0].results += [$result]')
         done
 
         # Save the SARIF output to a file
-        echo "Final SARIF output: $sarif_output"
         echo "$sarif_output" > output.sarif
-
-        echo "Conversion to SARIF completed successfully. Output saved to output.sarif."
 
     - name: Upload SARIF report
       uses: github/codeql-action/upload-sarif@v2
