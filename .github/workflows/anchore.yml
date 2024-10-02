@@ -97,49 +97,49 @@ jobs:
       with:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
+        output: sarif
+        format: sarif
+    
+    # Debugging step: Check if SARIF file was created
+    - name: Check if SARIF file is created
+      run: |
+        echo "Checking for grype.sarif file..."
+        if [ -f "grype.sarif" ]; then
+          echo "SARIF file created successfully!"
+          echo "SARIF file contents:"
+          head -n 20 grype.sarif  # Print the first 20 lines for debugging
+        else
+          echo "ERROR: SARIF file not found!"
+        fi
 
-    - name: Upload vulnerability report
+    # Fallback: Check if vulnerabilities.json exists instead
+    - name: Check if vulnerabilities.json exists
+      run: |
+        echo "Checking for vulnerabilities.json file..."
+        if [ -f "vulnerabilities.json" ]; then
+          echo "vulnerabilities.json file found. It seems Grype output JSON instead of SARIF."
+          echo "Here are the first 20 lines of vulnerabilities.json:"
+          head -n 20 vulnerabilities.json
+        else
+          echo "No vulnerabilities.json file found either."
+        fi
+
+    # - name: Upload vulnerability report
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: vulnerabilities-report
+    #     path: vulnerabilities.json
+    
+    - name: Upload SARIF report as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: vulnerabilities-report
-        path: vulnerabilities.json
-
-    - name: Convert JSON to SARIF
-      run: |
-        echo "Converting vulnerabilities.json to SARIF..."
-        json_content=$(cat vulnerabilities.json)
-        sarif_output='{
-          "version": "2.1.0",
-          "runs": [
-            {
-              "tool": {
-                "driver": {
-                  "name": "Anchore Grype",
-                  "version": "0.77.4"
-                }
-              },
-              "results": []
-            }
-          ]
-        }'
-
-        echo "$json_content" | jq -c '.vulnerabilities[]' | while IFS= read -r vulnerability; do
-          sarif_result='{}'
-          
-          for key in $(echo "$vulnerability" | jq -r 'keys[]'); do
-            value=$(echo "$vulnerability" | jq -r --arg key "$key" '.[$key]')
-            sarif_result=$(echo "$sarif_result" | jq --arg key "$key" --arg value "$value" '.[$key] = $value')
-          done
-
-          sarif_output=$(echo "$sarif_output" | jq --argjson result "$sarif_result" '.runs[0].results += [$result]')
-        done
-        
-        echo "$sarif_output" > output.sarif
-
-    - name: Upload SARIF report
+        name: vulnerabilities-sarif-artifact
+        path: grype.sarif
+    
+    - name: Upload SARIF report to GitHub
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: output.sarif
+        sarif_file: grype.sarif
 
     # Additional cleanup
     - name: Final cleanup
