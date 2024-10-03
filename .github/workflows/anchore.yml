@@ -90,29 +90,37 @@ jobs:
           esac
         }
 
-        # Process vulnerabilities.json and map levels to SARIF-compatible values
-        jq -c '.matches[] | {
-          "ruleId": .vulnerability.id,
-          "level": (.vulnerability.severity | ascii_downcase),
-          "message": { "text": (.vulnerability.description // "No description provided") },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": (.artifact.name + ":" + .artifact.version)
-                }
-              }
-            }
-          ]
-        }' vulnerabilities.json | while read -r result; do
-          severity=$(echo "$result" | jq -r '.level')
+        # Process vulnerabilities.json and map all fields to SARIF structure
+        jq -c '.matches[]' vulnerabilities.json | while read -r vulnerability; do
+          # Extract severity and map it to a valid SARIF level
+          severity=$(echo "$vulnerability" | jq -r '.vulnerability.severity')
           sarif_level=$(map_severity "$severity")
 
-          # Replace the level with the SARIF-compatible value
-          result=$(echo "$result" | jq --arg sarif_level "$sarif_level" '.level = $sarif_level')
+          # Ensure that the URI has the correct file:// scheme
+          artifact_name=$(echo "$vulnerability" | jq -r '.artifact.name')
+          artifact_version=$(echo "$vulnerability" | jq -r '.artifact.version')
+          artifact_uri="file://$artifact_name:$artifact_version"
 
-          # Append each result to the SARIF file
-          jq --argjson result "$result" '.runs[0].results += [$result]' output.sarif > temp.sarif && mv temp.sarif output.sarif
+          # Build a SARIF result with dynamically added fields
+          sarif_result=$(echo "$vulnerability" | jq --arg sarif_level "$sarif_level" --arg artifact_uri "$artifact_uri" '{
+            "ruleId": .vulnerability.id,
+            "level": $sarif_level,
+            "message": { "text": (.vulnerability.description // "No description provided") },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": $artifact_uri
+                  }
+                }
+              }
+            ],
+            # Add all other fields from the vulnerability under properties
+            "properties": (to_entries | map({(.key): .value}) | add)
+          }')
+
+          # Append each dynamically created result to the SARIF output file
+          jq --argjson result "$sarif_result" '.runs[0].results += [$result]' output.sarif > temp.sarif && mv temp.sarif output.sarif
         done
 
         echo "SARIF conversion complete. Output saved to output.sarif."
