@@ -50,12 +50,6 @@ jobs:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
 
-    - name: Upload vulnerability report
-      uses: actions/upload-artifact@v3
-      with:
-        name: vulnerabilities-report
-        path: vulnerabilities.json
-
     - name: Convert JSON to SARIF dynamically
       run: |
         echo "Starting conversion of vulnerabilities.json to SARIF..."
@@ -140,6 +134,14 @@ jobs:
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: output.sarif
+    
+    - name: Upload vulnerability reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: vulnerability-reports
+        path: |
+          vulnerabilities.json
+          output.sarif
 
     - name: Final cleanup
       run: |
