@@ -96,10 +96,11 @@ jobs:
           severity=$(echo "$vulnerability" | jq -r '.vulnerability.severity')
           sarif_level=$(map_severity "$severity")
 
-          # Ensure that the URI has the correct file:// scheme
+          # Ensure that the URI points to a file path instead of using artifact name and version directly
           artifact_name=$(echo "$vulnerability" | jq -r '.artifact.name')
           artifact_version=$(echo "$vulnerability" | jq -r '.artifact.version')
-          artifact_uri="file://$artifact_name:$artifact_version"
+          # Use a file-like path instead of colon-separated values
+          artifact_uri="file://path/to/$artifact_name-$artifact_version"
 
           # Build a SARIF result with dynamically added fields
           sarif_result=$(echo "$vulnerability" | jq --arg sarif_level "$sarif_level" --arg artifact_uri "$artifact_uri" '{
