@@ -62,8 +62,8 @@ jobs:
       run: |
         echo "Starting conversion of vulnerabilities.json to SARIF..."
 
-        # Initialize the SARIF structure
-        sarif_output=$(jq -n --arg version "2.1.0" --arg toolName "Anchore Grype" --arg toolVersion "0.77.4" '{
+        # Create the initial SARIF structure and write it to the output file
+        jq -n --arg version "2.1.0" --arg toolName "Anchore Grype" --arg toolVersion "0.77.4" '{
           "version": $version,
           "runs": [
             {
@@ -76,10 +76,10 @@ jobs:
               "results": []
             }
           ]
-        }')
+        }' > output.sarif
 
-        # Process the vulnerabilities.json file using jq
-        sarif_results=$(jq '[.matches[] | {
+        # Append the vulnerabilities to the SARIF output file
+        jq -c '.matches[] | {
           "ruleId": .vulnerability.id,
           "level": (.vulnerability.severity | ascii_downcase),
           "message": { "text": (.vulnerability.description // "No description provided") },
@@ -93,13 +93,12 @@ jobs:
             }
           ],
           "customProperties": (to_entries | map(select(.key != "vulnerability" and .key != "artifact") | {(.key): .value}) | add)
-        }]' vulnerabilities.json)
+        }' vulnerabilities.json | while read -r result; do
+          # Append each result to the SARIF file
+          jq --argjson result "$result" '.runs[0].results += [$result]' output.sarif > temp.sarif && mv temp.sarif output.sarif
+        done
 
-        # Append results to the SARIF output
-        sarif_output=$(echo "$sarif_output" | jq --argjson results "$sarif_results" '.runs[0].results = $results')
-
-        # Save the SARIF output to a file
-        echo "$sarif_output" > output.sarif
+        echo "SARIF conversion complete. Output saved to output.sarif."
 
     - name: Check SARIF file
       run: |
