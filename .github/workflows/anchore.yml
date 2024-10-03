@@ -18,9 +18,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Check out the code
     - name: Check out the code
       uses: actions/checkout@v4
 
+    # Print environment and available disk space for debugging
     - name: Print environment details and disk space
       run: |
         echo "Running on $(uname -a)"
@@ -28,6 +30,7 @@ jobs:
         df -h
         docker --version
     
+    # Build Docker image 
     - name: Build the Docker image
       run: |
         echo "Building Docker image..."
@@ -35,14 +38,13 @@ jobs:
         echo "Docker build finished with exit code $?"
         echo "Listing Docker images:"
         docker images
-
+    # Clean up unused Docker images to free up space
     - name: Clean up Docker
       run: |
         echo "Cleaning up Docker to free up space..."
         docker system prune -f
         echo "Disk space after cleanup:"
         df -h
-
     - name: Run the Anchore Grype scan action
       id: scan
       uses: anchore/scan-action@v2
@@ -60,71 +62,43 @@ jobs:
       run: |
         echo "Starting conversion of vulnerabilities.json to SARIF..."
 
-        # Initialize the SARIF output structure
-        sarif_output='{
-          "version": "2.1.0",
+        sarif_output=$(jq -n --arg version "2.1.0" --arg toolName "Anchore Grype" --arg toolVersion "0.77.4" '{
+          "version": $version,
           "runs": [
             {
               "tool": {
                 "driver": {
-                  "name": "Anchore Grype",
-                  "version": "0.77.4"
+                  "name": $toolName,
+                  "version": $toolVersion
                 }
               },
               "results": []
             }
           ]
-        }'
+        }')
 
-        # Create a temporary file for SARIF results
-        sarif_results_temp=$(mktemp)
-
-        # Read vulnerabilities one by one and convert them to SARIF format
-        jq -c '.matches[]' vulnerabilities.json | while IFS= read -r vulnerability; do
-          # Extract fields
-          vulnerability_id=$(echo "$vulnerability" | jq -r '.vulnerability.id')
-          severity=$(echo "$vulnerability" | jq -r '.vulnerability.severity')
-          description=$(echo "$vulnerability" | jq -r '.vulnerability.description // "No description provided"')
-          package_name=$(echo "$vulnerability" | jq -r '.artifact.name')
-          package_version=$(echo "$vulnerability" | jq -r '.artifact.version')
-
-          # Construct the SARIF result for the current vulnerability
-          sarif_result=$(jq -n \
-            --arg id "$vulnerability_id" \
-            --arg sev "$(echo "$severity" | tr '[:upper:]' '[:lower:]')" \
-            --arg desc "$description" \
-            --arg pkg "$package_name" \
-            --arg ver "$package_version" '
+        # Use a single jq command to process vulnerabilities.json and build SARIF structure
+        sarif_results=$(jq '[.matches[] | {
+          "ruleId": .vulnerability.id,
+          "level": (.vulnerability.severity | ascii_downcase),
+          "message": { "text": (.vulnerability.description // "No description provided") },
+          "locations": [
             {
-              "ruleId": $id,
-              "level": $sev,
-              "message": { "text": $desc },
-              "locations": [{
-                "physicalLocation": {
-                  "artifactLocation": {
-                    "uri": "\($pkg):\($ver)"
-                  }
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": (.artifact.name + ":" + .artifact.version)
                 }
-              }],
-              "customProperties": {}
-            }'
-          )
+              }
+            }
+          ],
+          "customProperties": (to_entries | map(select(.key != "vulnerability" and .key != "artifact") | {(.key): .value}) | add)
+        }]' vulnerabilities.json)
 
-          # Append to the temporary SARIF result file
-          echo "$sarif_result" >> "$sarif_results_temp"
-        done
-
-        # Format the results array properly for JSON
-        sarif_results="[ $(cat "$sarif_results_temp" | paste -sd, -) ]"
-
-        # Finalize the SARIF output with the collected results
+        # Append results to the SARIF output
         sarif_output=$(echo "$sarif_output" | jq --argjson results "$sarif_results" '.runs[0].results = $results')
 
         # Save the SARIF output to a file
         echo "$sarif_output" > output.sarif
-
-        # Clean up temporary file
-        rm "$sarif_results_temp"
 
     - name: Check SARIF file
       run: |
@@ -133,12 +107,15 @@ jobs:
           cat output.sarif
         else
           echo "SARIF file does not exist."
+          exit 1
         fi
+
     - name: Upload SARIF report
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: output.sarif
 
+    # Additional cleanup
     - name: Final cleanup
       run: |
         echo "Cleaning up unused containers and images..."
