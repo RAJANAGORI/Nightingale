@@ -18,19 +18,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Check out the code
     - name: Check out the code
       uses: actions/checkout@v4
 
-    # Print environment and available disk space for debugging
     - name: Print environment details and disk space
       run: |
         echo "Running on $(uname -a)"
         echo "Current directory: $(pwd)"
         df -h
         docker --version
-    
-    # Build Docker image 
+     
     - name: Build the Docker image
       run: |
         echo "Building Docker image..."
@@ -38,13 +35,14 @@ jobs:
         echo "Docker build finished with exit code $?"
         echo "Listing Docker images:"
         docker images
-    # Clean up unused Docker images to free up space
+    
     - name: Clean up Docker
       run: |
         echo "Cleaning up Docker to free up space..."
         docker system prune -f
         echo "Disk space after cleanup:"
         df -h
+
     - name: Run the Anchore Grype scan action
       id: scan
       uses: anchore/scan-action@v2
@@ -78,7 +76,21 @@ jobs:
           ]
         }' > output.sarif
 
-        # Append the vulnerabilities to the SARIF output file
+        # Define a mapping function for severity to SARIF levels
+        map_severity() {
+          case "$1" in
+            "critical" | "high")
+              echo "error";;
+            "medium")
+              echo "warning";;
+            "low" | "negligible")
+              echo "note";;
+            *)
+              echo "none";;
+          esac
+        }
+
+        # Process vulnerabilities.json and map levels to SARIF-compatible values
         jq -c '.matches[] | {
           "ruleId": .vulnerability.id,
           "level": (.vulnerability.severity | ascii_downcase),
@@ -91,9 +103,14 @@ jobs:
                 }
               }
             }
-          ],
-          "customProperties": (to_entries | map(select(.key != "vulnerability" and .key != "artifact") | {(.key): .value}) | add)
+          ]
         }' vulnerabilities.json | while read -r result; do
+          severity=$(echo "$result" | jq -r '.level')
+          sarif_level=$(map_severity "$severity")
+
+          # Replace the level with the SARIF-compatible value
+          result=$(echo "$result" | jq --arg sarif_level "$sarif_level" '.level = $sarif_level')
+
           # Append each result to the SARIF file
           jq --argjson result "$result" '.runs[0].results += [$result]' output.sarif > temp.sarif && mv temp.sarif output.sarif
         done
@@ -115,7 +132,6 @@ jobs:
       with:
         sarif_file: output.sarif
 
-    # Additional cleanup
     - name: Final cleanup
       run: |
         echo "Cleaning up unused containers and images..."
