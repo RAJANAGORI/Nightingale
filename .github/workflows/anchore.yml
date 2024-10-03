@@ -62,6 +62,7 @@ jobs:
       run: |
         echo "Starting conversion of vulnerabilities.json to SARIF..."
 
+        # Initialize the SARIF structure
         sarif_output=$(jq -n --arg version "2.1.0" --arg toolName "Anchore Grype" --arg toolVersion "0.77.4" '{
           "version": $version,
           "runs": [
@@ -77,7 +78,7 @@ jobs:
           ]
         }')
 
-        # Use a single jq command to process vulnerabilities.json and build SARIF structure
+        # Process the vulnerabilities.json file using jq
         sarif_results=$(jq '[.matches[] | {
           "ruleId": .vulnerability.id,
           "level": (.vulnerability.severity | ascii_downcase),
