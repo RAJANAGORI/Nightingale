@@ -1,5 +1,5 @@
 # Stage 1: Base Image with Dependencies
-FROM ghcr.io/rajanagori/nightingale_programming_image:development as base
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable as base
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
