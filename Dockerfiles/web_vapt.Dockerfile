@@ -46,7 +46,9 @@ RUN \
     #Install git leaks
     git clone --depth 1 https://github.com/gitleaks/gitleaks.git &&\
     # Install Ghauri
-    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git
+    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git &&\
+    # Install Hashcat
+    git clone https://github.com/hashcat/hashcat.git
 
 
 ### Installing Tools 
@@ -117,5 +119,10 @@ RUN \
     cd ghauri &&\
     while read p; do pipx install --include-deps "$p"; done < requirements.txt &&\
     python3 setup.py install
+
+ RUN \
+    cd hashcat && \
+    make && \
+    ln -s hashcat/hashcat /usr/local/bin/hashcat
     
 WORKDIR /home
