@@ -17,7 +17,7 @@ FROM python:2.7-slim AS python2
 # Stage 3: Python 3 stage
 FROM python:3.10.12-slim AS python3
 
-# Install Python 3 dependencies
+# Install Python 3 dependencies and set up pip3 and virtual environment
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     python3-pip \
@@ -26,12 +26,15 @@ RUN apt-get update && \
     python3-openssl \
     pipx \
     python3-distutils && \
-    pip install --upgrade pip && \
-    pip install setuptools==58.2.0 && \
+    pip3 install --upgrade pip && \
+    pip3 install setuptools==58.2.0 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set environment path for Python 3 virtual environment
-ENV PATH="/opt/venv3/bin:$PATH"
+# Create a Python 3 virtual environment in /opt/venv3
+RUN python3 -m venv /opt/venv3
+
+# Ensure pip3 in the virtual environment is up-to-date
+RUN /opt/venv3/bin/pip install --upgrade pip
 
 # Stage 4: Ruby stage
 FROM ruby:3.0.3-slim AS ruby-builder
@@ -88,12 +91,15 @@ RUN apt-get update -y --fix-missing && \
 
 # Copy necessary files from other stages
 COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
+COPY --from=python2 /usr/local/bin/pip /usr/local/bin/pip2.7
 COPY --from=python3 /usr/bin/python3 /usr/bin/python3
+COPY --from=python3 /usr/bin/pip3 /usr/bin/pip3
+COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=java /usr/java/openjdk-23 /usr/java/openjdk-23
 
 # Set environment variables
-ENV PATH="/usr/java/openjdk-23/bin:/opt/venv3/bin:$PATH:$GOROOT/bin:$GOPATH/bin"
+ENV PATH="/usr/java/openjdk-23/bin:/opt/venv3/bin:/usr/local/go/bin:$PATH"
 ENV PYTHON2="/usr/local/bin/python2.7"
 ENV PYTHON3="/usr/bin/python3"
 ENV GOROOT="/usr/local/go"
