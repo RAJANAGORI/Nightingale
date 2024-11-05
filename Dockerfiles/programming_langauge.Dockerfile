@@ -17,23 +17,25 @@ FROM python:2.7-slim AS python2
 # Stage 3: Python 3 stage
 FROM python:3.10.12-slim AS python3
 
-# Install Python 3 dependencies and set up pip3 and virtual environment
+# Install Python 3 dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     python3-pip \
     python3-venv \
     python3-dev \
     python3-openssl \
-    pipx \
     python3-distutils && \
-    pip3 install --upgrade pip && \
-    pip3 install setuptools==58.2.0 && \
+    pipx \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Reinstall and upgrade pip
+RUN python3 -m ensurepip --upgrade && \
+    python3 -m pip install --upgrade pip setuptools
 
 # Create a Python 3 virtual environment in /opt/venv3
 RUN python3 -m venv /opt/venv3
 
-# Ensure pip3 in the virtual environment is up-to-date
+# Upgrade pip inside the virtual environment
 RUN /opt/venv3/bin/pip install --upgrade pip
 
 # Stage 4: Ruby stage
