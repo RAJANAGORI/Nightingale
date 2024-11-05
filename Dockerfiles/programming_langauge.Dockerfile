@@ -25,18 +25,17 @@ RUN apt-get update && \
     python3-dev \
     python3-openssl \
     python3-distutils && \
-    pipx \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
+    apt-get clean && rm -rf /var/lib/apt/lists/* &&\
 # Reinstall and upgrade pip
-RUN python3 -m ensurepip --upgrade && \
-    python3 -m pip install --upgrade pip setuptools
-
+    python3 -m ensurepip --upgrade && \
+    python3 -m pip install --upgrade pip setuptools &&\
+# Install pipx via pip
+    pip3 install pipx && \
+    pipx ensurepath &&\
 # Create a Python 3 virtual environment in /opt/venv3
-RUN python3 -m venv /opt/venv3
-
+    python3 -m venv /opt/venv3 &&\
 # Upgrade pip inside the virtual environment
-RUN /opt/venv3/bin/pip install --upgrade pip
+   /opt/venv3/bin/pip install --upgrade pip
 
 # Stage 4: Ruby stage
 FROM ruby:3.0.3-slim AS ruby-builder
