@@ -123,6 +123,6 @@ RUN \
  RUN \
     cd hashcat && \
     make && \
-    ln -s hashcat/hashcat /usr/local/bin/hashcat
+    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat
     
 WORKDIR /home
