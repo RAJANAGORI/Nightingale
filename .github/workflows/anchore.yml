@@ -4,13 +4,11 @@ on:
   push:
     branches: ["development"]
     paths:
-      - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
       - ".github/workflows/anchore.yml"
   pull_request:
     branches: ["development"]
     paths:
-      - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
       - ".github/workflows/anchore.yml"
 
