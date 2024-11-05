@@ -12,3 +12,5 @@ figlet -f term "Run 'activate --help' for more options"
 # Set up aliases for ping and ping6
 alias ping="ping -4"
 alias ping6="ping -6"
+
+ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat

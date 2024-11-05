@@ -35,7 +35,7 @@ declare -A TOOLS=(
     ["go_subfinder"]="go list -m github.com/projectdiscovery/subfinder/v2 | grep subfinder"
     ["go_waybackurls"]="go list -m github.com/tomnomnom/waybackurls | grep waybackurls"
     ["go_interactsh"]="go list -m github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest | grep interactsh"
-    ["go_katana"]= "go list -m github.com/projectdiscovery/katana/cmd/katana@latest | grep katana"
+    ["go_katana"]="go list -m github.com/projectdiscovery/katana/cmd/katana@latest | grep katana"
 )
 
 # Function to check if a tool is already installed
