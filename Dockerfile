@@ -132,6 +132,7 @@ EXPOSE 5432 8080 8081 7681
 RUN apt-get -y autoremove && \
     apt-get -y clean && \
     rm -rf /tmp/* /var/lib/apt/lists/* && \
+    echo 'ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat' >> ~/.bashrc &&\
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 WORKDIR /home
