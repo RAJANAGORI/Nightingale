@@ -1,5 +1,5 @@
 # Stage 1: Base stage
-FROM debian:buster-slim as base
+FROM debian:buster-slim AS base
 
 # Install common dependencies
 RUN apt-get update -y --fix-missing && \
@@ -11,10 +11,10 @@ RUN apt-get update -y --fix-missing && \
     ca-certificates
 
 # Stage 2: Python 2 stage
-FROM python:2.7-slim as python2
+FROM python:2.7-slim AS python2
 
 # Stage 3: Python 3 stage
-FROM python:3.10.12-slim as python3
+FROM python:3.10.12-slim AS python3
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -28,27 +28,24 @@ RUN apt-get update && \
     pip install --upgrade pip && \
     pip install setuptools==58.2.0 && \
     pip install pipx
-
-ENV PATH="/opt/venv3/bin:$PATH"
-
 # Stage 4: Ruby stage
-FROM ruby:3.0.3-slim as ruby-builder
+FROM ruby:3.0.3-slim AS ruby-builder
 
 RUN gem install nokogiri
 
 # Stage 5: Go stage
-FROM base as go-builder
+FROM base AS go-builder
 
 WORKDIR /home
-RUN wget -q https://go.dev/dl/go1.21.5.linux-amd64.tar.gz -O go.tar.gz && \
+RUN wget -q https://go.dev/dl/go1.23.2.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 
 # Stage 6: Java stage
-FROM openjdk:23-jdk-oracle as java
+FROM openjdk:23-jdk-oracle AS java
 
 # Stage 7: Final stage
-FROM debian:stable-slim as final
+FROM debian:stable-slim AS final
 
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
@@ -107,10 +104,9 @@ COPY --from=go-builder /home /home
 COPY --from=java /usr/java/openjdk-23 /usr/java/openjdk-23
 
 # Set environment variables
-ENV PATH="/usr/java/openjdk-23/bin:/opt/venv3/bin:$PATH"
 ENV PYTHON2="/usr/local/bin/python2.7"
 ENV PYTHON3="/usr/bin/python3"
 ENV GOROOT="/usr/local/go"
 ENV GOPATH="/home/go"
-ENV PATH="$PATH:$GOPATH/bin:$GOROOT/bin"
 ENV JAVA_HOME="/usr/java/openjdk-23"
+ENV PATH="$GOPATH/bin:$GOROOT/bin:$PYTHON3:$PYTHON2:$JAVA_HOME:$PATH"

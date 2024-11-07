@@ -1,4 +1,4 @@
-## Taking Image from Docker Hub for Programming language support
+# Taking Image from Docker Hub for Programming language support
 FROM ghcr.io/rajanagori/nightingale_programming_image:stable
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -23,8 +23,6 @@ RUN git clone --depth 1 https://github.com/xmendez/wfuzz.git && \
     git clone --depth 1 https://github.com/daviddias/node-dirbuster.git && \
     git clone --depth 1 https://github.com/v0re/dirb.git && \
     curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
-    curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
-    curl -L -o fuzz.txt https://raw.githubusercontent.com/Bo0oM/fuzz.txt/master/fuzz.txt && \
     # Cleaning Unwanted libraries
     apt-get -y autoremove && \
     apt-get -y clean && \

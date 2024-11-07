@@ -17,6 +17,7 @@ RUN apt-get update -y --fix-missing && \
     locate \
     snapd \
     tree \
+    zsh \
     figlet \
     unzip \
     p7zip-full \
@@ -62,11 +63,11 @@ RUN apt-get update -y --fix-missing && \
 # Stage 2: Copy Scripts and Configurations
 FROM base as intermediate
 
-COPY shells/banner.sh /temp/banner.sh
+COPY shells/banner.sh /tmp/banner.sh
 COPY configuration/nodejs-env/ /temp/
 
 RUN dos2unix ${HOME}/.bashrc && \
-    cat /temp/banner.sh >> ${HOME}/.bashrc && \
+    cat /tmp/banner.sh >> ${HOME}/.bashrc && \
     mkdir -p /home/tools_web_vapt /home/tools_osint /home/tools_mobile_vapt /home/tools_network_vapt \
     /home/tools_red_teaming /home/tools_forensics /home/wordlist /home/binaries /home/.gf /home/.shells
 
@@ -83,14 +84,14 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     METASPLOIT_TOOL=/home/metasploit \
     SHELLS=/home/.shells
 
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${GREP_PATTERNS} ${GREP_PATTERNS}
-COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
-COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:development ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
-COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:development ${WORDLIST} ${WORDLIST}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${GREP_PATTERNS} ${GREP_PATTERNS}
+COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:stable ${TOOLS_OSINT} ${TOOLS_OSINT}
+COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:stable ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:stable ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable ${WORDLIST} ${WORDLIST}
 
 # Stage 3: Install Python and Go Modules
 FROM intermediate as modules
@@ -111,7 +112,9 @@ RUN chmod +x ${BINARIES}/* && \
     wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
     unzip 1.7.2.zip && \
     cd ttyd-1.7.2 && mkdir build && cd build && \
-    cmake .. && make && make install
+    cmake .. && make && make install &&\
+    ## Install tools using curl or wget 
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
 # Stage 4: Setup Metasploit
 FROM modules as metasploit
@@ -129,6 +132,7 @@ EXPOSE 5432 8080 8081 7681
 RUN apt-get -y autoremove && \
     apt-get -y clean && \
     rm -rf /tmp/* /var/lib/apt/lists/* && \
+    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat && \
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 WORKDIR /home

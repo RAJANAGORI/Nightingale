@@ -42,7 +42,14 @@ RUN \
     #git clone jwt_tool
     git clone --depth 1 https://github.com/ticarpi/jwt_tool.git &&\
     #git clone whatweb
-    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git
+    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git &&\
+    #Install git leaks
+    git clone --depth 1 https://github.com/gitleaks/gitleaks.git &&\
+    # Install Ghauri
+    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git &&\
+    # Install Hashcat
+    git clone https://github.com/hashcat/hashcat.git
+
 
 ### Installing Tools 
 RUN \
@@ -96,6 +103,26 @@ RUN \
     rm -rf /tmp/* &&\
     rm -rf /var/lib/apt/lists/* &&\
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
-    
 
+RUN \
+### Installing Trufflehog
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+
+RUN \
+## Installing Git leaks
+    cd gitleaks &&\
+    make build
+
+RUN \
+    ## Installing Ghauri
+    cd ghauri &&\
+    while read p; do pipx install --include-deps "$p"; done < requirements.txt &&\
+    python3 setup.py install
+
+ RUN \
+    cd hashcat && \
+    make && \
+    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat
+    
 WORKDIR /home

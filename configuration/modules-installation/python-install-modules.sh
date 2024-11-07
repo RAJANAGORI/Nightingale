@@ -80,6 +80,9 @@ install_tool_with_pipx "${TOOLS_OSINT}/metagoofil" "requirements.txt"
 # Install theHarvester
 install_tool_with_pipx "${TOOLS_OSINT}/theHarvester" "requirements/base.txt"
 
+# Install Ghauri
+install_tool_with_pipx  "--include-deps ${TOOLS_WEB_VAPT}/ghauri" "requirements.txt"
+
 # Install objection, octosuite, dirsearch, sqlmap, and frida-tools from PyPI
 echo "Installing objection, octosuite, dirsearch, sqlmap, and frida-tools..."
 pipx install objection
@@ -87,7 +90,8 @@ pipx install octosuite
 pipx install dirsearch
 pipx install sqlmap
 pipx install frida-tools
-echo "objection, octosuite, dirsearch, sqlmap, and frida-tools installation completed."
+pipx install detect-secrets
+echo "objection, octosuite, dirsearch, sqlmap, detect-secrets, and frida-tools installation completed."
 
 # Add pipx binaries to PATH
 echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
