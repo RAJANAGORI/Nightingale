@@ -1,0 +1,87 @@
+{
+  "version": "v1.0.0",
+  "entity": {
+    "type": "individual",
+    "role": "owner",
+    "name": "Raja Nagori",
+    "email": "security@rajanagori.in",
+    "phone": "+919509082201",
+    "description": "I'm a Product Security Engineer with a focus on penetration testing, threat modeling, and DevSecOps. I lead the OWASP-Nightingale project and actively contribute to the security community through events like Blackhat Arsenal. Passionate about making the digital world safer, I enjoy sharing knowledge, solving security challenges, and continuously learning. Outside of work, I play the guitar and love biking.",
+    "webpageUrl": {
+      "url": "https://github.com/RAJANAGORI/Nightingale",
+      "wellKnown": "https://github.com/RAJANAGORI/Nightingale/blob/main/.well-known/funding-manifest-urls"
+    }
+  },
+  "projects": [
+    {
+      "guid": "nightingale-docker-for-pentester",
+      "name": "Nightingale: Docker for Pentesters",
+      "description": "Nightingale is an open-source tool that leverages Docker to provide penetration testers with a ready-to-use, consistent, and repeatable testing environment. It eliminates the need for manual setup by including essential tools for web, network, and system testing. With fast boot times, resource efficiency, and browser access, Nightingale saves time and simplifies vulnerability assessments and penetration testing, making it a valuable resource for pentesters.",
+      "webpageUrl": {
+        "url": "https://github.com/RAJANAGORI/Nightingale",
+        "wellKnown": "https://github.com/RAJANAGORI/Nightingale/blob/main/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/RAJANAGORI/Nightingale",
+        "wellKnown": "https://github.com/RAJANAGORI/Nightingale/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "GPL-3.0 LICENSE"
+      ],
+      "tags": [
+        "docker-image",
+        "owasp",
+        "cybersecurity",
+        "penetration-testing",
+        "vulnerabilities",
+        "bugbounty",
+        "platform-independent",
+        "nightingale",
+        "pentest-tool",
+        "hacking-tools"
+      ]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "mybank",
+        "type": "bank",
+        "description": "Will accept direct bank transfers. Please e-mail me for details."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "website-hosting",
+        "status": "inactive",
+        "name": "Hosting Support",
+        "description": "This will cover the monthly server hosting costs for the projects.",
+        "amount": 2000,
+        "currency": "INR",
+        "frequency": "monthly",
+        "channels": [
+          "mybank"
+        ]
+      },
+      {
+        "guid": "developer-time",
+        "status": "active",
+        "name": "Developer compensation",
+        "description": "This will cover the cost of one developer working part-time on the projects.",
+        "amount": 6000,
+        "currency": "INR",
+        "frequency": "monthly",
+        "channels": [
+          "mybank"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "year": 2024,
+        "currency": "INR",
+        "description": "Setup this funding information to accept the payments"
+      }
+    ]
+  }
+}
