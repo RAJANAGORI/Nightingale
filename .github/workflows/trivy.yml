@@ -39,8 +39,9 @@ jobs:
           sudo dpkg -i trivy_0.29.2_Linux-64bit.deb
           trivy --cache-dir ${HOME}/.cache/trivy
 
-      - name: Clean Trivy Java database
-        run: trivy clean --java-db
+      # Reset Trivy cache
+      - name: Reset Trivy cache
+        run: trivy --reset
 
       - name: Run Trivy vulnerability scanner
         run: |
