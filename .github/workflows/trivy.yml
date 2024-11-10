@@ -55,7 +55,7 @@ jobs:
           export TRIVY_AUTH_URL="https://ghcr.io"
           export TRIVY_TOKEN=$GITHUB_TOKEN
           for i in {1..5}; do
-            trivy image --skip-dirs /home/wordlist --format template --template "@/contrib/sarif.tpl" --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
+            trivy image --skip-dirs /home/wordlist --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
           done
 
       - name: Generate SBOM  # Generate a Software Bill of Materials
