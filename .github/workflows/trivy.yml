@@ -1,6 +1,6 @@
-name: Trivy Scan
+name: Trivy Scan  # Workflow for scanning vulnerabilities using Trivy
 
-on:
+on:  # Events triggering the workflow
   push:
     branches: [ "main" ]
     paths:
@@ -9,29 +9,37 @@ on:
     branches: [ "main" ]
     paths:
       - ".github/workflows/trivy.yml"
-  # schedule:  
-  #   - cron: '30 17 * * 0'  # Runs every Sunday at 5:30 PM UTC (11:00 PM IST).
+  # schedule:  # Uncomment to schedule periodic scans in IST
+  #   - cron: '30 17 * * 0'  # Runs every Sunday at 11:00 PM IST (5:30 PM UTC)
 
-permissions:
+permissions:  # Permissions for accessing repository and security events
   contents: read
 
 jobs:
   build:
     permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      contents: read  # For actions/checkout to fetch the code
+      security-events: write  # For uploading SARIF results
     name: Build
-    runs-on: "ubuntu-latest" # Use the latest Ubuntu version
+    runs-on: "ubuntu-latest"  # Use the latest Ubuntu version
     steps:
-      - name: Checkout code
+      - name: Checkout code  # Checkout repository code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node.js  # Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # Updated to Node.js 20
+          node-version: '20'  # Use Node.js version 20
 
-      - name: Install Trivy
+      - name: Cache Trivy DB  # Cache the vulnerability database
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/trivy  # Directory to cache
+          key: ${{ runner.os }}-trivy-db
+          restore-keys: |
+            ${{ runner.os }}-trivy-db
+
+      - name: Install Trivy  # Install Trivy vulnerability scanner
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
@@ -39,24 +47,33 @@ jobs:
           sudo dpkg -i trivy_0.57.0_Linux-64bit.deb
           trivy --cache-dir ${HOME}/.cache/trivy
 
-      - name: Run Trivy vulnerability scanner
-        run: |
-          trivy image --skip-dirs /home/wordlist --format template --template "@/contrib/sarif.tpl" --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable
+      - name: Set up GitHub Token for Trivy  # Set up environment variable for GitHub token
+        run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
 
-      - name: Generate SBOM
+      - name: Clear Trivy cache  # Clear any old Trivy cache
+        run: trivy --clear-cache
+
+      - name: Run Trivy vulnerability scanner with retry  # Scan the image and handle rate limits
+        run: |
+          export TRIVY_AUTH_URL="https://ghcr.io"
+          export TRIVY_TOKEN=$GITHUB_TOKEN
+          for i in {1..5}; do
+            trivy image --skip-dirs /home/wordlist --format template --template "@/contrib/sarif.tpl" --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
+          done
+
+      - name: Generate SBOM  # Generate a Software Bill of Materials
         run: |
           trivy sbom --format spdx-json --output sbom.json ghcr.io/rajanagori/nightingale:stable
 
-      - name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy scan results to GitHub Security tab  # Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 
-      # Upload artifacts for later download
-      - name: Upload Trivy results artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload Trivy results artifact  # Save scan results as build artifacts
+        uses: actions/upload-artifact@v4  # Use the latest version of the upload artifact action
         with:
-          name: trivy-results
+          name: trivy-results  # Artifact name
           path: |
             trivy-results.sarif
-            sbom.json
+            sbom.json  # Include SBOM file
