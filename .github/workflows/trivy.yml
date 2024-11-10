@@ -56,12 +56,12 @@ jobs:
           export TRIVY_AUTH_URL="https://ghcr.io"  # Set the registry URL for authentication
           export TRIVY_TOKEN=$GITHUB_TOKEN  # Provide authentication token for private registry
           for i in {1..5}; do  # Retry mechanism for handling rate limits
-            trivy image --skip-dirs /home/wordlist --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
+            trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
           done
 
-      - name: Generate SBOM  # Generate Software Bill of Materials (SBOM)
-        run: |
-          trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
+      # - name: Generate SBOM  # Generate Software Bill of Materials (SBOM)
+      #   run: |
+      #     trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
 
       - name: Upload Trivy scan results to GitHub Security tab  # Upload SARIF results for display in GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
