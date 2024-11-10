@@ -9,8 +9,8 @@ on:
     branches: [ "main" ]
     paths:
       - ".github/workflows/trivy.yml"
-  # schedule:
-  #   - cron: '0 23 * * 0'
+  # schedule:  
+  #   - cron: '30 17 * * 0'  # Runs every Sunday at 5:30 PM UTC (11:00 PM IST).
 
 permissions:
   contents: read
@@ -35,10 +35,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/download/v0.29.2/trivy_0.29.2_Linux-64bit.deb
-          sudo dpkg -i trivy_0.29.2_Linux-64bit.deb
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.57.0/trivy_0.57.0_Linux-64bit.deb
+          sudo dpkg -i trivy_0.57.0_Linux-64bit.deb
           trivy --cache-dir ${HOME}/.cache/trivy
-
+      
+      - name: Clear Trivy cache
+        run: $ trivy image --clear-cache
 
       - name: Run Trivy vulnerability scanner
         run: |
