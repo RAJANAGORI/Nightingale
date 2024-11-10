@@ -50,9 +50,6 @@ jobs:
       - name: Set up GitHub Token for Trivy  # Set up environment variable for GitHub token
         run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
 
-      - name: Clear Trivy cache  # Clear any old Trivy cache
-        run: trivy --clear-cache
-
       - name: Run Trivy vulnerability scanner with retry  # Scan the image and handle rate limits
         run: |
           export TRIVY_AUTH_URL="https://ghcr.io"
