@@ -1,4 +1,4 @@
-name: Trivy Scan 
+name: Trivy Scan
 
 on:
   push:
@@ -9,8 +9,8 @@ on:
     branches: [ "main" ]
     paths:
       - ".github/workflows/trivy.yml"
-  schedule:
-    - cron: '0 23 * * 0'
+  # schedule:
+  #   - cron: '0 23 * * 0'
 
 permissions:
   contents: read
@@ -21,7 +21,7 @@ jobs:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
     name: Build
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-latest" # Use the latest Ubuntu version
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14' # Specify the desired Node.js version here
+          node-version: '20' # Updated to Node.js 20
 
       - name: Install Trivy
         run: |
@@ -39,8 +39,8 @@ jobs:
           sudo dpkg -i trivy_0.29.2_Linux-64bit.deb
           trivy --cache-dir ${HOME}/.cache/trivy
 
-      # - name: Clean Trivy Java database
-      #   run: trivy clean --java-db
+      - name: Clean Trivy Java database
+        run: trivy clean --java-db
 
       - name: Run Trivy vulnerability scanner
         run: |
@@ -54,3 +54,12 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
+
+      # Upload artifacts for later download
+      - name: Upload Trivy results artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-results
+          path: |
+            trivy-results.sarif
+            sbom.json
