@@ -60,7 +60,7 @@ jobs:
 
       - name: Generate SBOM  # Generate a Software Bill of Materials
         run: |
-          trivy sbom --format spdx-json --output sbom.json ghcr.io/rajanagori/nightingale:stable
+          trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
 
       - name: Upload Trivy scan results to GitHub Security tab  # Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
