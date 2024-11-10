@@ -53,8 +53,8 @@ jobs:
 
       - name: Run Trivy vulnerability scanner with retry  # Scan the image and handle rate limits
         run: |
-          export TRIVY_AUTH_URL="https://ghcr.io"  # Set the registry URL for authentication
-          export TRIVY_TOKEN=$GITHUB_TOKEN  # Provide authentication token for private registry
+          export TRIVY_AUTH_URL="https://ghcr.io" 
+          export TRIVY_TOKEN=$GITHUB_TOKEN 
           for i in {1..5}; do  # Retry mechanism for handling rate limits
             trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
           done
@@ -68,10 +68,10 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-      - name: Upload Trivy results artifact  # Save the scan results as build artifacts
-        uses: actions/upload-artifact@v4  # Use the latest version of the upload-artifact action
-        with:
-          name: trivy-results  # Name of the artifact
-          path: |
-            trivy-results.sarif  # Upload SARIF scan results
-            sbom.json  # Upload SBOM JSON file
+      # - name: Upload Trivy results artifact  # Save the scan results as build artifacts
+      #   uses: actions/upload-artifact@v4  # Use the latest version of the upload-artifact action
+      #   with:
+      #     name: trivy-results  # Name of the artifact
+      #     path: |
+      #       trivy-results.sarif  # Upload SARIF scan results
+      #       sbom.json  # Upload SBOM JSON file
