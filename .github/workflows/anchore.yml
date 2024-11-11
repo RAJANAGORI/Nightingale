@@ -18,11 +18,26 @@ jobs:
       contents: read
       security-events: write
       actions: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Check out the code
       uses: actions/checkout@v4
+
+    - name: Aggressive Disk Cleanup
+      run: |
+        echo "Starting aggressive disk cleanup..."
+        sudo rm -rf /var/log/*
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo rm -rf /usr/share/doc/*
+        sudo rm -rf /usr/share/man/*
+        sudo rm -rf /home/runner/work/_temp
+        sudo rm -rf /home/runner/work/_actions
+        sudo rm -rf /home/runner/.npm
+        sudo rm -rf /home/runner/.cache
+        sudo rm -rf /home/runner/.local
+        df -h
 
     - name: Print environment details and disk space
       run: |
@@ -36,7 +51,7 @@ jobs:
         echo "Building Docker image..."
         docker build . -f Dockerfile -t localbuild/testimage:latest
         docker save localbuild/testimage:latest -o image.tar
-        echo "Docker build and save finished. Disk space:"
+        echo "Docker image saved as tar. Disk space:"
         df -h
     
     - name: Clean up Docker
