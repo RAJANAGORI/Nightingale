@@ -9,7 +9,7 @@ on:
     branches: [ "main" ]
     paths:
       - ".github/workflows/anchore.yml"
-  # schedule:
+  ## schedule:
   #   - cron: '0 23 * * 0'
 
 jobs:
