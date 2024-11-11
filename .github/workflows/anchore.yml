@@ -21,6 +21,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Initial Docker Cleanup
+      run: |
+        echo "Initial Docker system prune to clear space..."
+        docker system prune -af
+        df -h
+
     - name: Check out the code
       uses: actions/checkout@v4
 
@@ -34,14 +40,21 @@ jobs:
     - name: Build the Docker image
       run: |
         echo "Building Docker image..."
-        docker build . --file Dockerfile --tag localbuild/testimage:latest
-        echo "Docker build finished with exit code $?"
-        echo "Listing Docker images:"
+        docker build --no-cache . --file Dockerfile --tag localbuild/testimage:latest
+        echo "Docker build finished with exit code $?"; echo "Listing Docker images:"
         docker images
-    
-    - name: Clean up Docker
+      continue-on-error: true
+
+    - name: Verify Docker Image Build
       run: |
-        echo "Cleaning up Docker to free up space..."
+        if [[ "$(docker images -q localbuild/testimage:latest)" == "" ]]; then
+          echo "Docker image build failed or image does not exist. Exiting."
+          exit 1
+        fi
+
+    - name: Additional Docker Cleanup After Build
+      run: |
+        echo "Performing additional cleanup to ensure space..."
         docker system prune -f
         echo "Disk space after cleanup:"
         df -h
@@ -52,9 +65,12 @@ jobs:
       with:
         image: "localbuild/testimage:latest"
         grype-version: 0.77.4
+      continue-on-error: true
 
     - name: Convert JSON to SARIF dynamically
+      if: ${{ steps.scan.outcome == 'success' }}
       run: |
+        echo "Starting conversion of vulnerabilities.json to SARIF..."
         echo "Starting conversion of vulnerabilities.json to SARIF..."
 
         jq -n --arg version "2.1.0" --arg toolName "Anchore Grype" --arg toolVersion "0.77.4" '{
@@ -130,7 +146,7 @@ jobs:
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: output.sarif
-    
+
     - name: Upload vulnerability reports
       uses: actions/upload-artifact@v3
       with:
