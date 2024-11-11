@@ -6,7 +6,7 @@ on:
     paths:
       - ".github/workflows/anchore.yml"
   pull_request:
-    branches: [ "main" ]
+    branches: [ "debug-anchore-grype" ]
     paths:
       - ".github/workflows/anchore.yml"
   # schedule:
