@@ -18,26 +18,11 @@ jobs:
       contents: read
       security-events: write
       actions: read
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Check out the code
       uses: actions/checkout@v4
-
-    - name: Aggressive Disk Cleanup
-      run: |
-        echo "Starting aggressive disk cleanup..."
-        sudo rm -rf /var/log/*
-        sudo apt-get clean
-        sudo rm -rf /var/lib/apt/lists/*
-        sudo rm -rf /usr/share/doc/*
-        sudo rm -rf /usr/share/man/*
-        sudo rm -rf /home/runner/work/_temp
-        sudo rm -rf /home/runner/work/_actions
-        sudo rm -rf /home/runner/.npm
-        sudo rm -rf /home/runner/.cache
-        sudo rm -rf /home/runner/.local
-        df -h
 
     - name: Print environment details and disk space
       run: |
@@ -46,30 +31,30 @@ jobs:
         df -h
         docker --version
      
-    - name: Build the Docker image and save as tar
+    - name: Build the Docker image
       run: |
         echo "Building Docker image..."
-        docker build . -f Dockerfile -t localbuild/testimage:latest
-        docker save localbuild/testimage:latest -o image.tar
-        echo "Docker image saved as tar. Disk space:"
-        df -h
+        docker build . --file Dockerfile --tag localbuild/testimage:latest
+        echo "Docker build finished with exit code $?"
+        echo "Listing Docker images:"
+        docker images
     
     - name: Clean up Docker
       run: |
         echo "Cleaning up Docker to free up space..."
-        docker system prune -f --volumes
+        docker system prune -f
+        echo "Disk space after cleanup:"
         df -h
 
-    - name: Run the Anchore Grype scan on the tarball
+    - name: Run the Anchore Grype scan action
       id: scan
       uses: anchore/scan-action@v2
       with:
-        input: image.tar
-        grype-version: 0.84.0
+        image: "localbuild/testimage:latest"
+        grype-version: 0.77.4
 
     - name: Convert JSON to SARIF dynamically
       run: |
-        echo "Starting conversion of vulnerabilities.json to SARIF..."
         echo "Starting conversion of vulnerabilities.json to SARIF..."
 
         jq -n --arg version "2.1.0" --arg toolName "Anchore Grype" --arg toolVersion "0.77.4" '{
