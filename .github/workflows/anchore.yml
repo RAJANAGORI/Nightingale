@@ -2,7 +2,7 @@ name: Anchore Grype Vulnerability Scan
 
 on:
   push:
-    branches: [ "debug-anchore-grype" ]
+    branches: [ "main" ]
     paths:
       - ".github/workflows/anchore.yml"
   pull_request:
@@ -70,7 +70,6 @@ jobs:
     - name: Convert JSON to SARIF dynamically
       if: ${{ steps.scan.outcome == 'success' }}
       run: |
-        echo "Starting conversion of vulnerabilities.json to SARIF..."
         echo "Starting conversion of vulnerabilities.json to SARIF..."
 
         jq -n --arg version "2.1.0" --arg toolName "Anchore Grype" --arg toolVersion "0.77.4" '{
