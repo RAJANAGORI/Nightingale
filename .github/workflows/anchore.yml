@@ -31,30 +31,30 @@ jobs:
         df -h
         docker --version
      
-    - name: Build the Docker image
+    - name: Build the Docker image and save as tar
       run: |
         echo "Building Docker image..."
-        docker build . --file Dockerfile --tag localbuild/testimage:latest
-        echo "Docker build finished with exit code $?"
-        echo "Listing Docker images:"
-        docker images
+        docker build . -f Dockerfile -t localbuild/testimage:latest
+        docker save localbuild/testimage:latest -o image.tar
+        echo "Docker build and save finished. Disk space:"
+        df -h
     
     - name: Clean up Docker
       run: |
         echo "Cleaning up Docker to free up space..."
-        docker system prune -f
-        echo "Disk space after cleanup:"
+        docker system prune -f --volumes
         df -h
 
-    - name: Run the Anchore Grype scan action
+    - name: Run the Anchore Grype scan on the tarball
       id: scan
       uses: anchore/scan-action@v2
       with:
-        image: "localbuild/testimage:latest"
-        grype-version: 0.77.4
+        input: image.tar
+        grype-version: 0.84.0
 
     - name: Convert JSON to SARIF dynamically
       run: |
+        echo "Starting conversion of vulnerabilities.json to SARIF..."
         echo "Starting conversion of vulnerabilities.json to SARIF..."
 
         jq -n --arg version "2.1.0" --arg toolName "Anchore Grype" --arg toolVersion "0.77.4" '{

@@ -70,13 +70,10 @@ FROM --platform=linux/arm64/v8 debian:latest as nightingale-programming-multi-st
 
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
-RUN apt-get update && apt-get install -y \
-    wget unzip cmake build-essential libjson-c-dev
-
-RUN apt-get update -y --fix-missing &&\
-# Installing essential Library
-    apt-get -f --no-install-recommends install -y \
+# Installing essential library
+RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
+    unzip \
     tar \
     make \
     gcc \
@@ -105,7 +102,6 @@ RUN apt-get update -y --fix-missing &&\
     libyaml-snake-java \
     libz-dev \
     linux-libc-dev \
-    libev-* \
     libev4 \
     libffi-dev \
     libbz2-dev \
@@ -121,7 +117,8 @@ RUN apt-get update -y --fix-missing &&\
     python3-dev \
     python3-openssl \
     python3-distutils \
-    pipx
+    pipx && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy only the necessary files and directories from the Python 2 and Python 3 stages
 # COPY --from=python2 /opt/venv2 /opt/venv2
