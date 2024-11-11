@@ -70,6 +70,9 @@ FROM --platform=linux/arm64/v8 debian:latest as nightingale-programming-multi-st
 
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
+RUN apt-get update && apt-get install -y \
+    wget unzip cmake build-essential libjson-c-dev
+
 RUN apt-get update -y --fix-missing &&\
 # Installing essential Library
     apt-get -f --no-install-recommends install -y \
