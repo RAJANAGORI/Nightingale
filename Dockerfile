@@ -106,9 +106,6 @@ RUN dos2unix ${SHELLS}/activate && \
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
-# RUN apt-get update && apt-get install -y \
-#     wget unzip cmake build-essential libjson-c-dev
-
 RUN chmod +x ${BINARIES}/* && \
     mv ${BINARIES}/* /usr/local/bin/ && \
     wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
