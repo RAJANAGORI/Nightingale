@@ -6,11 +6,11 @@ on:
     paths:
       - ".github/workflows/anchore.yml"
   pull_request:
-    branches: [ "debug-anchore-grype" ]
+    branches: [ "main" ]
     paths:
       - ".github/workflows/anchore.yml"
-  # schedule:
-  #   - cron: '0 23 * * 0'
+  schedule:
+    - cron: '0 23 * * 0'
 
 jobs:
   Anchore-Build-Scan:
