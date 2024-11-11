@@ -106,8 +106,8 @@ RUN dos2unix ${SHELLS}/activate && \
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
-RUN apt-get update && apt-get install -y \
-    wget unzip cmake build-essential libjson-c-dev
+# RUN apt-get update && apt-get install -y \
+#     wget unzip cmake build-essential libjson-c-dev
 
 RUN chmod +x ${BINARIES}/* && \
     mv ${BINARIES}/* /usr/local/bin/ && \

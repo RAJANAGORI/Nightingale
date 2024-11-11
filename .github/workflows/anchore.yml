@@ -2,15 +2,15 @@ name: Anchore Grype Vulnerability Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "debug-anchore-grype" ]
     paths:
       - ".github/workflows/anchore.yml"
   pull_request:
     branches: [ "main" ]
     paths:
       - ".github/workflows/anchore.yml"
-  schedule:
-    - cron: '0 23 * * 0'
+  # schedule:
+  #   - cron: '0 23 * * 0'
 
 jobs:
   Anchore-Build-Scan:
