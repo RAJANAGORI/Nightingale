@@ -143,7 +143,7 @@ WORKDIR ${BINARIES}
 ## INstallation stuff
 COPY \
     binary/ ${BINARIES}
-    
+
 RUN \
     chmod +x ${BINARIES}/* && \
     mv ${BINARIES}/* /usr/local/bin/ && \
