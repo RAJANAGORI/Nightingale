@@ -2,7 +2,7 @@ name: Anchore Grype Vulnerability Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "debug-anchore-grype" ]
     paths:
       - ".github/workflows/anchore.yml"
   pull_request:

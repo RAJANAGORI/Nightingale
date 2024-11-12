@@ -55,9 +55,11 @@ COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installatio
 RUN apt-get update -y --fix-missing && \
     apt-get install -y --no-install-recommends \
     wget \
+    unzip \
     tar \
     make \
     gcc \
+    cmake \
     software-properties-common \
     build-essential \
     libcurl4-openssl-dev \
