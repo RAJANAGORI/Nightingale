@@ -2,3 +2,5 @@
 password.txt
 web
 extra.bak
+vulnerability-reports/
+.DS_Store

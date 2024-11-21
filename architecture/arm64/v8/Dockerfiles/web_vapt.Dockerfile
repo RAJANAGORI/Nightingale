@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-development
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
@@ -27,8 +27,6 @@ RUN \
 WORKDIR ${TOOLS_WEB_VAPT}
 # git clonning of tools repository
 RUN \
-    # Git clone of HawkScan
-    git clone --depth 1 https://github.com/c0dejump/HawkScan.git &&\
     #git clone of xsstrike
     git clone --depth 1 https://github.com/s0md3v/XSStrike.git &&\
     #git clone arjun
@@ -44,7 +42,13 @@ RUN \
     #git clone jwt_tool
     git clone --depth 1 https://github.com/ticarpi/jwt_tool.git &&\
     #git clone whatweb
-    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git
+    git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git &&\
+    #Install git leaks
+    git clone --depth 1 https://github.com/gitleaks/gitleaks.git &&\
+    # Install Ghauri
+    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git &&\
+    # Install Hashcat
+    git clone https://github.com/hashcat/hashcat.git
 
 ### Installing Tools 
 RUN \
@@ -89,9 +93,9 @@ RUN \
 
 RUN \
 ### Installing Amass 
-    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.2.0/amass_Linux_arm64.zip -O amass.zip &&\
+    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.2.0/amass_Linux_amd64.zip -O amass.zip &&\
     unzip amass.zip && \
-    mv amass_Linux_arm64/amass /usr/local/bin && rm -rf amass_Linux_arm64 amass.zip && \
+    mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip && \
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\
@@ -99,4 +103,25 @@ RUN \
     rm -rf /var/lib/apt/lists/* &&\
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
+RUN \
+### Installing Trufflehog
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+
+RUN \
+## Installing Git leaks
+    cd gitleaks &&\
+    make build
+
+RUN \
+    ## Installing Ghauri
+    cd ghauri &&\
+    while read p; do pipx install --include-deps "$p"; done < requirements.txt &&\
+    python3 setup.py install
+
+ RUN \
+    cd hashcat && \
+    make && \
+    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat
+    
 WORKDIR /home

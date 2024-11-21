@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-development
 ## Installing tools using apt-get for web vapt
 RUN \
     apt-get update -y && \
@@ -9,18 +9,20 @@ RUN \
     cmake \
     bundler \
     pipx && \
-### Creating Directories
-    cd /home &&\
-    mkdir -p tools_network_vapt
+# Create directories for tools
+    mkdir -p /home/tools_red_teaming /home/tools_forensics
 
-ENV TOOLS_NETWORK_VAPT=/home/tools_network_vapt/
+# Set environment variables
+ENV TOOLS_RED_TEAMING=/home/tools_red_teaming \
+    TOOLS_FORENSICS=/home/tools_forensics
 
-WORKDIR ${TOOLS_NETWORK_VAPT}
-
-# git clonning of tools repository
+## Installing Impact toolkit for Red-Team 
+WORKDIR ${TOOLS_RED_TEAMING}
 RUN \
-    # Git clone of nikto
-    git clone --depth 1 https://github.com/sullo/nikto.git  &&\
+    python3 -m pipx install impacket &&\
+    pipx ensurepath
+
+RUN \
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\

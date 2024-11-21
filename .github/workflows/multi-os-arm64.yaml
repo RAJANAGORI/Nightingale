@@ -1,0 +1,66 @@
+name: Multi OS docker images  - arm64 MAC OS 
+ 
+on:
+  push:
+    branches: [development]
+    paths:
+      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
+      - "architecture/arm64/v8/Dockerfile"
+      - ".github/workflows/multi-os-arm64.yaml"
+  pull_request:
+    branches: [development]
+    paths:
+      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
+      - architecture/arm64/v8/Dockerfile"
+      - ".github/workflows/multi-os-arm64.yaml"
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKERFILES_PATH: architecture/arm64/v8/Dockerfiles
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
+
+
+jobs:
+  arm64:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: GitHub Login
+      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+
+    - name: Set Username to Lowercase
+      run: |
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+    
+
+    - name: Clear apt cache
+      run: sudo apt-get clean
+
+    - name: Get Commit Hash
+      id: vars
+      run: echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
+    # Build and Push Docker images with development and commit hash tags only
+    - name: Build and Push ARM64 Images
+      run: |
+        IMAGES=(
+          "nightingale_programming_image:$DOCKERFILES_PATH/programming_langauge.Dockerfile"
+          "nightingale_forensic_and_red_teaming:$DOCKERFILES_PATH/forensics_and_redteam.Dockerfile"
+          "nightingale_web_vapt_image:$DOCKERFILES_PATH/web_vapt.Dockerfile"
+          "nightingale_network_vapt_image:$DOCKERFILES_PATH/network_vapt.Dockerfile"
+          "nightingale_osint_tools_image:$DOCKERFILES_PATH/osint_tools.Dockerfile"
+          "nightingale_mobile_vapt_image:$DOCKERFILES_PATH/mobile_vapt.Dockerfile"
+          "nightingale_wordlist_image:$DOCKERFILES_PATH/wordlist.Dockerfile"
+          "nightingale:architecture/arm64/Dockerfile"
+        )
+        
+        for IMAGE in "${IMAGES[@]}"; do
+          IFS=":" read -r IMAGE_NAME DOCKERFILE_PATH <<< "$IMAGE"
+          docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILE_PATH \
+            --label branch=development --label commit_sha=${{ env.COMMIT_HASH }} \
+            --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:arm64-development \
+            --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:${{ env.COMMIT_HASH }}
+        done
