@@ -1,8 +1,5 @@
 # Use build arguments for platform
-ARG PYTHON2=2.7-slim
-ARG PYTHON3=3.10.12-slim
 ARG RUBY=slim
-ARG GOVERSION=23
 
 # Stage 1: Base stage
 FROM debian:latest AS base
@@ -18,11 +15,11 @@ RUN apt-get update -y --fix-missing && \
     software-properties-common \
     build-essential
 
-# # Stage 2: Python 2 stage
-# FROM python:2.7-slim AS python2
+# Stage 2: Python 2 stage
+FROM python:2.7-slim AS python2
 
 # Stage 3: Python 3 stage
-FROM python:$PYTHON3 AS python3
+FROM python:3.10.12-slim AS python3
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -34,7 +31,8 @@ RUN apt-get update && \
     python3-distutils && \
     python3 -m venv /opt/venv3 && \
     pip install --upgrade pip && \
-    pip install setuptools==58.2.0
+    pip install setuptools && \
+    pip install pipx
 
 # Stage 4: Ruby stage
 FROM ruby:$RUBY AS ruby-builder
@@ -47,7 +45,7 @@ RUN wget -q https://go.dev/dl/go1.23.2.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 
-# Stage 6: Final stage
+# Stage 7: Final stage
 FROM base AS final
 
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
@@ -55,9 +53,11 @@ COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installatio
 RUN apt-get update -y --fix-missing && \
     apt-get install -y --no-install-recommends \
     wget \
+    unzip \
     tar \
     make \
     gcc \
+    cmake \
     software-properties-common \
     build-essential \
     libcurl4-openssl-dev \
@@ -90,6 +90,12 @@ RUN apt-get update -y --fix-missing && \
     libncursesw5-dev \
     xz-utils \
     tk-dev \
+    python3-full \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    python3-openssl \
+    python3-distutils \
     pipx
 
 RUN apt-get update && \
@@ -97,11 +103,13 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy necessary files from other stages
-# COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
+# Copy necessary files from other stages
+COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
 COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
+# COPY --from=ruby-builder /usr/local/bin/nokogiri /usr/local/bin/nokogiri
 
 # Set environment variables
 ENV PYTHON2="/usr/local/bin/python2.7"
