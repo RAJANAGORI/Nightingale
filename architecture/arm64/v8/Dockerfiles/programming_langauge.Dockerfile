@@ -84,10 +84,10 @@ RUN apt-get update -y --fix-missing && \
     python3-venv \
     python3-dev \
     python3-openssl \
+    python3-setuptools \
     python3-distutils && \
     python3 -m venv /opt/venv3 && \
-    pip install --upgrade pip && \
-    pip install setuptools==58.2.0
+    pip install --upgrade pip
 
 
 # Copy necessary files from other stages
