@@ -1,5 +1,5 @@
-name: Multi OS docker images  - arm64 MAC OS 
- 
+name: Multi OS Docker Images - ARM64 macOS
+
 on:
   push:
     branches: [development]
@@ -11,7 +11,7 @@ on:
     branches: [development]
     paths:
       - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
-      - architecture/arm64/v8/Dockerfile"
+      - "architecture/arm64/v8/Dockerfile"
       - ".github/workflows/multi-os-arm64.yaml"
 
 env:
@@ -20,12 +20,11 @@ env:
   ACTIONS_RUNNER_DEBUG: true
   ACTIONS_STEP_DEBUG: true
 
-
 jobs:
   arm64:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: GitHub Login
       run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
@@ -34,7 +33,6 @@ jobs:
       run: |
         USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
         echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
-    
 
     - name: Clear apt cache
       run: sudo apt-get clean
@@ -43,7 +41,25 @@ jobs:
       id: vars
       run: echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
 
-    # Build and Push Docker images with development and commit hash tags only
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        install: true
+
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-docker-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-docker-
+
+    - name: Debug Environment Variables
+      run: |
+        echo "Commit SHA: ${{ env.COMMIT_HASH }}"
+        echo "Docker Registry: $DOCKER_REGISTRY"
+        echo "Username: ${{ env.USERNAME }}"
+
     - name: Build and Push ARM64 Images
       run: |
         IMAGES=(
@@ -59,7 +75,12 @@ jobs:
         
         for IMAGE in "${IMAGES[@]}"; do
           IFS=":" read -r IMAGE_NAME DOCKERFILE_PATH <<< "$IMAGE"
-          docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILE_PATH \
+          echo "Building and pushing image: $IMAGE_NAME using Dockerfile: $DOCKERFILE_PATH"
+          docker buildx build --push --platform linux/arm64/v8 . --no-cache \
+            --file $DOCKERFILE_PATH \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache \
             --label branch=development --label commit_sha=${{ env.COMMIT_HASH }} \
             --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:arm64-development \
             --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:${{ env.COMMIT_HASH }}
