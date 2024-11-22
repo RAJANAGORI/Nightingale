@@ -16,6 +16,25 @@ RUN apt-get update -y --fix-missing && \
     software-properties-common \
     build-essential
 
+# Stage 2: Python 2 stage
+FROM python:2.7-slim AS python2
+
+# Stage 3: Python 3 stage
+FROM python:3.10.12-slim AS python3
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3-full \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    python3-openssl \
+    python3-distutils && \
+    python3 -m venv /opt/venv3 && \
+    pip install --upgrade pip && \
+    pip install setuptools && \
+    pip install pipx
+
 # Stage 4: Ruby stage
 FROM --platform=$TARGETPLATFORM ruby:$RUBY AS ruby-builder
 RUN gem install nokogiri
@@ -30,22 +49,20 @@ RUN \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 
-# Stage 6: Final stage
-FROM base AS final
+# Stage 7: Final stage
+FROM debian:stable-slim AS final
 
-# Copy the Node.js installation script
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
-# Install essential libraries
 RUN apt-get update -y --fix-missing && \
-    apt-get -f --no-install-recommends install -y \
+    apt-get install -y --no-install-recommends \
     wget \
+    unzip \
     tar \
     make \
     gcc \
     cmake \
     software-properties-common \
-    ca-certificates \
     build-essential \
     libcurl4-openssl-dev \
     libexpat1-dev \
@@ -68,7 +85,6 @@ RUN apt-get update -y --fix-missing && \
     libyaml-snake-java \
     libz-dev \
     linux-libc-dev \
-    libev-* \
     libev4 \
     libffi-dev \
     libbz2-dev \
@@ -78,23 +94,19 @@ RUN apt-get update -y --fix-missing && \
     libncursesw5-dev \
     xz-utils \
     tk-dev \
-    pipx \
     python3-full \
     python3-pip \
     python3-venv \
     python3-dev \
     python3-openssl \
-    python3-setuptools \
-    python3-distutils && \
-    python3 -m venv /opt/venv3 && \
-    pip install --upgrade pip
+    python3-distutils \
+    pipx
 
 
 # Copy necessary files from other stages
-# COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
-# COPY --from=python3 /usr/bin/python3 /usr/bin/python3
-# COPY --from=python3 /usr/bin/python3.11 /usr/bin/python3.11
-# COPY --from=python3 /opt/venv3 /opt/venv3
+COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
+COPY --from=python3 /usr/bin/python3 /usr/bin/python3
+COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
 # COPY --from=ruby-builder /usr/local/bin/nokogiri /usr/local/bin/nokogiri
