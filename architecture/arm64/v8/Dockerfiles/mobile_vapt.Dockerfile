@@ -2,9 +2,8 @@
 FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-development
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Copy necessary scripts and configurations
 COPY configuration/nodejs-env/node-installation-script.sh /temp
-COPY configuration/modules-installation/rms-install-modules.sh /temp/rms-install-module.sh
+COPY configuration/modules-installation/rms-install-modules.sh /temp/rms-install-modules.sh
 COPY configuration/nodejs-pm2-configuration/pm2-rms.json /temp/pm2-rms.json
 
 # Update and install necessary tools
@@ -14,7 +13,9 @@ RUN apt-get update -y && \
     make \
     cmake \
     bundler \
-    pipx && \
+    pipx \
+    python3-pip \
+    dos2unix && \
     bash /temp/node-installation-script.sh && \
     mkdir -p /home/tools_mobile_vapt
 
@@ -29,6 +30,7 @@ RUN git clone --depth 1 https://github.com/MobSF/Mobile-Security-Framework-MobSF
 
 # Copy PM2 configuration for RMS
 COPY configuration/nodejs-pm2-configuration/pm2-rms.json rms/pm2-rms.json
+# Copy necessary scripts and configurations
 
 # Install MobSF
 RUN cd Mobile-Security-Framework-MobSF && \
@@ -37,8 +39,9 @@ RUN cd Mobile-Security-Framework-MobSF && \
     cd ..
 
 # Install RMS-Runtime-Mobile-Security
-RUN chmod +x /temp/rms-install-module.sh && \
-    /temp/rms-install-module.sh
+RUN chmod +x /temp/rms-install-modules.sh && \
+    dos2unix /temp/rms-install-modules.sh && \
+    /temp/rms-install-modules.sh
 
 # Clean up unnecessary files and libraries
 RUN apt-get -y autoremove && \

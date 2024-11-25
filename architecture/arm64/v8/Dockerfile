@@ -84,14 +84,14 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     METASPLOIT_TOOL=/home/metasploit \
     SHELLS=/home/.shells
 
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:development ${GREP_PATTERNS} ${GREP_PATTERNS}
-COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:development ${TOOLS_OSINT} ${TOOLS_OSINT}
-COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:development ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:development ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
-COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:development ${WORDLIST} ${WORDLIST}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64-development ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64-development ${GREP_PATTERNS} ${GREP_PATTERNS}
+COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:arm64-development ${TOOLS_OSINT} ${TOOLS_OSINT}
+COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:arm64-development ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:arm64-development ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64-development ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64-development ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:arm64-development ${WORDLIST} ${WORDLIST}
 
 # Stage 3: Install Python and Go Modules
 FROM intermediate as modules

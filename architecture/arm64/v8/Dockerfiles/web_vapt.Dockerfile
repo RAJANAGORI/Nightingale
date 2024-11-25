@@ -10,6 +10,8 @@ RUN \
     bundler \
     unzip \
     whatweb \
+    curl \
+    wget \
     pipx && \
 ### Creating Directories
     cd /home && \
