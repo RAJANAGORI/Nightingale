@@ -20,6 +20,7 @@ env:
   ACTIONS_STEP_DEBUG: true
 
 jobs:
+  # Step 1: Build Programming Image
   build-programming:
     runs-on: ubuntu-latest
     steps:
@@ -49,16 +50,17 @@ jobs:
       with:
         install: true
 
-    - name: Build and Push Programming Language Image
+    - name: Build and Push Programming Image
       uses: docker/build-push-action@v5
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/arm64/v8
         tags: |
-          ghcr.io/${{ env.USERNAME }}/programming_language:arm64-development
-          ghcr.io/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
 
+  # Step 2: Build Dependent Images
   build-dependent:
     needs: build-programming
     runs-on: ubuntu-latest
@@ -67,14 +69,14 @@ jobs:
         dockerfile:
           - name: forensics_and_redteam
             file: forensics_and_redteam.Dockerfile
-          - name: web_vapt
-            file: web_vapt.Dockerfile
+          - name: mobile_vapt
+            file: mobile_vapt.Dockerfile
           - name: network_vapt
             file: network_vapt.Dockerfile
           - name: osint_tools
             file: osint_tools.Dockerfile
-          - name: mobile_vapt
-            file: mobile_vapt.Dockerfile
+          - name: web_vapt
+            file: web_vapt.Dockerfile
           - name: wordlist
             file: wordlist.Dockerfile
     steps:
@@ -100,14 +102,51 @@ jobs:
       with:
         install: true
 
-    - name: Build and Push Dependent Images
+    - name: Build and Push Dependent Image
       uses: docker/build-push-action@v5
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64/v8
-        tags: |
-          ghcr.io/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
-          ghcr.io/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
         build-args: |
-          BASE_IMAGE=ghcr.io/${{ env.USERNAME }}/programming_language:arm64-development
+          BASE_IMAGE=$DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
+        tags: |
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+
+  # Step 3: Build Final Image Using Main Dockerfile
+  build-main:
+    needs: build-dependent
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate Secrets
+      run: |
+        if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
+          echo "Error: Missing registry credentials"
+          exit 1
+        fi
+
+    - name: GitHub Login
+      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+
+    - name: Set Username to Lowercase
+      run: |
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        install: true
+
+    - name: Build and Push Final Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfile
+        platforms: linux/arm64/v8
+        tags: |
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/main:arm64-development
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/main:${{ env.COMMIT_HASH }}
