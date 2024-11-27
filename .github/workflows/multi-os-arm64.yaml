@@ -26,6 +26,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Debug Environment Variables
+      run: |
+        echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
+        echo "USERNAME=${{ env.USERNAME }}"
+        echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
+
     - name: Validate Secrets
       run: |
         if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
@@ -57,8 +63,8 @@ jobs:
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/arm64/v8
         tags: |
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:arm64-development
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
 
   # Step 2: Build Dependent Images
   build-dependent:
