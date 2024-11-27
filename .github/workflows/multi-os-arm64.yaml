@@ -56,8 +56,8 @@ jobs:
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/arm64/v8
         tags: |
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
+          ghcr.io/${{ env.USERNAME }}/programming_language:arm64-development
+          ghcr.io/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
 
   build-dependent:
     needs: build-programming
@@ -107,7 +107,7 @@ jobs:
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64/v8
         tags: |
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+          ghcr.io/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
+          ghcr.io/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
         build-args: |
-          BASE_IMAGE=$DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
+          BASE_IMAGE=ghcr.io/${{ env.USERNAME }}/programming_language:arm64-development
