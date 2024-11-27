@@ -16,33 +16,12 @@ on:
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  DOCKERFILES_PATH: architecture/arm64/v8/Dockerfiles
   ACTIONS_RUNNER_DEBUG: true
   ACTIONS_STEP_DEBUG: true
 
 jobs:
-  arm64:
+  build-programming:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dockerfile:
-          - name: programming_language
-            file: programming_langauge.Dockerfile
-          - name: forensics_and_redteam
-            file: forensics_and_redteam.Dockerfile
-          - name: web_vapt
-            file: web_vapt.Dockerfile
-          - name: network_vapt
-            file: network_vapt.Dockerfile
-          - name: osint_tools
-            file: osint_tools.Dockerfile
-          - name: mobile_vapt
-            file: mobile_vapt.Dockerfile
-          - name: wordlist
-            file: wordlist.Dockerfile
-          - name: base
-            file: ../Dockerfile # Adjust for additional Dockerfiles if needed
-
     steps:
     - uses: actions/checkout@v4
 
@@ -61,9 +40,6 @@ jobs:
         USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
         echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
 
-    - name: Clear apt cache
-      run: sudo apt-get clean
-
     - name: Get Commit Hash
       id: vars
       run: echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
@@ -73,24 +49,65 @@ jobs:
       with:
         install: true
 
-    - name: Validate Buildx Installation
-      run: docker buildx ls
-
-    - name: Debug Environment Variables
-      run: |
-        echo "Commit SHA: ${{ env.COMMIT_HASH }}"
-        echo "Docker Registry: $DOCKER_REGISTRY"
-        echo "Username: ${{ env.USERNAME }}"
-
-    - name: Build and Push ARM64 Images
+    - name: Build and Push Programming Language Image
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ${{ env.DOCKERFILES_PATH }}/${{ matrix.dockerfile.file }}
+        file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
+        platforms: linux/arm64/v8
+        tags: |
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
+
+  build-dependent:
+    needs: build-programming
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile:
+          - name: forensics_and_redteam
+            file: forensics_and_redteam.Dockerfile
+          - name: web_vapt
+            file: web_vapt.Dockerfile
+          - name: network_vapt
+            file: network_vapt.Dockerfile
+          - name: osint_tools
+            file: osint_tools.Dockerfile
+          - name: mobile_vapt
+            file: mobile_vapt.Dockerfile
+          - name: wordlist
+            file: wordlist.Dockerfile
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate Secrets
+      run: |
+        if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
+          echo "Error: Missing registry credentials"
+          exit 1
+        fi
+
+    - name: GitHub Login
+      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+
+    - name: Set Username to Lowercase
+      run: |
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        install: true
+
+    - name: Build and Push Dependent Images
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64/v8
         tags: |
           $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
           $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
-
-    - name: Final Debug
-      run: docker images
+        build-args: |
+          BASE_IMAGE=$DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
