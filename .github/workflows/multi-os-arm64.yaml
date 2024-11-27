@@ -23,8 +23,27 @@ env:
 jobs:
   arm64:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile:
+          - programming_langauge.Dockerfile
+          - forensics_and_redteam.Dockerfile
+          - web_vapt.Dockerfile
+          - network_vapt.Dockerfile
+          - osint_tools.Dockerfile
+          - mobile_vapt.Dockerfile
+          - wordlist.Dockerfile
+          - ../Dockerfile # Adjust for additional Dockerfiles if needed
+
     steps:
     - uses: actions/checkout@v4
+
+    - name: Validate Secrets
+      run: |
+        if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
+          echo "Error: Missing registry credentials"
+          exit 1
+        fi
 
     - name: GitHub Login
       run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
@@ -46,13 +65,8 @@ jobs:
       with:
         install: true
 
-    - name: Cache Docker layers
-      uses: actions/cache@v3
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-docker-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-docker-
+    - name: Validate Buildx Installation
+      run: docker buildx ls
 
     - name: Debug Environment Variables
       run: |
@@ -61,27 +75,14 @@ jobs:
         echo "Username: ${{ env.USERNAME }}"
 
     - name: Build and Push ARM64 Images
-      run: |
-        IMAGES=(
-          "nightingale_programming_image:$DOCKERFILES_PATH/programming_langauge.Dockerfile"
-          "nightingale_forensic_and_red_teaming:$DOCKERFILES_PATH/forensics_and_redteam.Dockerfile"
-          "nightingale_web_vapt_image:$DOCKERFILES_PATH/web_vapt.Dockerfile"
-          "nightingale_network_vapt_image:$DOCKERFILES_PATH/network_vapt.Dockerfile"
-          "nightingale_osint_tools_image:$DOCKERFILES_PATH/osint_tools.Dockerfile"
-          "nightingale_mobile_vapt_image:$DOCKERFILES_PATH/mobile_vapt.Dockerfile"
-          "nightingale_wordlist_image:$DOCKERFILES_PATH/wordlist.Dockerfile"
-          "nightingale:architecture/arm64/Dockerfile"
-        )
-        
-        for IMAGE in "${IMAGES[@]}"; do
-          IFS=":" read -r IMAGE_NAME DOCKERFILE_PATH <<< "$IMAGE"
-          echo "Building and pushing image: $IMAGE_NAME using Dockerfile: $DOCKERFILE_PATH"
-          docker buildx build --push --platform linux/arm64/v8 . --no-cache \
-            --file $DOCKERFILE_PATH \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache \
-            --label branch=development --label commit_sha=${{ env.COMMIT_HASH }} \
-            --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:arm64-development \
-            --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:${{ env.COMMIT_HASH }}
-        done
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ${{ env.DOCKERFILES_PATH }}/${{ matrix.dockerfile }}
+        platforms: linux/arm64/v8
+        tags: |
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile | replace('.Dockerfile', '') }}:arm64-development
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile | replace('.Dockerfile', '') }}:${{ env.COMMIT_HASH }}
+
+    - name: Final Debug
+      run: docker images
