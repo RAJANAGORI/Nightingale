@@ -26,14 +26,22 @@ jobs:
     strategy:
       matrix:
         dockerfile:
-          - programming_langauge.Dockerfile
-          - forensics_and_redteam.Dockerfile
-          - web_vapt.Dockerfile
-          - network_vapt.Dockerfile
-          - osint_tools.Dockerfile
-          - mobile_vapt.Dockerfile
-          - wordlist.Dockerfile
-          - ../Dockerfile # Adjust for additional Dockerfiles if needed
+          - name: programming_language
+            file: programming_langauge.Dockerfile
+          - name: forensics_and_redteam
+            file: forensics_and_redteam.Dockerfile
+          - name: web_vapt
+            file: web_vapt.Dockerfile
+          - name: network_vapt
+            file: network_vapt.Dockerfile
+          - name: osint_tools
+            file: osint_tools.Dockerfile
+          - name: mobile_vapt
+            file: mobile_vapt.Dockerfile
+          - name: wordlist
+            file: wordlist.Dockerfile
+          - name: base
+            file: ../Dockerfile # Adjust for additional Dockerfiles if needed
 
     steps:
     - uses: actions/checkout@v4
@@ -78,13 +86,11 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ${{ env.DOCKERFILES_PATH }}/${{ matrix.dockerfile }}
+        file: ${{ env.DOCKERFILES_PATH }}/${{ matrix.dockerfile.file }}
         platforms: linux/arm64/v8
         tags: |
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile }}:arm64-development
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile }}:${{ env.COMMIT_HASH }}
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.replace('.Dockerfile', '') }}:arm64-development
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.replace('.Dockerfile', '') }}:${{ env.COMMIT_HASH }}
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
+          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
     - name: Final Debug
       run: docker images
