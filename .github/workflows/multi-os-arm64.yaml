@@ -70,7 +70,7 @@ jobs:
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/programming_language:arm64-development
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/programming_language:${{ env.COMMIT_HASH || 'latest' }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/programming_language:${{ env.COMMIT_HASH }}
 
   # Step 2: Build Dependent Images
   build-dependent:
@@ -133,7 +133,7 @@ jobs:
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/${{ matrix.dockerfile.name || 'default-name' }}:arm64-development
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/${{ matrix.dockerfile.name || 'default-name' }}:${{ env.COMMIT_HASH || 'latest' }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/${{ matrix.dockerfile.name || 'default-name' }}:${{ env.COMMIT_HASH }}
 
   # Step 3: Build Final Image Using Main Dockerfile
   build-main:
