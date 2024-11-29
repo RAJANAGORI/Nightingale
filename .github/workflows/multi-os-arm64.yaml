@@ -117,8 +117,8 @@ jobs:
         build-args: |
           BASE_IMAGE=$DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
         tags: |
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
   # Step 3: Build Final Image Using Main Dockerfile
   build-main:
@@ -154,5 +154,5 @@ jobs:
         file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64/v8
         tags: |
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/main:arm64-development
-          $DOCKER_REGISTRY/${{ env.USERNAME }}/main:${{ env.COMMIT_HASH }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64-development
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
