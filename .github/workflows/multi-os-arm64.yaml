@@ -62,15 +62,11 @@ jobs:
         install: true
 
     - name: Build and Push Programming Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
-        platforms: linux/arm64/v8
-        push: true
-        tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/programming_language:arm64-development
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/programming_language:${{ env.COMMIT_HASH }}
+      run: |
+        echo "Building Docker image..."
+        docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:arm64-development -f architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile .
+        docker push ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:arm64-development
+        docker push ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
 
   # Step 2: Build Dependent Images
   build-dependent:
@@ -125,15 +121,11 @@ jobs:
         install: true
 
     - name: Build and Push Dependent Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/arm64/v8
-        push: true
-        tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/${{ matrix.dockerfile.name || 'default-name' }}:arm64-development
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/${{ matrix.dockerfile.name || 'default-name' }}:${{ env.COMMIT_HASH }}
+      run: |
+        echo "Building and pushing dependent image..."
+        docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development -f architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }} .
+        docker push ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
+        docker push ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
   # Step 3: Build Final Image Using Main Dockerfile
   build-main:
@@ -165,12 +157,8 @@ jobs:
         install: true
 
     - name: Build and Push Final Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: architecture/arm64/v8/Dockerfile
-        platforms: linux/arm64/v8
-        push: true
-        tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale:arm64-development
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale:${{ env.COMMIT_HASH }}
+      run: |
+        echo "Building and pushing final image..."
+        docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64-development -f architecture/arm64/v8/Dockerfile .
+        docker push ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64-development
+        docker push ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
