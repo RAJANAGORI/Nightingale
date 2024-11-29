@@ -23,6 +23,8 @@ jobs:
   # Step 1: Build Programming Image
   build-programming:
     runs-on: ubuntu-latest
+    outputs:
+      commit_hash: ${{ steps.vars.outputs.commit_hash }}
     steps:
     - uses: actions/checkout@v4
 
@@ -49,7 +51,10 @@ jobs:
 
     - name: Get Commit Hash
       id: vars
-      run: echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -62,9 +67,10 @@ jobs:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/arm64/v8
+        push: true
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:arm64-development
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:${{ env.COMMIT_HASH }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/programming_language:arm64-development
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/programming_language:${{ env.COMMIT_HASH || 'latest' }}
 
   # Step 2: Build Dependent Images
   build-dependent:
@@ -85,8 +91,18 @@ jobs:
             file: web_vapt.Dockerfile
           - name: wordlist
             file: wordlist.Dockerfile
+    env:
+      COMMIT_HASH: ${{ needs.build-programming.outputs.commit_hash }}
     steps:
     - uses: actions/checkout@v4
+
+    - name: Debug Variables
+      run: |
+        echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
+        echo "USERNAME=${{ env.USERNAME }}"
+        echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
+        echo "Matrix Name=${{ matrix.dockerfile.name }}"
+        echo "Matrix File=${{ matrix.dockerfile.file }}"
 
     - name: Validate Secrets
       run: |
@@ -114,16 +130,17 @@ jobs:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64/v8
-        build-args: |
-          BASE_IMAGE=${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:arm64-development
+        push: true
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/${{ matrix.dockerfile.name || 'default-name' }}:arm64-development
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/${{ matrix.dockerfile.name || 'default-name' }}:${{ env.COMMIT_HASH || 'latest' }}
 
   # Step 3: Build Final Image Using Main Dockerfile
   build-main:
     needs: build-dependent
     runs-on: ubuntu-latest
+    env:
+      COMMIT_HASH: ${{ needs.build-programming.outputs.commit_hash }}
     steps:
     - uses: actions/checkout@v4
 
@@ -153,6 +170,7 @@ jobs:
         context: .
         file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64/v8
+        push: true
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64-development
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale:arm64-development
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale:${{ env.COMMIT_HASH }}
