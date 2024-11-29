@@ -115,7 +115,7 @@ jobs:
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64/v8
         build-args: |
-          BASE_IMAGE=$DOCKER_REGISTRY/${{ env.USERNAME }}/programming_language:arm64-development
+          BASE_IMAGE=${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:arm64-development
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-development
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
