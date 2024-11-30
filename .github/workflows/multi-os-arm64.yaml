@@ -119,6 +119,13 @@ jobs:
         USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
         echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
 
+    - name: Get Commit Hash
+      id: vars
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
@@ -158,6 +165,13 @@ jobs:
       run: |
         USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
         echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+    - name: Get Commit Hash
+      id: vars
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
