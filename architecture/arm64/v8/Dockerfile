@@ -1,5 +1,5 @@
 ## Taking Image from Docker Hub for Programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-development as base
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-development AS base
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
@@ -61,7 +61,7 @@ RUN apt-get update -y --fix-missing && \
     pv
 
 # Stage 2: Copy Scripts and Configurations
-FROM base as intermediate
+FROM base AS intermediate
 
 COPY shells/banner.sh /tmp/banner.sh
 COPY configuration/nodejs-env/ /temp/
@@ -94,7 +94,7 @@ COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64-develo
 COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:arm64-development ${WORDLIST} ${WORDLIST}
 
 # Stage 3: Install Python and Go Modules
-FROM intermediate as modules
+FROM intermediate AS modules
 
 COPY configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 COPY configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
@@ -117,15 +117,15 @@ RUN chmod +x ${BINARIES}/* && \
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
 # Stage 4: Setup Metasploit
-FROM modules as metasploit
+FROM modules AS metasploit
 
 WORKDIR ${METASPLOIT_TOOL}
 COPY configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
-COPY ./configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
+COPY configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
 # Stage 5: Final Image
-FROM metasploit as final
+FROM metasploit AS final
 
 EXPOSE 5432 8080 8081 7681
 

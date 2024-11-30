@@ -24,7 +24,7 @@ jobs:
   build-programming:
     runs-on: ubuntu-latest
     outputs:
-      commit_hash: ${{ steps.vars.outputs.commit_hash }}
+      commit_hash: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v4
 
@@ -92,7 +92,7 @@ jobs:
           - name: nightingale_wordlist_image
             file: wordlist.Dockerfile
     env:
-      COMMIT_HASH: ${{ needs.build-programming.outputs.commit_hash }}
+      COMMIT_HASH: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v4
 
@@ -140,7 +140,7 @@ jobs:
     needs: build-dependent
     runs-on: ubuntu-latest
     env:
-      COMMIT_HASH: ${{ needs.build-programming.outputs.commit_hash }}
+      COMMIT_HASH: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v4
 
