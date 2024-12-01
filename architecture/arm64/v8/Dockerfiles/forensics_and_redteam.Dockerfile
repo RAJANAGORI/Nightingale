@@ -9,16 +9,15 @@ RUN \
     cmake \
     bundler \
     pipx && \
-    # Creating Directories
-    cd /home &&\
-    mkdir -p tools_red_teaming tools_forensics
+# Create directories for tools
+    mkdir -p /home/tools_red_teaming /home/tools_forensics
 
-ENV TOOLS_RED_TEAMING=/home/tools_red_teaming/
-ENV TOOLS_FORENSICS=/home/tools_forensics/
+# Set environment variables
+ENV TOOLS_RED_TEAMING=/home/tools_red_teaming \
+    TOOLS_FORENSICS=/home/tools_forensics
 
 ## Installing Impact toolkit for Red-Team 
 WORKDIR ${TOOLS_RED_TEAMING}
-
 RUN \
     python3 -m pipx install impacket &&\
     pipx ensurepath

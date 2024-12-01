@@ -1,86 +1,190 @@
-name: Multi OS docker images  - arm64 MAC OS 
- 
+name: Multi OS Docker Images - ARM64 macOS
+
 on:
   push:
-    branches: [main]
+    branches: [development]
     paths:
-      - "architecture/arm64/Dockerfiles/*.Dockerfile"
-      - "architecture/arm64/Dockerfile"
+      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
+      - "architecture/arm64/v8/Dockerfile"
       - ".github/workflows/multi-os-arm64.yaml"
   pull_request:
-    branches: [main]
+    branches: [development]
     paths:
-      - "architecture/arm64/Dockerfiles/*.Dockerfile"
-      - "architecture/arm64/Dockerfile"
+      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
+      - "architecture/arm64/v8/Dockerfile"
       - ".github/workflows/multi-os-arm64.yaml"
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  DOCKERFILE: architecture/arm64
-  DOCKERFILES_PATH: architecture/arm64/Dockerfiles
-  IMAGE_NAME: ${{ github.repository }}\
-  # Get the short commit SHA
-  COMMIT_SHA: ${{ github.sha }}
-
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
 
 jobs:
-  arm64:
+  # Step 1: Build Programming Image
+  build-programming:
     runs-on: ubuntu-latest
+    outputs:
+      commit_hash: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v4
-    - name: Github Login
-      env:
-        GITHUB_TOKEN: ${{secrets.TOKEN}}
+
+    - name: Debug Environment Variables
       run: |
-        echo "${{secrets.TOKEN}}" | docker login ghcr.io -u ${{secrets.USERNAME}} --password-stdin
-    
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
+        echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
+        echo "USERNAME=${{ env.USERNAME }}"
+        echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
+
+    - name: Validate Secrets
+      run: |
+        if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
+          echo "Error: Missing registry credentials"
+          exit 1
+        fi
+
+    - name: GitHub Login
+      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+
+    - name: Set Username to Lowercase
+      run: |
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+    - name: Get Commit Hash
+      id: vars
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
+      with:
+        install: true
 
-    - name: Clean Docker build cache
-      run: |
-        docker buildx prune -f
+    - name: Build and Push Programming Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
+        platforms: linux/arm64/v8
+        push: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
 
-     # Clear apt cache    
-    - name: Clear apt cache
-      run: sudo apt-get clean
+  # Step 2: Build Dependent Images
+  build-dependent:
+    needs: build-programming
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile:
+          - name: nightingale_forensic_and_red_teaming
+            file: forensics_and_redteam.Dockerfile
+          - name: nightingale_mobile_vapt_image
+            file: mobile_vapt.Dockerfile
+          - name: nightingale_network_vapt_image
+            file: network_vapt.Dockerfile
+          - name: nightingale_osint_tools_image
+            file: osint_tools.Dockerfile
+          - name: nightingale_web_vapt_image
+            file: web_vapt.Dockerfile
+          - name: nightingale_wordlist_image
+            file: wordlist.Dockerfile
+    env:
+      COMMIT_HASH: ${{ github.sha }}
+    steps:
+    - uses: actions/checkout@v4
 
-    # Build Docker images
-    - name: Build nightingale_programming_image
+    - name: Debug Variables
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/programming_langauge.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_programming_image:arm64
+        echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
+        echo "USERNAME=${{ env.USERNAME }}"
+        echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
+        echo "Matrix Name=${{ matrix.dockerfile.name }}"
+        echo "Matrix File=${{ matrix.dockerfile.file }}"
 
-    - name: Build nightingale_forensic_and_red_teaming
+    - name: Validate Secrets
       run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/forensics_and_redteam.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_forensic_and_red_teaming:arm64
-    
-    - name: Build nightingale_web_vapt_image
-      run: |
-        docker buildx build --push --platform linux/arm64/v8  . --no-cache --file $DOCKERFILES_PATH/web_vapt.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_web_vapt_image:arm64
-    
-    - name: Build nightingale_network_vapt_image
-      run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/network_vapt.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_network_vapt_image:arm64
-   
-    - name: Build nightingale_osint_image
-      run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/osint_tools.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_osint_tools_image:arm64
-   
-    - name: Build nightingale_mobile_vapt_image
-      run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/mobile_vapt.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_mobile_vapt_image:arm64
-    
-    - name: Build nightingale_wordlist_image
-      run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILES_PATH/wordlist.Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale_wordlist_image:arm64
-    
-    - name: Build nightingale_arm64_image
-      run: |
-        docker buildx build --push --platform linux/arm64/v8 . --no-cache --file $DOCKERFILE/Dockerfile --label branch=main --label commit_sha=$COMMIT_SHA --tag $DOCKER_REGISTRY/rajanagori/nightingale:arm64
+        if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
+          echo "Error: Missing registry credentials"
+          exit 1
+        fi
 
-    - name: Clean Docker build cache - amd64
+    - name: GitHub Login
+      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+
+    - name: Set Username to Lowercase
       run: |
-        docker buildx prune -f
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+    - name: Get Commit Hash
+      id: vars
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        install: true
+
+    - name: Build and Push Dependent Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
+        platforms: linux/arm64/v8
+        push: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+
+  # Step 3: Build Final Image Using Main Dockerfile
+  build-main:
+    needs: build-dependent
+    runs-on: ubuntu-latest
+    env:
+      COMMIT_HASH: ${{ github.sha }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate Secrets
+      run: |
+        if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
+          echo "Error: Missing registry credentials"
+          exit 1
+        fi
+
+    - name: GitHub Login
+      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+
+    - name: Set Username to Lowercase
+      run: |
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+    - name: Get Commit Hash
+      id: vars
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        install: true
+
+    - name: Build and Push Final Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfile
+        platforms: linux/arm64/v8
+        push: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
