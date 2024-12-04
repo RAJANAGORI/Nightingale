@@ -2,19 +2,32 @@
 
 ![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
 
-[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory) 
-[![Docker Image CI](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml)
-[![Multi OS docker images  - arm64 MAC OS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)
-[![Trivy Scan](https://github.com/RAJANAGORI/Nightingale/actions/workflows/trivy.yml/badge.svg?branch=main)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/trivy.yml)
-[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/nightingale)](https://artifacthub.io/packages/search?repo=nightingale)
+---
 
-![BlackHat Asia 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2022.svg)
-![BlackHat Asia 2023](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2023.svg)
-![BlackHat Asia 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2024.svg)
-![OWASP AppSec EU 2022 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
+## Badges
 
-[![](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/) [![](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)
-![profile count](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)
+### Project and CI/CD
+[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)  
+[![Docker Image CI](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml)  
+[![Multi OS Docker Images - ARM64 macOS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)  
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/nightingale)](https://artifacthub.io/packages/search?repo=nightingale)  
+[![Anchore Grype Vulnerability Scan](https://github.com/RAJANAGORI/Nightingale/actions/workflows/anchore.yml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/anchore.yml)  
+[![Trivy Scan](https://github.com/RAJANAGORI/Nightingale/actions/workflows/trivy.yml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/trivy.yml)
+
+---
+
+### Events and Recognitions
+![BlackHat Asia 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2022.svg)  
+![BlackHat Asia 2023](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2023.svg)  
+![BlackHat Asia 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2024.svg)  
+![OWASP AppSec EU 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
+
+---
+
+### Social and Profiles
+[![Follow on LinkedIn](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/)  
+[![Follow on Twitter](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)  
+![Profile Views](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)  
 [![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
 
 ### Conferences
