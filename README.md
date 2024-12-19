@@ -20,6 +20,8 @@
 ![BlackHat Asia 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2022.svg)  
 ![BlackHat Asia 2023](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2023.svg)  
 ![BlackHat Asia 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2024.svg)  
+![IWCON 2023](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/IWCON.svg)  
+![c0c0n 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/c0c0n.svg)  
 ![OWASP AppSec EU 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
 
 ---
@@ -32,40 +34,41 @@
 
 ### Conferences
 - Blackhat Arsenal ASIA 2022
-- OWAPS Global AppSec EU 2022
-- Docker community hands on #6
+- OWASP Global AppSec EU 2022
+- Docker community hands-on event
 - Blackhat Arsenal MEA 2022 (Shortlisted)
 - Blackhat Arsenal ASIA 2023
 - Blackhat Arsenal MEA 2023 (Shortlisted)
-- Blackhat Arsenal ASIA 2024
+- Blackhat Arsenal Asia 2024
+- IWCON - 2023
+- c0c0n - 2024
+
 ## Project Name: Nightingale
 ==================================================
-## Docker for Pentesters: Pentesting Framework 
+# Docker for Pentesters: Pentesting Framework
 
 ## Description
-In today's technological era, docker is the most powerful technology in each and every domain, whether it is Development, cyber security, DevOps, Automation, or Infrastructure.
+In today's technological era, Docker is the most powerful technology across various domains, whether it's Development, Cybersecurity, DevOps, Automation, or Infrastructure.
 
-Considering the demand of the industry, I would like to introduce my idea to create a NIGHTINGALE: docker image for pentesters.
+Considering the demand of the industry, I would like to introduce my idea to create **NIGHTINGALE**: a Docker image for pentesters.
 
-This docker image is ready to use environment with the required tools that are needed at the time of pentesting on any of the scopes, whether it can be web application penetration testing, network penetration testing, mobile, API, OSINT, or Forensics.
+This Docker image provides a ready-to-use environment with the tools required for pentesting across different scopes, including web application penetration testing, network penetration testing, mobile, API, OSINT, or Forensics.
 
-The best part is you can either create an altered docker image or pull the pre-built docker image from the hub.
+The best part is that you can either create an altered Docker image or pull the pre-built Docker image from the hub.
 
-Some of the best features are listed below, I would highly recommend going through it and starting penetrating into the application.
-Link to access tool list : [tool list](https://owasp.org/www-project-nightingale/)
+Some of the best features are listed below; I would highly recommend going through them before starting to penetrate the application. **Link to access tool list**: ([tool list](https://github.com/RAJANAGORI/Nightingale/wiki/6-%F0%9F%9B%A0%EF%B8%8F-Tools-list))
 
-### Pros
-1.	No need to install multiple programming language support and multiple modules.
-2.	Booting process is very fast as per the virtualization concept.
-3.	Need as per use resource of the host machine.
-4.	All pre-install tools are installed and if you install any new software or tool use can go with that option.
-5.	You can perform vulnerability assessment and penetration testing of any scope.
-6.	You can access this docker container via browser by calling your local address.
+## Pros
+- No need to install multiple programming language supports and modules.
+- The booting process is very fast due to the virtualization concept.
+- Uses resources from the host machine as needed.
+- All pre-installed tools are ready, and you can install new software or tools if required.
+- You can perform vulnerability assessments and penetration testing on any scope.
+- You can access this Docker container via a browser by calling your local address.
 
-### Why? 
-The Reason behind creating this Docker file is to make a platform-independent penetration toolkit. It includes all the useful tools that will be required for a penetration tester
-(You can refer to the tool list section for the same).
+## Why?
+The reason behind creating this Docker image is to make a platform-independent penetration toolkit. It includes all the useful tools that a penetration tester might need (refer to the tool list section for details).
 
-Please feel free to contribute to the tool
+Please feel free to contribute to the tool.
 
 For more information [Nightingale Wiki](https://github.com/RAJANAGORI/Nightingale/wiki/1-%F0%9F%9A%80-Nightingale-Docker-for-Pentesters)
