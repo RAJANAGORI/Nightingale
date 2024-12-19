@@ -95,9 +95,9 @@ RUN \
 
 RUN \
 ### Installing Amass 
-    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.2.0/amass_Linux_amd64.zip -O amass.zip &&\
+    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.2.0/amass_Linux_arm64.zip -O amass.zip &&\
     unzip amass.zip && \
-    mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip && \
+    mv amass_Linux_arm64/amass /usr/local/bin && rm -rf amass_Linux_arm64 amass.zip && \
     # Cleaning Unwanted libraries 
     apt-get -y autoremove &&\
     apt-get -y clean &&\
@@ -123,7 +123,7 @@ RUN \
 
  RUN \
     cd hashcat && \
-    make && \
+    make && \ 
     ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat
     
 WORKDIR /home
