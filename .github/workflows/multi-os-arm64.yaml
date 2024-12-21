@@ -22,7 +22,7 @@ env:
 jobs:
   # Step 1: Build Programming Image
   build-programming:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       commit_hash: ${{ github.sha }}
     steps:
@@ -53,7 +53,6 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "::set-output name=commit_hash::$COMMIT_HASH"
         echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
@@ -75,7 +74,7 @@ jobs:
   # Step 2: Build Dependent Images
   build-dependent:
     needs: build-programming
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         dockerfile:
@@ -123,7 +122,6 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "::set-output name=commit_hash::$COMMIT_HASH"
         echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
@@ -145,7 +143,7 @@ jobs:
   # Step 3: Build Final Image Using Main Dockerfile
   build-main:
     needs: build-dependent
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
@@ -170,7 +168,6 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "::set-output name=commit_hash::$COMMIT_HASH"
         echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
