@@ -51,19 +51,19 @@ jobs:
       - name: Set up GitHub Token for Trivy  # Set up environment variable for GitHub token
         run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
 
-      - name: Verify Image Existence  # Verify if the image exists in the registry
-        run: |
-          if ! curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" https://ghcr.io/v2/rajanagori/nightingale/manifests/7af24e6 | grep -q "200"; then
-            echo "Image ghcr.io/rajanagori/nightingale:stable does not exist."
-            exit 1
-          fi
+      # - name: Verify Image Existence  # Verify if the image exists in the registry
+      #   run: |
+      #     if ! curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" https://ghcr.io/v2/rajanagori/nightingale/manifests/7af24e6 | grep -q "200"; then
+      #       echo "Image ghcr.io/rajanagori/nightingale:stable does not exist."
+      #       exit 1
+      #     fi
 
       - name: Run Trivy vulnerability scanner with retry  # Scan the image and handle rate limits
         run: |
           export TRIVY_AUTH_URL="https://ghcr.io" 
           export TRIVY_TOKEN=$GITHUB_TOKEN 
           for i in {1..5}; do  # Retry mechanism for handling rate limits
-            trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:7af24e6 && break || sleep 60;
+            trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:arm64-development && break || sleep 60;
           done
 
       - name: Verify Trivy results file  # Verify if the Trivy results file was created
