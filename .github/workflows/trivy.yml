@@ -6,7 +6,7 @@ on:  # Events triggering the workflow
     paths:
       - ".github/workflows/trivy.yml"  # Trigger only when the workflow file is changed
   pull_request:
-    branches: [ "development" ]  # Trigger on pull requests targeting the main branch
+    branches: [ "development" ]  # Trigger on pull requests targeting the development branch
     paths:
       - ".github/workflows/trivy.yml"  # Trigger only when the workflow file is changed
   # schedule:  # Uncomment to schedule periodic scans in IST
@@ -51,6 +51,13 @@ jobs:
       - name: Set up GitHub Token for Trivy  # Set up environment variable for GitHub token
         run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
 
+      - name: Verify Image Existence  # Verify if the image exists in the registry
+        run: |
+          if ! curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" https://ghcr.io/v2/rajanagori/nightingale/manifests/stable | grep -q "200"; then
+            echo "Image ghcr.io/rajanagori/nightingale:stable does not exist."
+            exit 1
+          fi
+
       - name: Run Trivy vulnerability scanner with retry  # Scan the image and handle rate limits
         run: |
           export TRIVY_AUTH_URL="https://ghcr.io" 
@@ -68,19 +75,7 @@ jobs:
             exit 1
           fi
 
-      # - name: Generate SBOM  # Generate Software Bill of Materials (SBOM)
-      #   run: |
-      #     trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
-
       - name: Upload Trivy scan results to GitHub Security tab  # Upload SARIF results for display in GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
-
-      # - name: Upload Trivy results artifact  # Save the scan results as build artifacts
-      #   uses: actions/upload-artifact@v4  # Use the latest version of the upload-artifact action
-      #   with:
-      #     name: trivy-results  # Name of the artifact
-      #     path: |
-      #       trivy-results.sarif  # Upload SARIF scan results
-      #       sbom.json  # Upload SBOM JSON file
