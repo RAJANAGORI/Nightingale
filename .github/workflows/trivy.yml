@@ -9,8 +9,8 @@ on:  # Events triggering the workflow
     branches: [ "main" ]  # Trigger on pull requests targeting the main branch
     paths:
       - ".github/workflows/trivy.yml"  # Trigger only when the workflow file is changed
-  schedule:  # Uncomment to schedule periodic scans in IST
-    - cron: '30 17 * * 0'  # Runs every Sunday at 11:00 PM IST (5:30 PM UTC)
+  # schedule:  # Uncomment to schedule periodic scans in IST
+  #   - cron: '30 17 * * 0'  # Runs every Sunday at 11:00 PM IST (5:30 PM UTC)
 
 permissions:  # Permissions for accessing repository and security events
   contents: read  # Permissions to fetch code for scanning
