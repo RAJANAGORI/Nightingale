@@ -2,11 +2,11 @@ name: Trivy Scan  # Workflow for scanning vulnerabilities using Trivy
 
 on:  # Events triggering the workflow
   push:
-    branches: [ "main" ]  # Trigger on push to the main branch
+    branches: [ "development" ]  # Trigger on push to the development branch
     paths:
       - ".github/workflows/trivy.yml"  # Trigger only when the workflow file is changed
   pull_request:
-    branches: [ "main" ]  # Trigger on pull requests targeting the main branch
+    branches: [ "development" ]  # Trigger on pull requests targeting the main branch
     paths:
       - ".github/workflows/trivy.yml"  # Trigger only when the workflow file is changed
   # schedule:  # Uncomment to schedule periodic scans in IST
