@@ -31,7 +31,7 @@ jobs:
         run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
 
       - name: Verify Image Existence
-        run: docker pull ghcr.io/rajanagori/nightingale:arm64-development
+        run: docker pull ghcr.io/rajanagori/nightingale:stable
 
       - name: Cache Trivy DB
         uses: actions/cache@v3
