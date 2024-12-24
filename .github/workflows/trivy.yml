@@ -55,14 +55,27 @@ jobs:
           export TRIVY_TOKEN=$GITHUB_TOKEN
           for i in {1..5}; do
             trivy image \
-              --platform linux/arm64 \
               --skip-dirs /home/wordlist \
               --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv \
               --format sarif \
               --output trivy-results.sarif \
               --severity CRITICAL \
-              ghcr.io/rajanagori/nightingale:arm64-development && break || sleep 60
+              ghcr.io/rajanagori/nightingale:stable && break || sleep 60
           done
+      # - name: Run Trivy vulnerability scanner
+      #   run: |
+      #     export TRIVY_AUTH_URL="https://ghcr.io"
+      #     export TRIVY_TOKEN=$GITHUB_TOKEN
+      #     for i in {1..5}; do
+      #       trivy image \
+      #         --platform linux/arm64 \
+      #         --skip-dirs /home/wordlist \
+      #         --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv \
+      #         --format sarif \
+      #         --output trivy-results.sarif \
+      #         --severity CRITICAL \
+      #         ghcr.io/rajanagori/nightingale:arm64-development && break || sleep 60
+      #     done
 
       - name: Verify Trivy results file
         run: |
