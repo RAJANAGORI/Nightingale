@@ -71,28 +71,30 @@ body:
     validations:
       required: true
 
-  - type: checkboxes
-    id: applicable_labels
+  - type: dropdown
+    id: applicable_label
     attributes:
-      label: Labels
-      description: "Select applicable labels for this issue:"
+      label: Label
+      description: "Select the most applicable label for this issue."
       options:
-        - label: bug - Something isn't working
-        - label: documentation - Improvements or additions to documentation
-        - label: duplicate - This issue or pull request already exists
-        - label: enhancement - New feature or request
-        - label: Feature - New Feature in Process
-        - label: game changer - Out of the Box
-        - label: good first issue - Good for newcomers
-        - label: help wanted - Extra attention is needed
-        - label: Ideas/Feedback - Add valuable ideas or feedback
-        - label: invalid - This doesn't seem right
-        - label: question - Further information is requested
-        - label: tool request - Suggest adding a new tool
-        - label: tools install/update - Install or update tools to the latest version
-        - label: vulnerability - Issues or vulnerabilities that need review
-        - label: Will Push to Main - Dev code is under testing and will push to the main branch
-        - label: wontfix - This will not be worked on
+        - bug - Something isn't working
+        - documentation - Improvements or additions to documentation
+        - duplicate - This issue or pull request already exists
+        - enhancement - New feature or request
+        - Feature - New Feature in Process
+        - game changer - Out of the Box
+        - good first issue - Good for newcomers
+        - help wanted - Extra attention is needed
+        - Ideas/Feedback - Add valuable ideas or feedback
+        - invalid - This doesn't seem right
+        - question - Further information is requested
+        - tool request - Suggest adding a new tool
+        - tools install/update - Install or update tools to the latest version
+        - vulnerability - Issues or vulnerabilities that need review
+        - Will Push to Main - Dev code is under testing and will push to the main branch
+        - wontfix - This will not be worked on
+    validations:
+      required: true
 
   - type: textarea
     id: solution
