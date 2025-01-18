@@ -1,24 +1,6 @@
 name: Add/Fix/Feat Request
 description: "Request to add, fix, or enhance a feature in the project"
 title: "[ADD/FIX/FEAT]: "
-labels:
-  - enhancement
-  - bug
-  - feature request
-  - tool request
-  - documentation
-  - Ideas/Feedback
-  - help wanted
-  - question
-  - tools install/update
-  - vulnerability
-  - Will Push to Main
-  - wontfix
-  - good first issue
-  - invalid
-  - duplicate
-  - Feature
-  - game changer
 assignees:
   - RAJANAGORI
 body:
