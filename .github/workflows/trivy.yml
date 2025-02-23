@@ -1,46 +1,46 @@
-name: Trivy Scan
+name: Trivy Scan  # Workflow for scanning vulnerabilities using Trivy
 
-on:
+on:  # Events triggering the workflow
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Trigger on push to the main branch
     paths:
-      - ".github/workflows/trivy.yml"
+      - ".github/workflows/trivy.yml"  # Trigger only when the workflow file is changed
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Trigger on pull requests targeting the main branch
     paths:
-      - ".github/workflows/trivy.yml"
-  schedule:
+      - ".github/workflows/trivy.yml"  # Trigger only when the workflow file is changed
+  schedule:  # Uncomment to schedule periodic scans in IST
     - cron: '30 17 * * 0'  # Runs every Sunday at 11:00 PM IST (5:30 PM UTC)
 
-permissions:
-  contents: read
-  security-events: write
+permissions:  # Permissions for accessing repository and security events
+  contents: read  # Permissions to fetch code for scanning
+  security-events: write  # Permissions to upload SARIF results for security tab
 
 jobs:
   build:
     permissions:
-      contents: read
-      security-events: write
+      contents: read  # For actions/checkout to fetch the code
+      security-events: write  # For uploading SARIF results to GitHub Security tab
     name: Build
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-latest"  # Use the latest Ubuntu version
     steps:
-      - name: Checkout code
+      - name: Checkout code  # Checkout the repository code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node.js  # Setup Node.js environment for the project
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '20'  # Use Node.js version 20 (latest LTS)
 
-      - name: Cache Trivy DB
+      - name: Cache Trivy DB  # Cache the vulnerability database to speed up subsequent scans
         uses: actions/cache@v3
         with:
-          path: ~/.cache/trivy
-          key: ${{ runner.os }}-trivy-db
+          path: ~/.cache/trivy  # Path to cache the Trivy database
+          key: ${{ runner.os }}-trivy-db  # Key for caching
           restore-keys: |
             ${{ runner.os }}-trivy-db  # Restore previous cache if possible
 
-      - name: Install Trivy
+      - name: Install Trivy  # Install Trivy vulnerability scanner
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
@@ -48,66 +48,30 @@ jobs:
           sudo dpkg -i trivy_0.57.0_Linux-64bit.deb
           trivy --cache-dir ${HOME}/.cache/trivy  # Setup Trivy with cache directory
 
-      - name: Set up GitHub Token for Trivy
+      - name: Set up GitHub Token for Trivy  # Set up environment variable for GitHub token
         run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
-      
-      # - name: Run Trivy vulnerability scanner with retry
-      #   run: |
-      #     export TRIVY_AUTH_URL="https://ghcr.io" 
-      #     export TRIVY_TOKEN=$GITHUB_TOKEN 
 
-      #     declare -A tags_with_platforms=(
-      #       ["stable"]="linux/amd64"
-      #       ["arm64"]="linux/arm64"
-      #     )
-
-      #     for tag in "${!tags_with_platforms[@]}"; do
-      #       platform="${tags_with_platforms[$tag]}"
-      #       echo "Scanning image: ghcr.io/rajanagori/nightingale:${tag} on platform ${platform}"
-      #       for i in {1..5}; do
-      #         trivy image \
-      #           --platform "${platform}" \
-      #           --skip-dirs /home/wordlist \
-      #           --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv \
-      #           --format sarif \
-      #           --output "trivy-results-${tag}.sarif" \
-      #           --severity CRITICAL \
-      #           "ghcr.io/rajanagori/nightingale:${tag}" && break || sleep 60
-      #       done
-      #     done
-
-      - name: Run Trivy vulnerability scanner with retry
+      - name: Run Trivy vulnerability scanner with retry  # Scan the image and handle rate limits
         run: |
           export TRIVY_AUTH_URL="https://ghcr.io" 
           export TRIVY_TOKEN=$GITHUB_TOKEN 
           for i in {1..5}; do  # Retry mechanism for handling rate limits
-            trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results-stable.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results-arm.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:arm64 && break || sleep 60;
+            trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
           done
 
       # - name: Generate SBOM  # Generate Software Bill of Materials (SBOM)
       #   run: |
       #     trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
 
-      - name: Verify SARIF files
-        run: |
-          echo "Checking SARIF files..."
-          ls -la && pwd 
-
-      - name: Verify SARIF files and working directory
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Files:"
-          find . -name "*.sarif"
-
-      - name: Upload Trivy scan results to GitHub Security tab 
+      - name: Upload Trivy scan results to GitHub Security tab  # Upload SARIF results for display in GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'Nightingale/trivy-results-stable.sarif,Nightingale/trivy-results-arm64.sarif'
+          sarif_file: 'trivy-results.sarif'
 
-      # - name: Upload Trivy results artifact  
-      #   uses: actions/upload-artifact@v4  
+      # - name: Upload Trivy results artifact  # Save the scan results as build artifacts
+      #   uses: actions/upload-artifact@v4  # Use the latest version of the upload-artifact action
       #   with:
-      #     name: trivy-results 
+      #     name: trivy-results  # Name of the artifact
       #     path: |
-      #       trivy-results.sarif
-      #       sbom.json  
+      #       trivy-results.sarif  # Upload SARIF scan results
+      #       sbom.json  # Upload SBOM JSON file
