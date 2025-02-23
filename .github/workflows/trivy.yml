@@ -88,10 +88,15 @@ jobs:
       #   run: |
       #     trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
 
-      - name: Upload Trivy scan results to GitHub Security tab 
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: '*.sarif'
+      - name: Verify SARIF files
+        run: |
+          echo "Checking SARIF files..."
+          ls -la
+
+      # - name: Upload Trivy scan results to GitHub Security tab 
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: '*.sarif'
 
       # - name: Upload Trivy results artifact  
       #   uses: actions/upload-artifact@v4  

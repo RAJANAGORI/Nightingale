@@ -1,0 +1,132 @@
+# name: Multi OS Docker Images - ARM64 macOS
+
+# on:
+#   push:
+#     branches: [development]
+#     paths:
+#       - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
+#       - "architecture/arm64/v8/Dockerfile"
+#       - ".github/workflows/multi-os-arm64.yaml"
+#   pull_request:
+#     branches: [development]
+#     paths:
+#       - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
+#       - "architecture/arm64/v8/Dockerfile"
+#       - ".github/workflows/multi-os-arm64.yaml"
+
+# env:
+#   DOCKER_REGISTRY: ghcr.io
+#   DOCKERFILES_PATH: architecture/arm64/v8/Dockerfiles
+#   ACTIONS_RUNNER_DEBUG: true
+#   ACTIONS_STEP_DEBUG: true
+
+# jobs:
+#   arm64:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v4
+
+#     - name: GitHub Login
+#       run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+
+#     - name: Set Username to Lowercase
+#       run: |
+#         USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+#         echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+#     - name: Clear apt cache
+#       run: sudo apt-get clean
+
+#     - name: Get Commit Hash
+#       id: vars
+#       run: echo "COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
+#     - name: Set up Docker Buildx
+#       uses: docker/setup-buildx-action@v3
+#       with:
+#         install: true
+
+#     - name: Cache Docker layers
+#       uses: actions/cache@v3
+#       with:
+#         path: /tmp/.buildx-cache
+#         key: ${{ runner.os }}-docker-${{ github.sha }}
+#         restore-keys: |
+#           ${{ runner.os }}-docker-
+
+#     - name: Debug Environment Variables
+#       run: |
+#         echo "Commit SHA: ${{ env.COMMIT_HASH }}"
+#         echo "Docker Registry: $DOCKER_REGISTRY"
+#         echo "Username: ${{ env.USERNAME }}"
+
+#     - name: Build and Push ARM64 Images
+#       run: |
+#         IMAGES=(
+#           "nightingale_programming_image:$DOCKERFILES_PATH/programming_langauge.Dockerfile"
+#           "nightingale_forensic_and_red_teaming:$DOCKERFILES_PATH/forensics_and_redteam.Dockerfile"
+#           "nightingale_web_vapt_image:$DOCKERFILES_PATH/web_vapt.Dockerfile"
+#           "nightingale_network_vapt_image:$DOCKERFILES_PATH/network_vapt.Dockerfile"
+#           "nightingale_osint_tools_image:$DOCKERFILES_PATH/osint_tools.Dockerfile"
+#           "nightingale_mobile_vapt_image:$DOCKERFILES_PATH/mobile_vapt.Dockerfile"
+#           "nightingale_wordlist_image:$DOCKERFILES_PATH/wordlist.Dockerfile"
+#           "nightingale:architecture/arm64/Dockerfile"
+#         )
+        
+#         for IMAGE in "${IMAGES[@]}"; do
+#           IFS=":" read -r IMAGE_NAME DOCKERFILE_PATH <<< "$IMAGE"
+#           echo "Building and pushing image: $IMAGE_NAME using Dockerfile: $DOCKERFILE_PATH"
+#           docker buildx build --push --platform linux/arm64/v8 . --no-cache \
+#             --file $DOCKERFILE_PATH \
+#             --label branch=development --label commit_sha=${{ env.COMMIT_HASH }} \
+#             --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:arm64-development \
+#             --tag $DOCKER_REGISTRY/${{ env.USERNAME }}/$IMAGE_NAME:${{ env.COMMIT_HASH }}
+#         done
+
+
+
+        build-args: |
+          BASE_IMAGE=${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/programming_language:arm64-development
+
+
+docker buildx build --push --platform linux/arm64/v8 . \
+  --file architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile \
+  --tag ghcr.io/${USERNAME}/nightingale_programming_image:arm64-development \
+  --tag ghcr.io/${USERNAME}/nightingale_programming_image:${COMMIT_HASH}
+
+docker buildx build --push --platform linux/arm64/v8 . \
+  --file architecture/arm64/v8/Dockerfiles/forensics_and_redteam.Dockerfile \
+  --tag ghcr.io/${USERNAME}/nightingale_forensic_and_red_teaming:arm64-development \
+  --tag ghcr.io/${USERNAME}/nightingale_forensic_and_red_teaming:${COMMIT_HASH}
+
+docker buildx build --push --platform linux/arm64/v8 . \
+  --file architecture/arm64/v8/Dockerfiles/mobile_vapt.Dockerfile \
+  --tag ghcr.io/${USERNAME}/nightingale_mobile_vapt_image:arm64-development \
+  --tag ghcr.io/${USERNAME}/nightingale_mobile_vapt_image:${COMMIT_HASH}
+
+docker buildx build --push --platform linux/arm64/v8 . \
+  --file architecture/arm64/v8/Dockerfiles/network_vapt.Dockerfile \
+  --tag ghcr.io/${USERNAME}/nightingale_network_vapt_image:arm64-development \
+  --tag ghcr.io/${USERNAME}/nightingale_network_vapt_image:${COMMIT_HASH}
+
+
+docker buildx build --push --platform linux/arm64/v8 . \
+  --file architecture/arm64/v8/Dockerfiles/osint_tools.Dockerfile \
+  --tag ghcr.io/${USERNAME}/nightingale_osint_tools_image:arm64-development \
+  --tag ghcr.io/${USERNAME}/nightingale_osint_tools_image:${COMMIT_HASH}
+
+
+docker buildx build --push --platform linux/arm64/v8 . \
+  --file architecture/arm64/v8/Dockerfiles/web_vapt.Dockerfile \
+  --tag ghcr.io/${USERNAME}/nightingale_web_vapt_image:arm64-development \
+  --tag ghcr.io/${USERNAME}/nightingale_web_vapt_image:${COMMIT_HASH}
+
+docker buildx build --push --platform linux/arm64/v8 . \
+  --file architecture/arm64/v8/Dockerfiles/wordlist.Dockerfile \
+  --tag ghcr.io/${USERNAME}/nightingale_wordlist_image:arm64-development \
+  --tag ghcr.io/${USERNAME}/nightingale_wordlist_image:${COMMIT_HASH}
+
+docker buildx build --push --platform linux/arm64/v8 . \
+  --file architecture/arm64/v8/Dockerfile \
+  --tag ghcr.io/${USERNAME}/nightingale:arm64-development \
+  --tag ghcr.io/${USERNAME}/nightingale:${COMMIT_HASH}
