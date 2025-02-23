@@ -99,10 +99,10 @@ jobs:
           echo "Files:"
           find . -name "*.sarif"
 
-      # - name: Upload Trivy scan results to GitHub Security tab 
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   with:
-      #     sarif_file: 'trivy-results-stable.sarif,trivy-results-arm64.sarif'
+      - name: Upload Trivy scan results to GitHub Security tab 
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'Nightingale/trivy-results-stable.sarif,Nightingale/trivy-results-arm64.sarif'
 
       # - name: Upload Trivy results artifact  
       #   uses: actions/upload-artifact@v4  
