@@ -51,38 +51,38 @@ jobs:
       - name: Set up GitHub Token for Trivy
         run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
       
-      - name: Run Trivy vulnerability scanner with retry
-        run: |
-          export TRIVY_AUTH_URL="https://ghcr.io" 
-          export TRIVY_TOKEN=$GITHUB_TOKEN 
-
-          declare -A tags_with_platforms=(
-            ["stable"]="linux/amd64"
-            ["arm64"]="linux/arm64"
-          )
-
-          for tag in "${!tags_with_platforms[@]}"; do
-            platform="${tags_with_platforms[$tag]}"
-            echo "Scanning image: ghcr.io/rajanagori/nightingale:${tag} on platform ${platform}"
-            for i in {1..5}; do
-              trivy image \
-                --platform "${platform}" \
-                --skip-dirs /home/wordlist \
-                --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv \
-                --format sarif \
-                --output "trivy-results-${tag}.sarif" \
-                --severity CRITICAL \
-                "ghcr.io/rajanagori/nightingale:${tag}" && break || sleep 60
-            done
-          done
-
       # - name: Run Trivy vulnerability scanner with retry
       #   run: |
       #     export TRIVY_AUTH_URL="https://ghcr.io" 
       #     export TRIVY_TOKEN=$GITHUB_TOKEN 
-      #     for i in {1..5}; do  # Retry mechanism for handling rate limits
-      #       trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
+
+      #     declare -A tags_with_platforms=(
+      #       ["stable"]="linux/amd64"
+      #       ["arm64"]="linux/arm64"
+      #     )
+
+      #     for tag in "${!tags_with_platforms[@]}"; do
+      #       platform="${tags_with_platforms[$tag]}"
+      #       echo "Scanning image: ghcr.io/rajanagori/nightingale:${tag} on platform ${platform}"
+      #       for i in {1..5}; do
+      #         trivy image \
+      #           --platform "${platform}" \
+      #           --skip-dirs /home/wordlist \
+      #           --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv \
+      #           --format sarif \
+      #           --output "trivy-results-${tag}.sarif" \
+      #           --severity CRITICAL \
+      #           "ghcr.io/rajanagori/nightingale:${tag}" && break || sleep 60
+      #       done
       #     done
+
+      - name: Run Trivy vulnerability scanner with retry
+        run: |
+          export TRIVY_AUTH_URL="https://ghcr.io" 
+          export TRIVY_TOKEN=$GITHUB_TOKEN 
+          for i in {1..5}; do  # Retry mechanism for handling rate limits
+            trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results-stable.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results-arm.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:arm64 && break || sleep 60;
+          done
 
       # - name: Generate SBOM  # Generate Software Bill of Materials (SBOM)
       #   run: |
