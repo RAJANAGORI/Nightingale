@@ -51,17 +51,22 @@ jobs:
       - name: Set up GitHub Token for Trivy
         run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
       
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner with retry
         run: |
           export TRIVY_AUTH_URL="https://ghcr.io" 
           export TRIVY_TOKEN=$GITHUB_TOKEN 
 
-          tags=("stable" "arm64")
+          declare -A tags_with_platforms=(
+            ["stable"]="linux/amd64"
+            ["arm64"]="linux/arm64"
+          )
 
-          for tag in "${tags[@]}"; do
-            echo "Scanning image: ghcr.io/rajanagori/nightingale:${tag}"
+          for tag in "${!tags_with_platforms[@]}"; do
+            platform="${tags_with_platforms[$tag]}"
+            echo "Scanning image: ghcr.io/rajanagori/nightingale:${tag} on platform ${platform}"
             for i in {1..5}; do
               trivy image \
+                --platform "${platform}" \
                 --skip-dirs /home/wordlist \
                 --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv \
                 --format sarif \
