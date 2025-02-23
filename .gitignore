@@ -3,4 +3,6 @@ password.txt
 vulnerability-reports/
 .DS_Store
 nightingale-go
-workflows/test
+.github/workflows/test.txt
+
+
