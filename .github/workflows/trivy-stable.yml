@@ -51,6 +51,9 @@ jobs:
       - name: Set up GitHub Token for Trivy
         run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
 
+      - name: Pull Docker image
+        run: docker pull ghcr.io/rajanagori/nightingale:stable
+
       - name: Run Trivy vulnerability scanner with retry
         run: |
           export TRIVY_AUTH_URL="https://ghcr.io"

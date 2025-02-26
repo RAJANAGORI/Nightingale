@@ -51,6 +51,9 @@ jobs:
       - name: Set up GitHub Token for Trivy
         run: echo "GITHUB_TOKEN=${{ secrets.TOKEN }}" >> $GITHUB_ENV
 
+      - name: Pull ARM64 Docker image
+        run: docker pull --platform linux/arm64 ghcr.io/rajanagori/nightingale:arm64
+
       - name: Run Trivy vulnerability scanner with retry
         run: |
           export TRIVY_AUTH_URL="https://ghcr.io"
@@ -61,7 +64,7 @@ jobs:
 
       - name: Generate SBOM
         run: |
-          trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:arm64
+          trivy sbom --platform linux/arm64 --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:arm64
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
