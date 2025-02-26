@@ -4,13 +4,13 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - ".github/workflows/trivy.yml"
+      - ".github/workflows/trivy-stable.yml"
   pull_request:
     branches: [ "main" ]
     paths:
-      - ".github/workflows/trivy.yml"
-  schedule:
-    - cron: '30 17 * * 0'
+      - ".github/workflows/trivy-stable.yml"
+  # schedule:
+  #   - cron: '30 17 * * 0'
 
 permissions:
   contents: read
