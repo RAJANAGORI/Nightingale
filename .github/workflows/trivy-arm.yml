@@ -64,7 +64,7 @@ jobs:
 
       - name: Generate SBOM
         run: |
-          trivy sbom --platform linux/arm64 --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:arm64
+          trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:arm64
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
