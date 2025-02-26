@@ -59,19 +59,19 @@ jobs:
             trivy image --skip-dirs /home/wordlist --skip-files home/tools_web_vapt/WhatWeb/plugins/IpToCountry.csv --format sarif --output trivy-results.sarif --severity CRITICAL ghcr.io/rajanagori/nightingale:stable && break || sleep 60;
           done
 
-      # - name: Generate SBOM
-      #   run: |
-      #     trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
+      - name: Generate SBOM
+        run: |
+          trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 
-      # - name: Upload Trivy results artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: trivy-results
-      #     path: |
-      #       trivy-results.sarif
-      #       sbom.json
+      - name: Upload Trivy results artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-results
+          path: |
+            trivy-results.sarif
+            sbom.json
