@@ -64,7 +64,7 @@ jobs:
 
       - name: Generate SBOM
         run: |
-          trivy sbom --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
+          trivy image --format spdx-json --scanners vuln --output sbom.json ghcr.io/rajanagori/nightingale:stable
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
