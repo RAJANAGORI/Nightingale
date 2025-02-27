@@ -6,7 +6,7 @@ on:
       - main  # Change to your target branch
 
 jobs:
-  build:
+  release:
     name: Build & Upload Binary
     runs-on: ubuntu-latest
 
@@ -19,6 +19,43 @@ jobs:
         with:
           go-version: stable
 
+      - name: Determine New Release Tag
+        id: versioning
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            let nextTag = "v1.1.2"; // Default if no releases exist
+            if (releases.length > 0) {
+              const latestTag = releases[0].tag_name;
+              const parts = latestTag.match(/v(\d+)\.(\d+)\.(\d+)/);
+              if (parts) {
+                let [_, major, minor, patch] = parts.map(Number);
+                patch++; // Increment patch version
+                nextTag = `v${major}.${minor}.${patch}`;
+              }
+            }
+
+            console.log(`Next release: ${nextTag}`);
+            core.setOutput("new_tag", nextTag);
+
+      - name: Create a New GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.versioning.outputs.new_tag }}
+          release_name: Release ${{ steps.versioning.outputs.new_tag }}
+          body: "Automated release from the latest commit."
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
       - name: Build Go Binaries
         run: |
           cd nightingale-go/src/nightingale  # Navigate to the correct directory
@@ -29,68 +66,10 @@ jobs:
           GOOS=darwin GOARCH=arm64 go build -o dist/nightingale-go-mac-arm64 .
           GOOS=windows GOARCH=amd64 go build -o dist/nightingale-go-win-amd64.exe
 
-      - name: Get latest release
-        id: get_release
-        uses: actions/github-script@v7
+      - name: Upload Binaries to Release
+        uses: svenstaro/upload-release-action@v2
         with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const { data: releases } = await github.rest.repos.listReleases({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
-            if (releases.length === 0) {
-              core.setFailed("No releases found. Please create a release first.");
-            } else {
-              core.setOutput("upload_url", releases[0].upload_url);
-            }
-
-      - name: Upload Linux AMD64 Binary
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-linux-amd64
-          asset_name: nightingale-go-linux-amd64
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-      - name: Upload Linux ARM64 Binary
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-linux-arm64
-          asset_name: nightingale-go-linux-arm64
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-      - name: Upload macOS AMD64 Binary
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-mac-amd64
-          asset_name: nightingale-go-mac-amd64
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-      - name: Upload macOS ARM64 Binary
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-mac-arm64
-          asset_name: nightingale-go-mac-arm64
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-      - name: Upload Windows AMD64 Binary
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-win-amd64.exe
-          asset_name: nightingale-go-win-amd64.exe
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          repo_token: ${{ secrets.TOKEN }}
+          file: nightingale-go/src/nightingale/dist/*
+          tag: ${{ steps.versioning.outputs.new_tag }}
+          overwrite: true
