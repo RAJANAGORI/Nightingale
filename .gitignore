@@ -2,7 +2,5 @@
 password.txt
 vulnerability-reports/
 .DS_Store
-nightingale-go
+# nightingale-go
 .github/workflows/test.txt
-
-
