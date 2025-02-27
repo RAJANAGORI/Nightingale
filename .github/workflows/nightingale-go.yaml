@@ -18,7 +18,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.TOKEN }}
         run: |
-          git clone https://${{ secrets.TOKEN }}@hgithub.com/RAJANAGORI/nightingale-go.git private-source
+          git clone https://${{ secrets.TOKEN }}@github.com/RAJANAGORI/nightingale-go.git private-source
           cd private-source
           echo "Cloned private repository successfully."
 
