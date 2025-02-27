@@ -3,7 +3,7 @@ name: Release Binary from Private Repo
 on:
   push:
     branches:
-      - development  # Change to your default branch
+      - development  # Change this to your target branch
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
 
       - name: Build Go Binaries
         run: |
-          cd private-source  # Move into the cloned repo
+          cd private-source/src/nightingale  # Navigate to the correct directory
           mkdir -p dist
           GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
           GOOS=linux GOARCH=arm64 go build -o dist/nightingale-go-linux-arm64 .
@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/dist/nightingale-go-linux-amd64
+          asset_path: private-source/src/nightingale/dist/nightingale-go-linux-amd64
           asset_name: nightingale-go-linux-amd64
           asset_content_type: application/octet-stream
         env:
@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/dist/nightingale-go-linux-arm64
+          asset_path: private-source/src/nightingale/dist/nightingale-go-linux-arm64
           asset_name: nightingale-go-linux-arm64
           asset_content_type: application/octet-stream
         env:
@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/dist/nightingale-go-mac-amd64
+          asset_path: private-source/src/nightingale/dist/nightingale-go-mac-amd64
           asset_name: nightingale-go-mac-amd64
           asset_content_type: application/octet-stream
         env:
@@ -87,7 +87,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/dist/nightingale-go-mac-arm64
+          asset_path: private-source/src/nightingale/dist/nightingale-go-mac-arm64
           asset_name: nightingale-go-mac-arm64
           asset_content_type: application/octet-stream
         env:
@@ -97,7 +97,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/dist/nightingale-go-win-amd64.exe
+          asset_path: private-source/src/nightingale/dist/nightingale-go-win-amd64.exe
           asset_name: nightingale-go-win-amd64.exe
           asset_content_type: application/octet-stream
         env:
