@@ -1,0 +1,109 @@
+name: Release Binary from Private Repo
+
+on:
+  push:
+    branches:
+      - development  # Change to your default branch
+
+jobs:
+  build:
+    name: Clone Private Repo, Build & Upload Binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Clone Private Repository
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          git clone https://${{ secrets.TOKEN }}@hgithub.com/RAJANAGORI/nightingale-go.git private-source
+          cd private-source
+          echo "Cloned private repository successfully."
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Build Go Binaries
+        run: |
+          cd private-source  # Move into the cloned repo
+          mkdir -p dist
+          GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
+          GOOS=linux GOARCH=arm64 go build -o dist/nightingale-go-linux-arm64 .
+          GOOS=darwin GOARCH=amd64 go build -o dist/nightingale-go-mac-amd64 .
+          GOOS=darwin GOARCH=arm64 go build -o dist/nightingale-go-mac-arm64 .
+          GOOS=windows GOARCH=amd64 go build -o dist/nightingale-go-win-amd64.exe
+
+      - name: Get latest release
+        id: get_release
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            if (releases.length === 0) {
+              core.setFailed("No releases found. Please create a release first.");
+            } else {
+              core.setOutput("upload_url", releases[0].upload_url);
+            }
+
+      - name: Upload Linux AMD64 Binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: private-source/dist/nightingale-go-linux-amd64
+          asset_name: nightingale-go-linux-amd64
+          asset_content_type: application/octet-stream
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Upload Linux ARM64 Binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: private-source/dist/nightingale-go-linux-arm64
+          asset_name: nightingale-go-linux-arm64
+          asset_content_type: application/octet-stream
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Upload macOS AMD64 Binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: private-source/dist/nightingale-go-mac-amd64
+          asset_name: nightingale-go-mac-amd64
+          asset_content_type: application/octet-stream
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Upload macOS ARM64 Binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: private-source/dist/nightingale-go-mac-arm64
+          asset_name: nightingale-go-mac-arm64
+          asset_content_type: application/octet-stream
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Upload Windows AMD64 Binary
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: private-source/dist/nightingale-go-win-amd64.exe
+          asset_name: nightingale-go-win-amd64.exe
+          asset_content_type: application/octet-stream
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Cleanup Private Repository
+        run: |
+          rm -rf private-source
+          echo "Private repository deleted after use."
