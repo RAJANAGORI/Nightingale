@@ -1,4 +1,4 @@
-name: Release Binary from Public Repo
+name: Release Binary from Local Source
 
 on:
   push:
@@ -7,18 +7,12 @@ on:
 
 jobs:
   build:
-    name: Clone Public Repo, Build & Upload Binary
+    name: Build & Upload Binary
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
-
-      - name: Clone Public Repository
-        run: |
-          git clone https://github.com/RAJANAGORI/nightingale-go.git public-source
-          cd public-source
-          echo "Cloned public repository successfully."
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -27,7 +21,7 @@ jobs:
 
       - name: Build Go Binaries
         run: |
-          cd public-source/src/nightingale  # Navigate to the correct directory
+          cd nightingale-go/src/nightingale  # Navigate to the correct directory
           mkdir -p dist
           GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
           GOOS=linux GOARCH=arm64 go build -o dist/nightingale-go-linux-arm64 .
@@ -55,7 +49,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: public-source/src/nightingale/dist/nightingale-go-linux-amd64
+          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-linux-amd64
           asset_name: nightingale-go-linux-amd64
           asset_content_type: application/octet-stream
         env:
@@ -65,7 +59,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: public-source/src/nightingale/dist/nightingale-go-linux-arm64
+          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-linux-arm64
           asset_name: nightingale-go-linux-arm64
           asset_content_type: application/octet-stream
         env:
@@ -75,7 +69,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: public-source/src/nightingale/dist/nightingale-go-mac-amd64
+          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-mac-amd64
           asset_name: nightingale-go-mac-amd64
           asset_content_type: application/octet-stream
         env:
@@ -85,7 +79,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: public-source/src/nightingale/dist/nightingale-go-mac-arm64
+          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-mac-arm64
           asset_name: nightingale-go-mac-arm64
           asset_content_type: application/octet-stream
         env:
@@ -95,13 +89,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: public-source/src/nightingale/dist/nightingale-go-win-amd64.exe
+          asset_path: nightingale-go/src/nightingale/dist/nightingale-go-win-amd64.exe
           asset_name: nightingale-go-win-amd64.exe
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-      - name: Cleanup Public Repository
-        run: |
-          rm -rf public-source
-          echo "Public repository deleted after use."
