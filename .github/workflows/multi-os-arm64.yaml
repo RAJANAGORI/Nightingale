@@ -13,6 +13,8 @@ on:
       - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
       - "architecture/arm64/v8/Dockerfile"
       - ".github/workflows/multi-os-arm64.yaml"
+  schedule:
+    - cron: '0 23 * * 6'
 
 env:
   DOCKER_REGISTRY: ghcr.io
