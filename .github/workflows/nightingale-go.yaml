@@ -1,26 +1,24 @@
-name: Release Binary from Private Repo
+name: Release Binary from Public Repo
 
 on:
   push:
     branches:
-      - development  # Change this to your target branch
+      - development  # Change to your target branch
 
 jobs:
   build:
-    name: Clone Private Repo, Build & Upload Binary
+    name: Clone Public Repo, Build & Upload Binary
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Clone Private Repository
-        env:
-          TOKEN: ${{ secrets.TOKEN }}
+      - name: Clone Public Repository
         run: |
-          git clone https://${{ secrets.TOKEN }}@github.com/RAJANAGORI/nightingale-go.git private-source
-          cd private-source
-          echo "Cloned private repository successfully."
+          git clone https://github.com/RAJANAGORI/nightingale-go.git public-source
+          cd public-source
+          echo "Cloned public repository successfully."
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -29,7 +27,7 @@ jobs:
 
       - name: Build Go Binaries
         run: |
-          cd private-source/src/nightingale  # Navigate to the correct directory
+          cd public-source/src/nightingale  # Navigate to the correct directory
           mkdir -p dist
           GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
           GOOS=linux GOARCH=arm64 go build -o dist/nightingale-go-linux-arm64 .
@@ -57,53 +55,53 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/src/nightingale/dist/nightingale-go-linux-amd64
+          asset_path: public-source/src/nightingale/dist/nightingale-go-linux-amd64
           asset_name: nightingale-go-linux-amd64
           asset_content_type: application/octet-stream
         env:
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload Linux ARM64 Binary
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/src/nightingale/dist/nightingale-go-linux-arm64
+          asset_path: public-source/src/nightingale/dist/nightingale-go-linux-arm64
           asset_name: nightingale-go-linux-arm64
           asset_content_type: application/octet-stream
         env:
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload macOS AMD64 Binary
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/src/nightingale/dist/nightingale-go-mac-amd64
+          asset_path: public-source/src/nightingale/dist/nightingale-go-mac-amd64
           asset_name: nightingale-go-mac-amd64
           asset_content_type: application/octet-stream
         env:
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload macOS ARM64 Binary
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/src/nightingale/dist/nightingale-go-mac-arm64
+          asset_path: public-source/src/nightingale/dist/nightingale-go-mac-arm64
           asset_name: nightingale-go-mac-arm64
           asset_content_type: application/octet-stream
         env:
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload Windows AMD64 Binary
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: private-source/src/nightingale/dist/nightingale-go-win-amd64.exe
+          asset_path: public-source/src/nightingale/dist/nightingale-go-win-amd64.exe
           asset_name: nightingale-go-win-amd64.exe
           asset_content_type: application/octet-stream
         env:
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
-      - name: Cleanup Private Repository
+      - name: Cleanup Public Repository
         run: |
-          rm -rf private-source
-          echo "Private repository deleted after use."
+          rm -rf public-source
+          echo "Public repository deleted after use."
