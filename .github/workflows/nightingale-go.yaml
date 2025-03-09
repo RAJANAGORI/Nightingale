@@ -32,7 +32,7 @@ jobs:
 
             let nextTag = "v1.1.2"; // Default if no releases exist
             if (releases.length > 0) {
-              const latestTag = releases[0].tag_name || "v1.1.1";
+              const latestTag = releases[0].tag_name;
               const parts = latestTag.match(/v(\d+)\.(\d+)\.(\d+)/);
               if (parts) {
                 let [_, major, minor, patch] = parts.map(Number);
@@ -67,11 +67,49 @@ jobs:
           GOOS=windows GOARCH=amd64 go build -o dist/nightingale-go-win-amd64.exe
 
       - name: Upload Binaries to Release
-        run: |
-          for file in nightingale-go/src/nightingale/dist/*; do
-            asset_name=$(basename "$file")
-            curl -X POST --data-binary @"$file" -H "Authorization: token ${{ secrets.TOKEN }}" -H "Content-Type: application/octet-stream" "${{ steps.create_release.outputs.upload_url }}?name=$asset_name"
-          done
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.TOKEN }}
+          file: nightingale-go/src/nightingale/dist/nightingale-go-linux-amd64
+          asset_name: nightingale-go-linux-amd64
+          tag: ${{ steps.versioning.outputs.new_tag }}
+          overwrite: true
+
+      - name: Upload Linux ARM64 Binary
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.TOKEN }}
+          file: nightingale-go/src/nightingale/dist/nightingale-go-linux-arm64
+          asset_name: nightingale-go-linux-arm64
+          tag: ${{ steps.versioning.outputs.new_tag }}
+          overwrite: true
+
+      - name: Upload macOS AMD64 Binary
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.TOKEN }}
+          file: nightingale-go/src/nightingale/dist/nightingale-go-mac-amd64
+          asset_name: nightingale-go-mac-amd64
+          tag: ${{ steps.versioning.outputs.new_tag }}
+          overwrite: true
+
+      - name: Upload macOS ARM64 Binary
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.TOKEN }}
+          file: nightingale-go/src/nightingale/dist/nightingale-go-mac-arm64
+          asset_name: nightingale-go-mac-arm64
+          tag: ${{ steps.versioning.outputs.new_tag }}
+          overwrite: true
+
+      - name: Upload Windows AMD64 Binary
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.TOKEN }}
+          file: nightingale-go/src/nightingale/dist/nightingale-go-win-amd64.exe
+          asset_name: nightingale-go-win-amd64.exe
+          tag: ${{ steps.versioning.outputs.new_tag }}
+          overwrite: true
 
       - name: Update Release Notes
         uses: actions/github-script@v7
