@@ -10,7 +10,7 @@ on:
     paths:
       - ".github/workflows/trivy.yml"
   schedule:
-    - cron: '0 23 * * 0'
+    - cron: '0 23 * * 0'  # Every Sunday at 11:00 PM UTC
 
 permissions:
   contents: read
