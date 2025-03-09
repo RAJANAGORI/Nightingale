@@ -6,7 +6,7 @@ on:
       - main  # Change to your target branch
 
 jobs:
-  build:
+  release:
     name: Build & Upload Binary
     runs-on: ubuntu-latest
 
@@ -19,18 +19,8 @@ jobs:
         with:
           go-version: stable
 
-      - name: Build Go Binaries
-        run: |
-          cd nightingale-go/src/nightingale  # Navigate to the correct directory
-          mkdir -p dist
-          GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
-          GOOS=linux GOARCH=arm64 go build -o dist/nightingale-go-linux-arm64 .
-          GOOS=darwin GOARCH=amd64 go build -o dist/nightingale-go-mac-amd64 .
-          GOOS=darwin GOARCH=arm64 go build -o dist/nightingale-go-mac-arm64 .
-          GOOS=windows GOARCH=amd64 go build -o dist/nightingale-go-win-amd64.exe
-
-      - name: Get latest release
-        id: get_release
+      - name: Determine New Release Tag
+        id: versioning
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.TOKEN }}
@@ -39,18 +29,48 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
-            if (releases.length === 0) {
-              core.setFailed("No releases found. Please create a release first.");
-            } else {
-              core.setOutput("release_id", releases[0].id);
-              core.setOutput("upload_url", releases[0].upload_url);
+
+            let nextTag = "v1.1.2"; // Default if no releases exist
+            if (releases.length > 0) {
+              const latestTag = releases[0].tag_name || "v1.1.1";
+              const parts = latestTag.match(/v(\d+)\.(\d+)\.(\d+)/);
+              if (parts) {
+                let [_, major, minor, patch] = parts.map(Number);
+                patch++; // Increment patch version
+                nextTag = `v${major}.${minor}.${patch}`;
+              }
             }
 
-      - name: Upload Binaries
+            console.log(`Next release: ${nextTag}`);
+            core.setOutput("new_tag", nextTag);
+
+      - name: Create a New GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.versioning.outputs.new_tag }}
+          release_name: Release ${{ steps.versioning.outputs.new_tag }}
+          body: "Automated release from the latest commit."
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Build Go Binaries
+        working-directory: nightingale-go/src/nightingale
+        run: |
+          mkdir -p dist
+          GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
+          GOOS=linux GOARCH=arm64 go build -o dist/nightingale-go-linux-arm64 .
+          GOOS=darwin GOARCH=amd64 go build -o dist/nightingale-go-mac-amd64 .
+          GOOS=darwin GOARCH=arm64 go build -o dist/nightingale-go-mac-arm64 .
+          GOOS=windows GOARCH=amd64 go build -o dist/nightingale-go-win-amd64.exe
+
+      - name: Upload Binaries to Release
         run: |
           for file in nightingale-go/src/nightingale/dist/*; do
             asset_name=$(basename "$file")
-            curl -X POST --data-binary @"$file" -H "Authorization: token ${{ secrets.TOKEN }}" -H "Content-Type: application/octet-stream" "${{ steps.get_release.outputs.upload_url }}?name=$asset_name"
+            curl -X POST --data-binary @"$file" -H "Authorization: token ${{ secrets.TOKEN }}" -H "Content-Type: application/octet-stream" "${{ steps.create_release.outputs.upload_url }}?name=$asset_name"
           done
 
       - name: Update Release Notes
@@ -84,6 +104,6 @@ jobs:
             await github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: ${{ steps.get_release.outputs.release_id }},
+              release_id: ${{ steps.create_release.outputs.id }},
               body: releaseNotes
             });
