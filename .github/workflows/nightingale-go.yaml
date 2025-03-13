@@ -1,89 +1,89 @@
-name: Release Binary from Local Source
+# name: Release Binary from Local Source
 
-on:
-  push:
-    branches:
-      - development  # Change to your target branch
+# on:
+#   push:
+#     branches:
+#       - development  # Change to your target branch
 
-jobs:
-  build:
-    name: Build & Upload Binary
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     name: Build & Upload Binary
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout this repository
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout this repository
+#         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: stable
+#       - name: Set up Go
+#         uses: actions/setup-go@v5
+#         with:
+#           go-version: stable
 
-      - name: Build Go Binaries
-        run: |
-          cd nightingale-go/src/nightingale  # Navigate to the correct directory
-          mkdir -p dist
-          GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
-          GOOS=linux GOARCH=arm64 go build -o dist/nightingale-go-linux-arm64 .
-          GOOS=darwin GOARCH=amd64 go build -o dist/nightingale-go-mac-amd64 .
-          GOOS=darwin GOARCH=arm64 go build -o dist/nightingale-go-mac-arm64 .
-          GOOS=windows GOARCH=amd64 go build -o dist/nightingale-go-win-amd64.exe
+#       - name: Build Go Binaries
+#         run: |
+#           cd nightingale-go/src/nightingale  # Navigate to the correct directory
+#           mkdir -p dist
+#           GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
+#           GOOS=linux GOARCH=arm64 go build -o dist/nightingale-go-linux-arm64 .
+#           GOOS=darwin GOARCH=amd64 go build -o dist/nightingale-go-mac-amd64 .
+#           GOOS=darwin GOARCH=arm64 go build -o dist/nightingale-go-mac-arm64 .
+#           GOOS=windows GOARCH=amd64 go build -o dist/nightingale-go-win-amd64.exe
 
-      - name: Get latest release
-        id: get_release
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const { data: releases } = await github.rest.repos.listReleases({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
-            if (releases.length === 0) {
-              core.setFailed("No releases found. Please create a release first.");
-            } else {
-              core.setOutput("release_id", releases[0].id);
-              core.setOutput("upload_url", releases[0].upload_url);
-            }
+#       - name: Get latest release
+#         id: get_release
+#         uses: actions/github-script@v7
+#         with:
+#           github-token: ${{ secrets.TOKEN }}
+#           script: |
+#             const { data: releases } = await github.rest.repos.listReleases({
+#               owner: context.repo.owner,
+#               repo: context.repo.repo,
+#             });
+#             if (releases.length === 0) {
+#               core.setFailed("No releases found. Please create a release first.");
+#             } else {
+#               core.setOutput("release_id", releases[0].id);
+#               core.setOutput("upload_url", releases[0].upload_url);
+#             }
 
-      - name: Upload Binaries
-        run: |
-          for file in nightingale-go/src/nightingale/dist/*; do
-            asset_name=$(basename "$file")
-            curl -X POST --data-binary @"$file" -H "Authorization: token ${{ secrets.TOKEN }}" -H "Content-Type: application/octet-stream" "${{ steps.get_release.outputs.upload_url }}?name=$asset_name"
-          done
+#       - name: Upload Binaries
+#         run: |
+#           for file in nightingale-go/src/nightingale/dist/*; do
+#             asset_name=$(basename "$file")
+#             curl -X POST --data-binary @"$file" -H "Authorization: token ${{ secrets.TOKEN }}" -H "Content-Type: application/octet-stream" "${{ steps.get_release.outputs.upload_url }}?name=$asset_name"
+#           done
 
-      - name: Update Release Notes
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const releaseNotes = `
-            # Nightingale Binary Update  
+#       - name: Update Release Notes
+#         uses: actions/github-script@v7
+#         with:
+#           github-token: ${{ secrets.TOKEN }}
+#           script: |
+#             const releaseNotes = `
+#             # Nightingale Binary Update  
 
-            ## Understanding Your Built Binaries  
+#             ## Understanding Your Built Binaries  
 
-            Your compiled binaries are optimized for different system architectures:  
+#             Your compiled binaries are optimized for different system architectures:  
 
-            - **nightingale-go-linux-amd64** → Linux on Intel/AMD (x86_64)  
-            - **nightingale-go-linux-arm64** → Linux on ARM (Raspberry Pi)  
-            - **nightingale-go-mac-amd64** → macOS on Intel Macs  
-            - **nightingale-go-mac-arm64** → macOS on Apple Silicon (M1/M2/M3)  
-            - **nightingale-go-win-amd64.exe** → Windows on Intel/AMD (x86_64)  
+#             - **nightingale-go-linux-amd64** → Linux on Intel/AMD (x86_64)  
+#             - **nightingale-go-linux-arm64** → Linux on ARM (Raspberry Pi)  
+#             - **nightingale-go-mac-amd64** → macOS on Intel Macs  
+#             - **nightingale-go-mac-arm64** → macOS on Apple Silicon (M1/M2/M3)  
+#             - **nightingale-go-win-amd64.exe** → Windows on Intel/AMD (x86_64)  
 
-            ## 💡 Which One Should You Use?  
+#             ## 💡 Which One Should You Use?  
 
-            - If you’re on an **Intel Mac**, grab \`nightingale-go-mac-amd64\`.  
-            - If you’re on an **M1/M2/M3 Mac**, use \`nightingale-go-mac-arm64\`.  
+#             - If you’re on an **Intel Mac**, grab \`nightingale-go-mac-amd64\`.  
+#             - If you’re on an **M1/M2/M3 Mac**, use \`nightingale-go-mac-arm64\`.  
 
-            Let me know what you think about this update. Drop your thoughts in the comments or join the **discussion channel**!  
+#             Let me know what you think about this update. Drop your thoughts in the comments or join the **discussion channel**!  
 
-            💬 **Discussion Panel** - [https://lnkd.in/duHBQitp](https://lnkd.in/duHBQitp)  
-            `;
+#             💬 **Discussion Panel** - [https://lnkd.in/duHBQitp](https://lnkd.in/duHBQitp)  
+#             `;
 
-            await github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: ${{ steps.get_release.outputs.release_id }},
-              body: releaseNotes
-            });
+#             await github.rest.repos.updateRelease({
+#               owner: context.repo.owner,
+#               repo: context.repo.repo,
+#               release_id: ${{ steps.get_release.outputs.release_id }},
+#               body: releaseNotes
+#             });
