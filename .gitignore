@@ -4,6 +4,7 @@ web
 extra.bak
 vulnerability-reports/
 .DS_Store
-# nightingale-go/**
+nightingale-go/src/nightingale/dist/**
 nightingale-go copy/**
+test
 
