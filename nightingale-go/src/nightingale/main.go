@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
 func main() {
@@ -41,10 +42,18 @@ func main() {
 		} else {
 			fmt.Println("Invalid option for start command")
 		}
+	case "activate":
+		activateEnvironment()
+	case "metasploit":
+		installMetasploit()
+	case "zsh":
+		installZsh()
 	case "access":
 		accessApplication()
 	case "help":
 		displayHelp()
+	case "tools":
+		listTools()
 	default:
 		fmt.Println("Invalid command")
 		displayHelp()
@@ -54,10 +63,14 @@ func main() {
 func displayHelp() {
 	fmt.Println("Usage: nightingale-go <command> <option>")
 	fmt.Println("Commands:")
+	fmt.Println("  start local <arch>      Start the Docker container with specified architecture (amd/arm)")
+	fmt.Println("  activate                Activate the Python and GO Modules to support the tools")
 	fmt.Println("  clone local             Clone the repository locally")
 	fmt.Println("  build local <arch>      Build the Docker image locally for amd or arm")
-	fmt.Println("  start local <arch>      Start the Docker container with specified architecture (amd/arm)")
 	fmt.Println("  access                  Access the application in the browser")
+	fmt.Println("  metasploit              Installing and Activating Metasploit Framework")
+	fmt.Println("  zsh                     Installing ZSH and Oh-My-Zsh")
+	fmt.Println("  tools                   List all the tools available in the container")
 	fmt.Println("  help                    Display this help message")
 }
 
@@ -76,7 +89,7 @@ func buildDockerImage(arch string) {
 	if arch == "amd" {
 		cmd = exec.Command("sh", "-c", "cd Nightingale && docker build -t rajanagori/nightingale:stable .")
 	} else if arch == "arm" {
-		cmd = exec.Command("sh", "-c", "cd Nightingale/architecture/arm64/v8 && docker buildx build --platform linux/arm64 -t rajanagori/nightingale:arm64 .")
+		cmd = exec.Command("sh", "-c", "cd Nightingale/architecture/arm64/v8 && docker buildx build --no-cache --platform linux/arm64 -t rajanagori/nightingale:arm64 .")
 	} else {
 		fmt.Println("Invalid architecture")
 		return
@@ -101,13 +114,259 @@ func startDockerContainer(arch string) {
 		return
 	}
 
-	cmd := exec.Command("docker", "run", "-it", "-p", "8080:7681", "-d", image, "ttyd", "-p", "7681", "bash")
+	// Container name
+	containerName := "Nightingale"
+
+	// Check if a container with the same name is already running
+	checkRunningCmd := exec.Command("docker", "ps", "--filter", "name="+containerName, "--format", "{{.Names}}")
+	runningOutput, err := checkRunningCmd.Output()
+	if err != nil {
+		fmt.Println("Error checking running containers:", err)
+		return
+	}
+
+	// If the container is running, inform the user and exit
+	if strings.TrimSpace(string(runningOutput)) == containerName {
+		fmt.Println("Container of the same name is already running. Please use that or delete it if you want to start fresh.")
+		return
+	}
+
+	// Check if a stopped container with the same name exists
+	checkAllCmd := exec.Command("docker", "ps", "-a", "--filter", "name="+containerName, "--format", "{{.Names}}")
+	allOutput, err := checkAllCmd.Output()
+	if err != nil {
+		fmt.Println("Error checking existing containers:", err)
+		return
+	}
+
+	// If a stopped container exists, prompt the user
+	if strings.TrimSpace(string(allOutput)) == containerName {
+		fmt.Println("A stopped container with the same name exists. You can restart it using:")
+		fmt.Printf("  docker start %s\n", containerName)
+		fmt.Println("Or remove it and start fresh using:")
+		fmt.Printf("  docker rm %s\n", containerName)
+		return
+	}
+
+	// Start a new container
+	cmd := exec.Command("docker", "run", "-it", "--name", containerName, "-p", "8080:7681", "-d", image, "ttyd", "-p", "7681", "bash")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("Error starting Docker container:", err)
+	}
+}
+
+func installMetasploit() {
+	containerName := "Nightingale"
+
+	// Check if the container is running
+	checkRunningCmd := exec.Command("docker", "ps", "--filter", "name="+containerName, "--format", "{{.Names}}")
+	runningOutput, err := checkRunningCmd.Output()
+	if err != nil {
+		fmt.Println("Error checking running containers:", err)
+		return
+	}
+
+	if strings.TrimSpace(string(runningOutput)) != containerName {
+		fmt.Println("Error: The container", containerName, "is not running. Start it first using:")
+		fmt.Println("  nightingale-go start local <arch>")
+		return
+	}
+
+	fmt.Println("Installing Metasploit inside the container...")
+
+	// Commands to install Metasploit inside the container
+	installCmds := []string{
+		"curl -fsSL https://apt.metasploit.com/metasploit-framework.gpg.key | gpg --dearmor -o /usr/share/keyrings/metasploit.gpg",
+		`echo "deb [signed-by=/usr/share/keyrings/metasploit.gpg] https://apt.metasploit.com/ buster main" > /etc/apt/sources.list.d/metasploit.list`,
+		"apt update",
+		"apt install -y metasploit-framework",
+	}
+
+	// Execute each command inside the container
+	for _, cmdStr := range installCmds {
+		cmd := exec.Command("docker", "exec", containerName, "bash", "-c", cmdStr)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			fmt.Println("Error executing:", cmdStr, "Error:", err)
+			return
+		}
+	}
+
+	fmt.Println("Metasploit installation complete inside the container.")
+}
+
+func installZsh() {
+	containerName := "Nightingale"
+
+	// Check if the container is running
+	checkRunningCmd := exec.Command("docker", "ps", "--filter", "name="+containerName, "--format", "{{.Names}}")
+	runningOutput, err := checkRunningCmd.Output()
+	if err != nil {
+		fmt.Println("Error checking running containers:", err)
+		return
+	}
+
+	if strings.TrimSpace(string(runningOutput)) != containerName {
+		fmt.Println("Error: The container", containerName, "is not running. Start it first using:")
+		fmt.Println("  nightingale-go start local <arch>")
+		return
+	}
+
+	fmt.Println("Activating Zsh inside the container...")
+
+	// Command to install and configure Zsh inside the container
+	cmdStr := `sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
+	-t https://github.com/denysdovhan/spaceship-prompt \
+	-a 'SPACESHIP_PROMPT_ADD_NEWLINE="true"' \
+	-a 'SPACESHIP_PROMPT_SEPARATE_LINE="true"' \
+	-p git \
+	-p https://github.com/zsh-users/zsh-autosuggestions \
+	-p https://github.com/zsh-users/zsh-completions &&\
+	dos2unix ${HOME}/.zshrc &&\
+	cat /tmp/banner.sh >> ${HOME}/.zshrc`
+
+	// Execute the command inside the container
+	cmd := exec.Command("docker", "exec", containerName, "bash", "-c", cmdStr)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		fmt.Println("Error activating Zsh inside the container:", err)
+		return
+	}
+
+	fmt.Println("Zsh activation complete inside the container.")
+}
+
+func activateEnvironment() {
+	containerName := "Nightingale"
+
+	fmt.Println("🔄 Activating Python and Go modules inside the container...")
+	fmt.Println("⏳ This may take some time... Please wait.")
+
+	cmd := exec.Command("docker", "exec", containerName, "/bin/bash", "-c", "activate python && activate go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("Error starting Docker container:", err)
+		fmt.Println("Error activating environment:", err)
 	}
+
+	fmt.Println("✅ Python and Go module activation completed inside the container.")
+}
+
+func listTools() {
+	fmt.Println("Available tools:\n")
+
+	fmt.Println("  Operating System:")
+	fmt.Println("    - Text Editor:")
+	fmt.Println("      - vim")
+	fmt.Println("      - nano")
+	fmt.Println("    - Development Essentials:")
+	fmt.Println("      - locate")
+	fmt.Println("      - tree")
+	fmt.Println("      - figlet")
+	fmt.Println("      - ssh")
+	fmt.Println("      - git")
+	fmt.Println("      - curl")
+	fmt.Println("      - wget")
+	fmt.Println("      - file")
+	fmt.Println("      - dos2unix")
+	fmt.Println("    - Terminal Support:")
+	fmt.Println("      - bash (default)")
+	fmt.Println("      - zsh")
+	fmt.Println("    - Compression Technique:")
+	fmt.Println("      - unzip")
+	fmt.Println("      - p7zip-full")
+	fmt.Println("    - Network Essentials:")
+	fmt.Println("      - htop")
+	fmt.Println("      - traceroute")
+	fmt.Println("      - telnet")
+	fmt.Println("      - net-tools")
+	fmt.Println("      - iputils-ping")
+	fmt.Println("      - whois")
+	fmt.Println("      - tor")
+	fmt.Println("      - dnsutils")
+
+	fmt.Println("\n  Web Application VAPT tools:")
+	fmt.Println("    - Whatweb")
+	fmt.Println("    - sqlmap")
+	fmt.Println("    - amass")
+	fmt.Println("    - assetfinder")
+	fmt.Println("    - dirsearch")
+	fmt.Println("    - ffuf")
+	fmt.Println("    - findomain")
+	fmt.Println("    - gau")
+	fmt.Println("    - gf")
+	fmt.Println("    - gobuster")
+	fmt.Println("    - hawkscan")
+	fmt.Println("    - httprobe")
+	fmt.Println("    - httpx")
+	fmt.Println("    - jwt_tool")
+	fmt.Println("    - linkfinder")
+	fmt.Println("    - masscan")
+	fmt.Println("    - nuclei")
+	fmt.Println("    - subfinder")
+	fmt.Println("    - sublist3r")
+	fmt.Println("    - waybackurls")
+	fmt.Println("    - xray")
+	fmt.Println("    - reconspider")
+	fmt.Println("    - john")
+	fmt.Println("    - hydra")
+	fmt.Println("    - Arjun")
+	fmt.Println("    - Katana")
+	fmt.Println("    - Trufflehog")
+	fmt.Println("    - Ghauri")
+	fmt.Println("    - Detect-Secrets")
+	fmt.Println("    - Gitleaks")
+
+	fmt.Println("\n  Network VAPT tools:")
+	fmt.Println("    - nmap")
+	fmt.Println("    - metasploit")
+	fmt.Println("    - Naabu")
+	fmt.Println("    - RustScan")
+
+	fmt.Println("\n  OSINT tools:")
+	fmt.Println("    - Reconspider")
+	fmt.Println("    - recon-ng")
+	fmt.Println("    - spiderfoot")
+	fmt.Println("    - metagoofil")
+	fmt.Println("    - theHarvester")
+
+	fmt.Println("\n  Mobile VAPT tools:")
+	fmt.Println("    - adb")
+	fmt.Println("    - apktool")
+	fmt.Println("    - jdax")
+	fmt.Println("    - Mobile Security Framework (MobSF)")
+	fmt.Println("    - Runtime Mobile Security (RMS)")
+	fmt.Println("    - android-framework-res")
+	fmt.Println("    - frida-tools")
+	fmt.Println("    - objection")
+
+	fmt.Println("\n  Forensic and Red Team tools:")
+	fmt.Println("    - impacket")
+	fmt.Println("    - exiftool")
+	fmt.Println("    - steghide")
+	fmt.Println("    - binwalk")
+	fmt.Println("    - foremost")
+
+	fmt.Println("\n  Wordlist:")
+	fmt.Println("    - wfuzz")
+	fmt.Println("    - Seclists")
+	fmt.Println("    - dirb")
+	fmt.Println("    - rockyou.txt")
+	fmt.Println("    - fuzzdb")
+	fmt.Println("    - Node Dirbuster")
+
+	fmt.Println("\n  Programming Language Support:")
+	fmt.Println("    - Python 3")
+	fmt.Println("    - Java")
+	fmt.Println("    - Ruby")
+	fmt.Println("    - Node.js")
+	fmt.Println("    - Go")
 }
 
 func accessApplication() {
