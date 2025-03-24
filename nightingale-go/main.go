@@ -6,6 +6,10 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
+
+	// "golang.org/x/text/cases"
+	"github.com/schollz/progressbar/v3"
 )
 
 func main() {
@@ -30,6 +34,12 @@ func main() {
 		}
 		arch := os.Args[3]
 		buildDockerImage(arch)
+	case "update":
+		if len(os.Args) < 3 || os.Args[2] != "local" {
+			fmt.Println("Usage: nightingale-go update local")
+			return
+		}
+		updateRepo()
 	case "start":
 		if len(os.Args) < 4 {
 			fmt.Println("Usage: nightingale-go start local <arch>")
@@ -67,6 +77,7 @@ func displayHelp() {
 	fmt.Println("  activate                Activate the Python and GO Modules to support the tools")
 	fmt.Println("  clone local             Clone the repository locally")
 	fmt.Println("  build local <arch>      Build the Docker image locally for amd or arm")
+	fmt.Println("  update local            Update the Docker image locally for amd and arm")
 	fmt.Println("  access                  Access the application in the browser")
 	fmt.Println("  metasploit              Installing and Activating Metasploit Framework")
 	fmt.Println("  zsh                     Installing ZSH and Oh-My-Zsh")
@@ -155,6 +166,60 @@ func startDockerContainer(arch string) {
 	err = cmd.Run()
 	if err != nil {
 		fmt.Println("Error starting Docker container:", err)
+	}
+}
+
+func updateRepo() {
+	if len(os.Args) < 4 {
+		fmt.Println("Usage: nightingale-go update local <arch>")
+		return
+	}
+
+	arch := os.Args[3] // Get the architecture argument
+	var image string
+
+	if arch == "amd" {
+		image = "ghcr.io/rajanagori/nightingale:stable" // AMD64 image
+	} else if arch == "arm" {
+		image = "ghcr.io/rajanagori/nightingale:arm64"  // ARM64 image
+	} else {
+		fmt.Println("❌ Invalid architecture. Use 'amd' or 'arm'.")
+		return
+	}
+
+	fmt.Println("🔄 Pulling image:", image)
+
+	// Create a progress bar
+	bar := progressbar.NewOptions(100,
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionSetDescription("Downloading..."),
+		progressbar.OptionSetWidth(40),
+		progressbar.OptionShowCount(),
+		progressbar.OptionSetPredictTime(false),
+	)
+
+	// Run docker pull in the background
+	cmd := exec.Command("docker", "pull", image)
+	cmd.Stdout = nil // Suppress output
+	cmd.Stderr = nil
+
+	err := cmd.Start()
+	if err != nil {
+		fmt.Println("❌ Error pulling image:", image, err)
+		return
+	}
+
+	// Simulate progress bar
+	for i := 0; i <= 100; i++ {
+		bar.Set(i)
+		time.Sleep(50 * time.Millisecond) // Adjust for smooth effect
+	}
+
+	err = cmd.Wait() // Wait for command to finish
+	if err != nil {
+		fmt.Println("❌ Error completing pull for:", image, err)
+	} else {
+		fmt.Println("\n✅ Successfully updated:", image)
 	}
 }
 
@@ -259,7 +324,7 @@ func activateEnvironment() {
 }
 
 func listTools() {
-	fmt.Println("Available tools:\n")
+	fmt.Println("Available tools:")
 
 	fmt.Println("  Operating System:")
 	fmt.Println("    - Text Editor:")
