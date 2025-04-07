@@ -6,6 +6,9 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
+
+	"github.com/schollz/progressbar/v3"
 )
 
 func main() {
@@ -30,6 +33,12 @@ func main() {
 		}
 		arch := os.Args[3]
 		buildDockerImage(arch)
+	case "update":
+		if len(os.Args) < 4 || os.Args[2] != "local" {
+			fmt.Println("Usage: nightingale-go update local <arch>")
+			return
+		}
+		updateRepo()
 	case "start":
 		if len(os.Args) < 4 {
 			fmt.Println("Usage: nightingale-go start local <arch>")
@@ -60,6 +69,13 @@ func main() {
 	}
 }
 
+func shellCommand(command string) *exec.Cmd {
+	if runtime.GOOS == "windows" {
+		return exec.Command("cmd", "/C", command)
+	}
+	return exec.Command("sh", "-c", command)
+}
+
 func displayHelp() {
 	fmt.Println("Usage: nightingale-go <command> <option>")
 	fmt.Println("Commands:")
@@ -67,6 +83,7 @@ func displayHelp() {
 	fmt.Println("  activate                Activate the Python and GO Modules to support the tools")
 	fmt.Println("  clone local             Clone the repository locally")
 	fmt.Println("  build local <arch>      Build the Docker image locally for amd or arm")
+	fmt.Println("  update local <arch>     Update the Docker image locally for amd or arm")
 	fmt.Println("  access                  Access the application in the browser")
 	fmt.Println("  metasploit              Installing and Activating Metasploit Framework")
 	fmt.Println("  zsh                     Installing ZSH and Oh-My-Zsh")
@@ -87,9 +104,9 @@ func cloneRepo() {
 func buildDockerImage(arch string) {
 	var cmd *exec.Cmd
 	if arch == "amd" {
-		cmd = exec.Command("sh", "-c", "cd Nightingale && docker build -t rajanagori/nightingale:stable .")
+		cmd = shellCommand("cd Nightingale && docker build -t rajanagori/nightingale:stable .")
 	} else if arch == "arm" {
-		cmd = exec.Command("sh", "-c", "cd Nightingale/architecture/arm64/v8 && docker buildx build --no-cache --platform linux/arm64 -t rajanagori/nightingale:arm64 .")
+		cmd = shellCommand("cd Nightingale/architecture/arm64/v8 && docker buildx build --no-cache --platform linux/arm64 -t rajanagori/nightingale:arm64 .")
 	} else {
 		fmt.Println("Invalid architecture")
 		return
@@ -100,6 +117,52 @@ func buildDockerImage(arch string) {
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("Error building Docker image:", err)
+	}
+}
+
+func updateRepo() {
+	arch := os.Args[3]
+	var image string
+
+	if arch == "amd" {
+		image = "ghcr.io/rajanagori/nightingale:stable"
+	} else if arch == "arm" {
+		image = "ghcr.io/rajanagori/nightingale:arm64"
+	} else {
+		fmt.Println("❌ Invalid architecture. Use 'amd' or 'arm'.")
+		return
+	}
+
+	fmt.Println("🔄 Pulling image:", image)
+
+	bar := progressbar.NewOptions(100,
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionSetDescription("Downloading..."),
+		progressbar.OptionSetWidth(40),
+		progressbar.OptionShowCount(),
+		progressbar.OptionSetPredictTime(false),
+	)
+
+	cmd := exec.Command("docker", "pull", image)
+	cmd.Stdout = nil
+	cmd.Stderr = nil
+
+	err := cmd.Start()
+	if err != nil {
+		fmt.Println("❌ Error pulling image:", image, err)
+		return
+	}
+
+	for i := 0; i <= 100; i++ {
+		bar.Set(i)
+		time.Sleep(50 * time.Millisecond)
+	}
+
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Println("❌ Error completing pull for:", image, err)
+	} else {
+		fmt.Println("\n✅ Successfully updated:", image)
 	}
 }
 
@@ -114,10 +177,8 @@ func startDockerContainer(arch string) {
 		return
 	}
 
-	// Container name
 	containerName := "Nightingale"
 
-	// Check if a container with the same name is already running
 	checkRunningCmd := exec.Command("docker", "ps", "--filter", "name="+containerName, "--format", "{{.Names}}")
 	runningOutput, err := checkRunningCmd.Output()
 	if err != nil {
@@ -125,13 +186,11 @@ func startDockerContainer(arch string) {
 		return
 	}
 
-	// If the container is running, inform the user and exit
 	if strings.TrimSpace(string(runningOutput)) == containerName {
-		fmt.Println("Container of the same name is already running. Please use that or delete it if you want to start fresh.")
+		fmt.Println("Container of the same name is already running.")
 		return
 	}
 
-	// Check if a stopped container with the same name exists
 	checkAllCmd := exec.Command("docker", "ps", "-a", "--filter", "name="+containerName, "--format", "{{.Names}}")
 	allOutput, err := checkAllCmd.Output()
 	if err != nil {
@@ -139,16 +198,14 @@ func startDockerContainer(arch string) {
 		return
 	}
 
-	// If a stopped container exists, prompt the user
 	if strings.TrimSpace(string(allOutput)) == containerName {
-		fmt.Println("A stopped container with the same name exists. You can restart it using:")
+		fmt.Println("A stopped container exists. Restart it with:")
 		fmt.Printf("  docker start %s\n", containerName)
-		fmt.Println("Or remove it and start fresh using:")
+		fmt.Println("Or remove it using:")
 		fmt.Printf("  docker rm %s\n", containerName)
 		return
 	}
 
-	// Start a new container
 	cmd := exec.Command("docker", "run", "-it", "--name", containerName, "-p", "8080:7681", "-d", image, "ttyd", "-p", "7681", "bash")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -158,10 +215,26 @@ func startDockerContainer(arch string) {
 	}
 }
 
+func activateEnvironment() {
+	containerName := "Nightingale"
+
+	fmt.Println("🔄 Activating Python and Go modules inside the container...")
+	fmt.Println("⏳ This may take some time... Please wait.")
+
+	cmd := exec.Command("docker", "exec", containerName, "bash", "-c", "source /opt/venv/bin/activate || echo 'No Python venv'; export GOPATH=/root/go || echo 'Set Go path'")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println("Error activating environment:", err)
+	}
+
+	fmt.Println("✅ Python and Go module activation completed inside the container.")
+}
+
 func installMetasploit() {
 	containerName := "Nightingale"
 
-	// Check if the container is running
 	checkRunningCmd := exec.Command("docker", "ps", "--filter", "name="+containerName, "--format", "{{.Names}}")
 	runningOutput, err := checkRunningCmd.Output()
 	if err != nil {
@@ -177,7 +250,6 @@ func installMetasploit() {
 
 	fmt.Println("Installing Metasploit inside the container...")
 
-	// Commands to install Metasploit inside the container
 	installCmds := []string{
 		"curl -fsSL https://apt.metasploit.com/metasploit-framework.gpg.key | gpg --dearmor -o /usr/share/keyrings/metasploit.gpg",
 		`echo "deb [signed-by=/usr/share/keyrings/metasploit.gpg] https://apt.metasploit.com/ buster main" > /etc/apt/sources.list.d/metasploit.list`,
@@ -185,7 +257,6 @@ func installMetasploit() {
 		"apt install -y metasploit-framework",
 	}
 
-	// Execute each command inside the container
 	for _, cmdStr := range installCmds {
 		cmd := exec.Command("docker", "exec", containerName, "bash", "-c", cmdStr)
 		cmd.Stdout = os.Stdout
@@ -202,7 +273,6 @@ func installMetasploit() {
 func installZsh() {
 	containerName := "Nightingale"
 
-	// Check if the container is running
 	checkRunningCmd := exec.Command("docker", "ps", "--filter", "name="+containerName, "--format", "{{.Names}}")
 	runningOutput, err := checkRunningCmd.Output()
 	if err != nil {
@@ -218,7 +288,6 @@ func installZsh() {
 
 	fmt.Println("Activating Zsh inside the container...")
 
-	// Command to install and configure Zsh inside the container
 	cmdStr := `sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
 	-t https://github.com/denysdovhan/spaceship-prompt \
 	-a 'SPACESHIP_PROMPT_ADD_NEWLINE="true"' \
@@ -229,7 +298,6 @@ func installZsh() {
 	dos2unix ${HOME}/.zshrc &&\
 	cat /tmp/banner.sh >> ${HOME}/.zshrc`
 
-	// Execute the command inside the container
 	cmd := exec.Command("docker", "exec", containerName, "bash", "-c", cmdStr)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -241,25 +309,27 @@ func installZsh() {
 	fmt.Println("Zsh activation complete inside the container.")
 }
 
-func activateEnvironment() {
-	containerName := "Nightingale"
+func accessApplication() {
+	var url string
+	if runtime.GOOS == "windows" {
+		url = "start http://localhost:8080"
+	} else if runtime.GOOS == "darwin" {
+		url = "open http://localhost:8080"
+	} else {
+		url = "xdg-open http://localhost:8080"
+	}
 
-	fmt.Println("🔄 Activating Python and Go modules inside the container...")
-	fmt.Println("⏳ This may take some time... Please wait.")
-
-	cmd := exec.Command("docker", "exec", containerName, "/bin/bash", "-c", "activate python && activate go")
+	cmd := shellCommand(url)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("Error activating environment:", err)
+		fmt.Println("Error accessing application:", err)
 	}
-
-	fmt.Println("✅ Python and Go module activation completed inside the container.")
 }
 
 func listTools() {
-	fmt.Println("Available tools:\n")
+	fmt.Println("Available tools:")
 
 	fmt.Println("  Operating System:")
 	fmt.Println("    - Text Editor:")
@@ -367,23 +437,4 @@ func listTools() {
 	fmt.Println("    - Ruby")
 	fmt.Println("    - Node.js")
 	fmt.Println("    - Go")
-}
-
-func accessApplication() {
-	var url string
-	if runtime.GOOS == "windows" {
-		url = "start http://localhost:8080"
-	} else if runtime.GOOS == "darwin" {
-		url = "open http://localhost:8080"
-	} else {
-		url = "xdg-open http://localhost:8080"
-	}
-
-	cmd := exec.Command("sh", "-c", url)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		fmt.Println("Error accessing application:", err)
-	}
 }

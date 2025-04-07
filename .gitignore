@@ -4,6 +4,6 @@ vulnerability-reports/
 .DS_Store
 # nightingale-go
 .github/workflows/test.txt
-nightingale-go/src/nightingale/dist/**
+nightingale-go/dist
 test
 
