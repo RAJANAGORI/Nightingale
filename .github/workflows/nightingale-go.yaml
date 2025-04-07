@@ -59,7 +59,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Build Go Binaries
-        working-directory: nightingale-go/src/nightingale
+        working-directory: nightingale-go
         run: |
           mkdir -p dist
           GOOS=linux GOARCH=amd64 go build -o dist/nightingale-go-linux-amd64 .
@@ -72,7 +72,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.TOKEN }}
-          file: nightingale-go/src/nightingale/dist/nightingale-go-linux-amd64
+          file: nightingale-go/dist/nightingale-go-linux-amd64
           asset_name: nightingale-go-linux-amd64
           tag: ${{ steps.versioning.outputs.new_tag }}
           overwrite: true
@@ -81,7 +81,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.TOKEN }}
-          file: nightingale-go/src/nightingale/dist/nightingale-go-linux-arm64
+          file: nightingale-go/dist/nightingale-go-linux-arm64
           asset_name: nightingale-go-linux-arm64
           tag: ${{ steps.versioning.outputs.new_tag }}
           overwrite: true
@@ -90,7 +90,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.TOKEN }}
-          file: nightingale-go/src/nightingale/dist/nightingale-go-mac-amd64
+          file: nightingale-go/dist/nightingale-go-mac-amd64
           asset_name: nightingale-go-mac-amd64
           tag: ${{ steps.versioning.outputs.new_tag }}
           overwrite: true
@@ -99,7 +99,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.TOKEN }}
-          file: nightingale-go/src/nightingale/dist/nightingale-go-mac-arm64
+          file: nightingale-go/dist/nightingale-go-mac-arm64
           asset_name: nightingale-go-mac-arm64
           tag: ${{ steps.versioning.outputs.new_tag }}
           overwrite: true
@@ -108,7 +108,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.TOKEN }}
-          file: nightingale-go/src/nightingale/dist/nightingale-go-win-amd64.exe
+          file: nightingale-go/dist/nightingale-go-win-amd64.exe
           asset_name: nightingale-go-win-amd64.exe
           tag: ${{ steps.versioning.outputs.new_tag }}
           overwrite: true
