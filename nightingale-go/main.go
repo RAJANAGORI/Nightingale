@@ -221,15 +221,19 @@ func activateEnvironment() {
 	fmt.Println("🔄 Activating Python and Go modules inside the container...")
 	fmt.Println("⏳ This may take some time... Please wait.")
 
-	cmd := exec.Command("docker", "exec", containerName, "bash", "-c", "source /opt/venv/bin/activate || echo 'No Python venv'; export GOPATH=/root/go || echo 'Set Go path'")
+	// Run both install scripts in the background inside the container
+	cmd := exec.Command("docker", "exec", containerName, "bash", "-c",
+		"nohup ${SHELLS}/python-install-modules.sh >/dev/null 2>&1 & " +
+			"nohup ${SHELLS}/go-install-modules.sh >/dev/null 2>&1 &")
+
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("Error activating environment:", err)
+		fmt.Println("❌ Error activating environment:", err)
+	} else {
+		fmt.Println("✅ Python and Go module activation completed inside the container.")
 	}
-
-	fmt.Println("✅ Python and Go module activation completed inside the container.")
 }
 
 func installMetasploit() {
