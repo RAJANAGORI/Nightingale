@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main  # Change to your target branch
-  schedule:
-    - cron: '0 10 * * 1'  # Every Monday at 10:00 AM UTC
+  # schedule:
+  #   - cron: '0 10 * * 1'  # Every Monday at 10:00 AM UTC
 
 jobs:
   release:

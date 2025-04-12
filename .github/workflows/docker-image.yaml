@@ -13,8 +13,8 @@ on:
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
       - ".github/workflows/docker-image.yaml"
-  schedule:
-    - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
+  # schedule:
+  #   - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
 
 env:
   DOCKER_REGISTRY: ghcr.io
