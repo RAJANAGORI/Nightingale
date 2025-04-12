@@ -104,7 +104,7 @@ jobs:
           trivy image $PLATFORM_FLAG \
             --format sarif \
             --scanners vuln \
-            --severity CRITICAL,MEDIUM \
+            --severity CRITICAL,HIGH \
             --timeout 60m \
             --output artifacts/trivy-results-${IMAGE_NAME}.sarif \
             ${{ matrix.image }}
@@ -112,7 +112,7 @@ jobs:
           trivy image $PLATFORM_FLAG \
             --format cyclonedx \
             --scanners vuln \
-            --severity CRITICAL,MEDIUM \
+            --severity CRITICAL,HIGH \
             --timeout 60m \
             --output artifacts/sbom-${IMAGE_NAME}.cyclonedx.json \
             ${{ matrix.image }}
