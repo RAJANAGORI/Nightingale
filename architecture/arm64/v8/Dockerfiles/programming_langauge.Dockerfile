@@ -3,7 +3,7 @@ ARG TARGETPLATFORM=linux/arm64/v8
 ARG RUBY=slim
 
 # Stage 1: Base stage
-FROM --platform=$TARGETPLATFORM debian:latest AS base
+FROM --platform=$TARGETPLATFORM debian:stable-slim AS base
 
 # Install common dependencies
 RUN apt-get update -y --fix-missing && \
