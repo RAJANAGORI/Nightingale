@@ -6,4 +6,5 @@ vulnerability-reports/
 .github/workflows/test.txt
 nightingale-go/dist
 test
+gui
 

@@ -1,5 +1,5 @@
 # Stage 1: Base Image with Dependencies
-FROM ghcr.io/rajanagori/nightingale_programming_image:stable as base
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable AS base
 
 LABEL maintainer="Raja Nagori" \
     email="raja.nagori@owasp.org"
@@ -61,7 +61,7 @@ RUN apt-get update -y --fix-missing && \
     pv
 
 # Stage 2: Copy Scripts and Configurations
-FROM base as intermediate
+FROM base AS intermediate
 
 COPY shells/banner.sh /tmp/banner.sh
 COPY configuration/nodejs-env/ /temp/
@@ -94,7 +94,7 @@ COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOO
 COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable ${WORDLIST} ${WORDLIST}
 
 # Stage 3: Install Python and Go Modules
-FROM intermediate as modules
+FROM intermediate AS modules
 
 COPY configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 COPY configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
@@ -117,7 +117,7 @@ RUN chmod +x ${BINARIES}/* && \
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
 # Stage 4: Setup Metasploit
-FROM modules as metasploit
+FROM modules AS metasploit
 
 WORKDIR ${METASPLOIT_TOOL}
 COPY configuration/msf-configuration/scripts/db.sql .
@@ -125,11 +125,15 @@ COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 COPY ./configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
 # Stage 5: Final Image
-FROM metasploit as final
+FROM metasploit AS final
 
 EXPOSE 5432 8080 8081 7681
 
-RUN apt-get -y autoremove && \
+COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
+
+RUN \
+    xargs -a /tmp/vuln-library-purge apt-get purge -y && \
+    apt-get -y autoremove && \
     apt-get -y clean && \
     rm -rf /tmp/* /var/lib/apt/lists/* && \
     ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat && \
