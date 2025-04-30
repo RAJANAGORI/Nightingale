@@ -1,5 +1,5 @@
 # Stage 1: Base stage
-FROM debian:buster-slim AS base
+FROM debian:stable-slim AS base
 
 # Install common dependencies
 RUN apt-get update -y --fix-missing && \
