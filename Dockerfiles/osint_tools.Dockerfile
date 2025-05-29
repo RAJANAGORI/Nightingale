@@ -44,7 +44,7 @@ RUN cd metagoofil && \
 
 # Install theHarvester requirements
 RUN cd theHarvester && \
-    pip3 install -r requirements/base.txt --break-system-packages && \
+    pip3 install -r requirements.txt --break-system-packages && \
     cd ..
 
 # Clean up unnecessary files and libraries
