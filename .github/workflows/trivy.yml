@@ -17,8 +17,8 @@ on:
       - "architecture/arm64/v8/Dockerfile"
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
-  # schedule:
-  #   - cron: '0 23 * * 0'  # Every Sunday at 11:00 PM UTC
+  schedule:
+    - cron: '0 23 * * 0'  # Every Sunday at 11:00 PM UTC
 
 permissions:
   contents: read
