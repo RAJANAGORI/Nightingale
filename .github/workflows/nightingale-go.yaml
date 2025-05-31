@@ -2,8 +2,21 @@ name: Release Binary from Local Source
 
 on:
   push:
-    branches:
-      - main  # Change to your target branch
+    branches: ["main"]
+    paths:
+      - ".github/workflows/trivy.yml"
+      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
+      - "architecture/arm64/v8/Dockerfile"
+      - "Dockerfiles/*.Dockerfile"
+      - "Dockerfile"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/trivy.yml"
+      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
+      - "architecture/arm64/v8/Dockerfile"
+      - "Dockerfiles/*.Dockerfile"
+      - "Dockerfile"
   schedule:
     - cron: '0 10 * * 1'  # Every Monday at 10:00 AM UTC
 
