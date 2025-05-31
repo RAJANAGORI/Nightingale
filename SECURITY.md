@@ -4,7 +4,7 @@ Thank you for contributing to the security of **NIGHTINGALE**. We appreciate you
 
 ## Reporting Guidelines
 
-To report a security vulnerability, please email **security@rajanagori.in** with the following information:
+To report a security vulnerability, please email **raja.nagori@owasp.org** with the following information:
 
 - **Name / Affiliation**: Your name and organizational affiliation (if applicable).
 - **Vulnerability Description**: A detailed description of the vulnerability, including its nature and potential impact.
@@ -35,4 +35,4 @@ As of now, **NIGHTINGALE** supports the following versions:
 
 **Note:** Older versions may not receive security updates or support. Please upgrade to the latest version to benefit from the latest security patches and features.
 
-For any additional questions or concerns, feel free to contact us at **security@rajanagori.in**.
+For any additional questions or concerns, feel free to contact us at **raja.nagori@owasp.org**.
