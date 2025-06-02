@@ -4,7 +4,6 @@ on:
   push:
     branches: ["main"]
     paths:
-      - ".github/workflows/trivy.yml"
       - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
       - "architecture/arm64/v8/Dockerfile"
       - "Dockerfiles/*.Dockerfile"
@@ -12,13 +11,13 @@ on:
   pull_request:
     branches: ["main"]
     paths:
-      - ".github/workflows/trivy.yml"
       - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
       - "architecture/arm64/v8/Dockerfile"
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
   schedule:
-    - cron: '0 23 * * 0'  # Every Sunday at 11:00 PM UTC
+    - cron: '0 0 1 * *'  # Every Sunday at 11:00 PM UTC
+
 
 permissions:
   contents: read
