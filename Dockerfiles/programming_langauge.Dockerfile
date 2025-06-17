@@ -11,10 +11,10 @@ RUN apt-get update -y --fix-missing && \
     ca-certificates
 
 # Stage 2: Python 2 stage
-FROM python:2.7-slim AS python2
+FROM python:3.13-slim AS python2
 
 # Stage 3: Python 3 stage
-FROM python:3.10.12-slim AS python3
+FROM python:3.13.5-slim AS python3
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
