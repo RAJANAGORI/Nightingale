@@ -6,7 +6,22 @@
 version: 2
 updates:
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/"           # Root Dockerfile
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker"
+    directory: "/architecture/arm64/v8"  # ARM64/v8 Dockerfile
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker"
+    directory: "/architecture/arm64/v8/Dockerfiles"  # ARM64/v8 additional Dockerfiles
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker"
+    directory: "/Dockerfiles"  # Root additional Dockerfiles
     schedule:
       interval: "weekly"
 
@@ -20,25 +35,16 @@ updates:
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "gomod"
-    directory: "/"
+    directory: "/nightingale-go"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
 
   - package-ecosystem: "pip"
     directory: "/"
