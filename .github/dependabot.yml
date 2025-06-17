@@ -1,0 +1,51 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "docker"        # Docker (supports v1)
+    directory: "/"                     # Location of Dockerfile(s)
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker-compose"  # Docker Compose (supports v2, v3)
+    directory: "/"                       # Location of docker-compose.yml
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "helm"           # Helm Charts (supports v3)
+    directory: "/"                      # Location of Chart.yaml
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gitsubmodule"   # Git submodules
+    directory: "/"                      # Location of .gitmodules
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions" # GitHub Actions workflows
+    directory: "/"                      # Location of .github/workflows
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gomod"          # Go modules (v1)
+    directory: "/"                      # Location of go.mod
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"            # npm (supports v7, v8, v9)
+    directory: "/"                      # Location of package.json
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"            # pip (v21.1.2)
+    directory: "/"                      # Location of requirements.txt
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"            # pipenv (Pipfile, <=2021-05-29)
+    directory: "/"                      # Location of Pipfile
+    schedule:
+      interval: "weekly"
