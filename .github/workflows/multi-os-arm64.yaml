@@ -3,16 +3,8 @@ name: Multi OS Docker Images - ARM64 macOS #Test Main Action
 on:
   push:
     branches: [main]
-    paths:
-      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
-      - "architecture/arm64/v8/Dockerfile"
-      - ".github/workflows/multi-os-arm64.yaml"
   pull_request:
     branches: [main]
-    paths:
-      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
-      - "architecture/arm64/v8/Dockerfile"
-      - ".github/workflows/multi-os-arm64.yaml"
   schedule:
     - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
 

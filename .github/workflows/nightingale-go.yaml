@@ -3,20 +3,10 @@ name: Release Binary from Local Source
 on:
   push:
     branches: ["main"]
-    paths:
-      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
-      - "architecture/arm64/v8/Dockerfile"
-      - "Dockerfiles/*.Dockerfile"
-      - "Dockerfile"
   pull_request:
     branches: ["main"]
-    paths:
-      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
-      - "architecture/arm64/v8/Dockerfile"
-      - "Dockerfiles/*.Dockerfile"
-      - "Dockerfile"
   schedule:
-    - cron: '0 10 * * 1'  # Every Monday at 10:00 AM UTC
+    - cron: 0 10 1 * *  # Every month at 10:00 AM UTC (on the 1st)
 
 jobs:
   release:

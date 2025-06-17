@@ -3,18 +3,9 @@ name: Trivy Scan
 on:
   push:
     branches: ["main"]
-    paths:
-      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
-      - "architecture/arm64/v8/Dockerfile"
-      - "Dockerfiles/*.Dockerfile"
-      - "Dockerfile"
   pull_request:
     branches: ["main"]
-    paths:
-      - "architecture/arm64/v8/Dockerfiles/*.Dockerfile"
-      - "architecture/arm64/v8/Dockerfile"
-      - "Dockerfiles/*.Dockerfile"
-      - "Dockerfile"
+
   schedule:
     - cron: '0 0 1 * *'  # Every Sunday at 11:00 PM UTC
 
