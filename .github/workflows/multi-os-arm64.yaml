@@ -64,7 +64,7 @@ jobs:
         install: true
 
     - name: Build and Push Programming Image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
@@ -134,7 +134,7 @@ jobs:
         install: true
 
     - name: Build and Push Dependent Image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
@@ -181,7 +181,7 @@ jobs:
         install: true
 
     - name: Build and Push Final Image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
