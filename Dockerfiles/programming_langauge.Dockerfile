@@ -42,7 +42,7 @@ RUN wget -q https://go.dev/dl/go1.23.2.linux-amd64.tar.gz -O go.tar.gz && \
     rm go.tar.gz
 
 # Stage 6: Java stage
-FROM openjdk:23-jdk-oracle AS java
+FROM openjdk:26-jdk-oracle AS java
 
 # Stage 7: Final stage
 FROM debian:stable-slim AS final
