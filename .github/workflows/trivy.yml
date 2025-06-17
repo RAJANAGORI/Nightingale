@@ -71,7 +71,7 @@ jobs:
           rm trivy_0.57.0_Linux-64bit.deb
 
       - name: Cache Trivy DB
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/trivy/db
           key: ${{ runner.os }}-trivy-db-${{ matrix.image }}-${{ github.sha }}
