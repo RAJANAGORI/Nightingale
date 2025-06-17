@@ -5,47 +5,42 @@
 
 version: 2
 updates:
-  - package-ecosystem: "docker"        # Docker (supports v1)
-    directory: "/"                     # Location of Dockerfile(s)
+  - package-ecosystem: "docker"
+    directory: "/"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "docker-compose"  # Docker Compose (supports v2, v3)
-    directory: "/"                       # Location of docker-compose.yml
+  - package-ecosystem: "docker-compose"
+    directory: "/"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "helm"           # Helm Charts (supports v3)
-    directory: "/"                      # Location of Chart.yaml
+  - package-ecosystem: "helm"
+    directory: "/"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "gitsubmodule"   # Git submodules
-    directory: "/"                      # Location of .gitmodules
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "github-actions" # GitHub Actions workflows
-    directory: "/"                      # Location of .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "gomod"          # Go modules (v1)
-    directory: "/"                      # Location of go.mod
+  - package-ecosystem: "gomod"
+    directory: "/"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "npm"            # npm (supports v7, v8, v9)
-    directory: "/"                      # Location of package.json
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "pip"            # pip (v21.1.2)
-    directory: "/"                      # Location of requirements.txt
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "pip"            # pipenv (Pipfile, <=2021-05-29)
-    directory: "/"                      # Location of Pipfile
+  - package-ecosystem: "pip"
+    directory: "/"
     schedule:
       interval: "weekly"
