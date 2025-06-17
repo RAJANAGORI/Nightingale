@@ -6,13 +6,11 @@ on:
     paths:
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
-      - ".github/workflows/docker-image.yaml"
   pull_request:
     branches: [main]
     paths:
       - "Dockerfiles/*.Dockerfile"
       - "Dockerfile"
-      - ".github/workflows/docker-image.yaml"
   schedule:
     - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
 
