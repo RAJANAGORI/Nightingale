@@ -116,7 +116,6 @@ COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
 COPY --from=java /usr/java/openjdk-26 /usr/java/openjdk-26
-COPY --from=ruby-builder /usr/local/bin/nokogiri /usr/local/bin/nokogiri
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends default-jdk && \
