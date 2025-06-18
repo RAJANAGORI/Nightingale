@@ -53,20 +53,6 @@ RUN \
 
 # Stage 6: Java stage (ARM64)
 FROM --platform=$TARGETPLATFORM openjdk:26-jdk-oracle AS java
-# Install Java dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    default-jdk \
-    libev4 \
-    libffi-dev \
-    libbz2-dev \
-    libreadline-dev \
-    llvm \
-    libncurses5-dev \
-    libncursesw5-dev \
-    xz-utils \
-    tk-dev
-
 
 # Stage 7: Final stage
 FROM --platform=$TARGETPLATFORM debian:stable-slim AS final
