@@ -5,7 +5,7 @@ on:
     branches: [main]
   schedule:
     - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
-
+  workflow_dispatch:
 env:
   DOCKER_REGISTRY: ghcr.io
   ACTIONS_RUNNER_DEBUG: true

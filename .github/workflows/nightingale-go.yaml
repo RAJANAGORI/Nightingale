@@ -3,7 +3,7 @@ name: Release Binary from Local Source
 on:
   schedule:
     - cron: 0 10 1 * *  # Every month at 10:00 AM UTC (on the 1st)
-
+  workflow_dispatch:
 jobs:
   release:
     name: Build & Upload Binary
