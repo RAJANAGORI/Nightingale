@@ -105,7 +105,7 @@ COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
-COPY --from=java /usr/bin/openjdk-26 /usr/bin/openjdk-26
+COPY --from=java /usr/java/openjdk-26 /usr/java/openjdk-26
 
 # Set environment variables
 # Removed Python 2 environment variable as it is deprecated
