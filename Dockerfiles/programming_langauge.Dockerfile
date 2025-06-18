@@ -105,7 +105,8 @@ COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
-COPY --from=java /usr/java/openjdk-23 /usr/java/openjdk-23
+COPY --from=java /usr/local/openjdk-26 /usr/local/openjdk-26
+COPY --from=ruby-builder /usr/local/bin/nokogiri /usr/local/bin/nokogiri
 
 # Set environment variables
 # Removed Python 2 environment variable as it is deprecated
@@ -114,4 +115,4 @@ ENV PYTHON3="/usr/bin/python3"
 ENV GOROOT="/usr/local/go"
 ENV GOPATH="/home/go"
 ENV JAVA_HOME="/usr/java/openjdk-23"
-ENV PATH="$GOPATH/bin:$GOROOT/bin:$PYTHON3:$PYTHON2:$JAVA_HOME:$PATH"
+ENV PATH="$GOPATH/bin:$GOROOT/bin:$PYTHON3:$JAVA_HOME:$PATH"

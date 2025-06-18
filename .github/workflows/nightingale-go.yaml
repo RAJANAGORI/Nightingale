@@ -1,8 +1,6 @@
 name: Release Binary from Local Source
 
 on:
-  push:
-    branches: ["main"]
   schedule:
     - cron: 0 10 1 * *  # Every month at 10:00 AM UTC (on the 1st)
 

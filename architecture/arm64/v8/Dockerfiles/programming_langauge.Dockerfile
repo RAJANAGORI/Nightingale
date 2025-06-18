@@ -38,6 +38,7 @@ RUN apt-get update && \
 
 # Stage 4: Ruby stage
 FROM --platform=$TARGETPLATFORM ruby:$RUBY AS ruby-builder
+
 RUN gem install nokogiri
 
 # Stage 5: Build Go dependencies
@@ -50,8 +51,25 @@ RUN \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
 
+# Stage 6: Java stage (ARM64)
+FROM --platform=$TARGETPLATFORM openjdk:26-jdk-oracle AS java
+# Install Java dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    default-jdk \
+    libev4 \
+    libffi-dev \
+    libbz2-dev \
+    libreadline-dev \
+    llvm \
+    libncurses5-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev
+
+
 # Stage 7: Final stage
-FROM debian:stable-slim AS final
+FROM --platform=$TARGETPLATFORM debian:stable-slim AS final
 
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
@@ -111,7 +129,8 @@ COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
-# COPY --from=ruby-builder /usr/local/bin/nokogiri /usr/local/bin/nokogiri
+COPY --from=java /usr/local/openjdk-26 /usr/local/openjdk-26
+COPY --from=ruby-builder /usr/local/bin/nokogiri /usr/local/bin/nokogiri
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends default-jdk && \
@@ -123,5 +142,5 @@ RUN apt-get update && \
 ENV PYTHON3="/usr/bin/python3"
 ENV GOROOT="/usr/local/go"
 ENV GOPATH="/home/go"
-ENV JAVA_HOME="/usr/lib/jvm/java-21-openjdk-arm64"
-ENV PATH="$GOPATH/bin:$GOROOT/bin:$PYTHON3:$PYTHON2:$JAVA_HOME:$PATH"
+ENV JAVA_HOME="/usr/local/openjdk-26"
+ENV PATH="$GOPATH/bin:$GOROOT/bin:$PYTHON3:$JAVA_HOME:$PATH"
