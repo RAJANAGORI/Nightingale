@@ -11,7 +11,8 @@ RUN apt-get update -y --fix-missing && \
     ca-certificates
 
 # Stage 2: Python 2 stage
-FROM python:3.13-slim AS python2
+# Removed Python 2 stage as it is deprecated and not recommended for use.
+# FROM python:3.13-slim AS python2 
 
 # Stage 3: Python 3 stage
 FROM python:3.13.5-slim AS python3

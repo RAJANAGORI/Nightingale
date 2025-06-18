@@ -26,27 +26,21 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "docker-compose"
-    directory: "/"
+    directory: "/docker compose"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "helm"
-    directory: "/"
+    directory: "/charts/nightingale"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directory: "/.github/workflows"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "gomod"
     directory: "/nightingale-go"
-    schedule:
-      interval: "weekly"
-
-
-  - package-ecosystem: "pip"
-    directory: "/"
     schedule:
       interval: "weekly"

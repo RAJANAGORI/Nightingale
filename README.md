@@ -7,6 +7,7 @@
 ## Badges
 
 ### Project and CI/CD
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7881/badge)](https://www.bestpractices.dev/projects/7881)
 [![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)  
 [![Docker Image CI](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml)  
 [![Multi OS Docker Images - ARM64 macOS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)  
