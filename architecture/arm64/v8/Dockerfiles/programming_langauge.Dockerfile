@@ -115,7 +115,7 @@ COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
-COPY --from=java /usr/local/openjdk-26 /usr/local/openjdk-26
+COPY --from=java /usr/openjdk-26 /usr/openjdk-26
 COPY --from=ruby-builder /usr/local/bin/nokogiri /usr/local/bin/nokogiri
 
 RUN apt-get update && \
