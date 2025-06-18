@@ -105,7 +105,8 @@ RUN apt-get update -y --fix-missing && \
 
 
 # Copy necessary files from other stages
-COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
+# Removed Python 2 environment variable as it is deprecated
+# COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
 COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
@@ -117,7 +118,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
-ENV PYTHON2="/usr/local/bin/python2.7"
+# Removed Python 2 environment variable as it is deprecated
+# ENV PYTHON2="/usr/local/bin/python2.7"
 ENV PYTHON3="/usr/bin/python3"
 ENV GOROOT="/usr/local/go"
 ENV GOPATH="/home/go"

@@ -15,7 +15,7 @@ RUN apt-get update -y --fix-missing && \
 # FROM python:3.13-slim AS python2 
 
 # Stage 3: Python 3 stage
-FROM python:3.13.5-slim AS python3
+FROM python:3.13.7-slim AS python3
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -99,7 +99,8 @@ RUN apt-get update -y --fix-missing && \
     pipx
 
 # Copy necessary files from other stages
-COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
+# Removed Python 2 environment variable as it is deprecated
+# COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
 COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
@@ -107,7 +108,8 @@ COPY --from=go-builder /home /home
 COPY --from=java /usr/java/openjdk-23 /usr/java/openjdk-23
 
 # Set environment variables
-ENV PYTHON2="/usr/local/bin/python2.7"
+# Removed Python 2 environment variable as it is deprecated
+# ENV PYTHON2="/usr/local/bin/python2.7"
 ENV PYTHON3="/usr/bin/python3"
 ENV GOROOT="/usr/local/go"
 ENV GOPATH="/home/go"
