@@ -12,7 +12,6 @@
 [![Docker Image CI](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml)  
 [![Multi OS Docker Images - ARM64 macOS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)  
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/nightingale)](https://artifacthub.io/packages/search?repo=nightingale)  
-[![Anchore Grype Vulnerability Scan](https://github.com/RAJANAGORI/Nightingale/actions/workflows/anchore.yml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/anchore.yml)  
 [![Trivy Scan](https://github.com/RAJANAGORI/Nightingale/actions/workflows/trivy.yml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/trivy.yml)
 
 ---
