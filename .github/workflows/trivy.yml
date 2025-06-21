@@ -2,7 +2,7 @@ name: Trivy Scan
 
 on:
   schedule:
-    - cron: '0 0 1 * *'  # Every Sunday at 11:00 PM UTC
+    - cron: 0 10 1 * *  # Every month at 10:00 AM UTC (on the 1st)
   workflow_dispatch:
 
 permissions:

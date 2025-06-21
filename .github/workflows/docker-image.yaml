@@ -1,8 +1,6 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [main]
   schedule:
     - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
   workflow_dispatch:
