@@ -78,36 +78,19 @@ COPY configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 COPY configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
-## Go builder stage: build Go backend binary
-FROM golang:1.24.4-alpine3.22 AS go_builder
-
-RUN apk add --no-cache ca-certificates
-
-WORKDIR /src
-COPY gui/go_backend/go.mod gui/go_backend/go.sum ./
-RUN go mod download
-COPY gui/go_backend/main.go ./
-RUN go build -o app
-
-## Final stage: combine metasploit, Go backend binary and finalize setup
+# Stage 5: Final Image
 FROM metasploit AS final
 
-# Copy Go backend binary
-COPY --from=go_builder /src/app /usr/local/bin/app
+EXPOSE 5432 8080 8081 7681
 
-RUN chmod 700 /usr/local/bin/app \
-    && ln -s /usr/local/bin/app /app
+COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
-WORKDIR /app
+RUN \
+    xargs -a /tmp/vuln-library-purge apt-get purge -y && \
+    apt-get -y autoremove && \
+    apt-get -y clean && \
+    rm -rf /tmp/* /var/lib/apt/lists/* && \
+    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat && \
+    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
-COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
-
-RUN xargs -a /tmp/vuln-library-purge apt-get purge -y \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /tmp/* /var/lib/apt/lists/* \
-    && ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat \
-    && echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
-
-EXPOSE 8765
-ENTRYPOINT ["/app"]
+WORKDIR /home

@@ -1,0 +1,139 @@
+name: Trivy Scan
+
+on:
+  schedule:
+    - cron: 0 10 1 * *  # Every month at 10:00 AM UTC (on the 1st)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  setup:
+    name: Fetch Images from GitHub Container Registry
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.fetch_images.outputs.images }}
+    steps:
+      - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install -y wget jq zip
+
+      - name: Authenticate with GitHub Container Registry
+        env:
+          CR_PAT: ${{ secrets.TOKEN }}
+        run: echo $CR_PAT | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+
+      - name: Fetch Images with Stable and ARM Tags
+        id: fetch_images
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          echo "Fetching images with stable and arm tags from GitHub Container Registry.."
+          # Hardcoded images for Trivy scan
+          SELECTED_IMAGES=(
+            "ghcr.io/rajanagori/nightingale:stable"
+            "ghcr.io/rajanagori/nightingale:arm64"
+          )
+
+          echo "Used images: ${SELECTED_IMAGES[@]}"
+
+          # Setting the output for the GitHub Actions workflow
+          echo "::set-output name=images::$(jq -c -n '$ARGS.positional' --args "${SELECTED_IMAGES[@]}")"
+
+  scan:
+    name: Run Trivy Scan and Generate SBOM
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ${{ fromJson(needs.setup.outputs.images) }}
+    steps:
+      - name: Install Trivy
+        run: |
+          echo "Installing Trivy..."
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.57.0/trivy_0.57.0_Linux-64bit.deb
+          sudo dpkg -i trivy_0.57.0_Linux-64bit.deb
+          rm trivy_0.57.0_Linux-64bit.deb
+
+      - name: Cache Trivy DB
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy/db
+          key: ${{ runner.os }}-trivy-db-${{ matrix.image }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-trivy-db-${{ matrix.image }}-
+
+      - name: Refresh Trivy DB if necessary
+        run: |
+          echo "Checking if Trivy vulnerability database needs to be refreshed..."
+          DB_PATH=~/.cache/trivy/db
+          if [[ ! -f "$DB_PATH" ]] || [[ $(find $DB_PATH -mmin +60) ]]; then
+            echo "Refreshing Trivy vulnerability database..."
+            trivy image --download-db-only
+          else
+            echo "Trivy DB is up-to-date, no need to refresh."
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Trivy Vulnerability Scanner
+        run: |
+          IMAGE_NAME=$(echo "${{ matrix.image }}" | sed 's/[^a-zA-Z0-9]/_/g')
+          echo "Scanning ${{ matrix.image }}..."
+          mkdir -p artifacts
+          echo "Scanning ${{ matrix.image }} for vulnerabilities and generating SARIF and SBOM..."
+
+          # Detect if the image is ARM64 or not
+          if [[ "${{ matrix.image }}" == *":arm64" ]]; then
+            PLATFORM_FLAG="--platform linux/arm64"
+          else
+            PLATFORM_FLAG=""
+          fi
+
+          echo "Using PLATFORM_FLAG: $PLATFORM_FLAG"
+
+          trivy image $PLATFORM_FLAG \
+            --format sarif \
+            --scanners vuln \
+            --severity CRITICAL,HIGH \
+            --timeout 60m \
+            --output artifacts/trivy-results-${IMAGE_NAME}.sarif \
+            ${{ matrix.image }}
+
+          trivy image $PLATFORM_FLAG \
+            --format cyclonedx \
+            --scanners vuln \
+            --severity CRITICAL,HIGH \
+            --timeout 60m \
+            --output artifacts/sbom-${IMAGE_NAME}.cyclonedx.json \
+            ${{ matrix.image }}
+
+          echo "Verifying files in artifacts directory..."
+          ls -al artifacts/
+
+          if [[ ! -f "artifacts/trivy-results-${IMAGE_NAME}.sarif" ]]; then
+            echo "Error: SARIF file was not created."
+            exit 1
+          fi
+
+          if [[ ! -f "artifacts/sbom-${IMAGE_NAME}.cyclonedx.json" ]]; then
+            echo "Error: JSON SBOM file was not created."
+            exit 1
+          fi
+
+      - name: Set Image Name for Upload
+        id: set_image_name
+        run: echo "IMAGE_NAME=$(echo '${{ matrix.image }}' | sed 's/[^a-zA-Z0-9]/_/g')" >> $GITHUB_ENV
+
+      - name: Upload SARIF file to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: artifacts/trivy-results-${{ env.IMAGE_NAME }}.sarif
+
+      - name: Upload Scan Results to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-scan-results-${{ env.IMAGE_NAME }}
+          path: artifacts/
