@@ -1,0 +1,30 @@
+services:
+  backend:
+    image: ghcr.io/rajanagori/nightingale_backend:amd64
+    # Mount the host project into /home so File Explorer can see it
+    volumes:
+      - backend_data_home:/home    # adjust path if your compose file isn’t one level down
+      - backend_data:/app      # mount backend code for live edits
+    working_dir: /app
+    ports:
+      - "8765:8765"
+    restart: always
+
+  frontend:
+    image: ghcr.io/rajanagori/nightingale_frontend:amd64
+    volumes:
+      - frontend_data_app:/app
+      - frontend_data_app_node_nodules:/app/node_modules  # keep container’s node_modules intact
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_WEBSOCKET_URL=ws://backend:8765/ws
+    depends_on:
+      - backend
+
+volumes:
+  backend_data_home:  # named volume for backend home directory
+  frontend_data_app:  # named volume for frontend data
+  backend_data:  # named volume for backend data
+  frontend_data_app_node_nodules: # named volume for frontend data

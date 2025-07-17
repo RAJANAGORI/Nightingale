@@ -1,4 +1,5 @@
-## Taking Image from Docker Hub for Programming language support
+# syntax=docker/dockerfile:1.4
+## Base image with programming language support and essential tools
 FROM ghcr.io/rajanagori/nightingale_programming_image:arm64 AS base
 
 LABEL maintainer="Raja Nagori" \
@@ -6,70 +7,21 @@ LABEL maintainer="Raja Nagori" \
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-USER root
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+        software-properties-common ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update -y --fix-missing && \
-    apt-get install -y --no-install-recommends \
-    software-properties-common \
-    ca-certificates \
-    build-essential \
-    cmake \
-    locate \
-    snapd \
-    tree \
-    zsh \
-    figlet \
-    unzip \
-    p7zip-full \
-    ftp \
-    ssh \
-    git \
-    curl \
-    wget \
-    file \
-    nano \
-    vim \
-    dirb \
-    nmap \
-    htop \
-    traceroute \
-    telnet \
-    net-tools \
-    iputils-ping \
-    tcpdump \
-    openvpn \
-    whois \
-    host \
-    tor \
-    john \
-    cewl \
-    hydra \
-    medusa \
-    dnsutils \
-    android-framework-res \
-    adb \
-    apktool \
-    exiftool \
-    steghide \
-    binwalk \
-    foremost \
-    dos2unix \
-    postgresql \
-    postgresql-client \
-    postgresql-contrib \
-    pipx \
-    pv
-
-# Stage 2: Copy Scripts and Configurations
+## Intermediate stage: copy scripts, setup environment and directories, and import tools
 FROM base AS intermediate
 
 COPY shells/banner.sh /tmp/banner.sh
 COPY configuration/nodejs-env/ /temp/
 
-RUN dos2unix ${HOME}/.bashrc && \
-    cat /tmp/banner.sh >> ${HOME}/.bashrc && \
-    mkdir -p /home/tools_web_vapt /home/tools_osint /home/tools_mobile_vapt /home/tools_network_vapt \
-    /home/tools_red_teaming /home/tools_forensics /home/wordlist /home/binaries /home/.gf /home/.shells
+RUN dos2unix ${HOME}/.bashrc \
+    && cat /tmp/banner.sh >> ${HOME}/.bashrc \
+    && mkdir -p /home/tools_web_vapt /home/tools_osint /home/tools_mobile_vapt /home/tools_network_vapt \
+        /home/tools_red_teaming /home/tools_forensics /home/wordlist /home/binaries /home/.gf /home/.shells
 
 ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     BINARIES=/home/binaries \
@@ -93,30 +45,32 @@ COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64 ${TOOL
 COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
 COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:arm64 ${WORDLIST} ${WORDLIST}
 
-# Stage 3: Install Python and Go Modules
+## Modules stage: install Python and Go modules, setup binaries and additional tools
 FROM intermediate AS modules
 
 COPY configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 COPY configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
-COPY activate.sh ${SHELLS}/activate
 
-RUN dos2unix ${SHELLS}/activate && \
-    chmod +x ${SHELLS}/activate && \
-    ln -s ${SHELLS}/activate /usr/local/bin
+RUN dos2unix ${SHELLS}/python-install-modules.sh \
+    && chmod +x ${SHELLS}/python-install-modules.sh \
+    && dos2unix ${SHELLS}/go-install-modules.sh \
+    && chmod +x ${SHELLS}/go-install-modules.sh \
+    && ln -s ${SHELLS}/python-install-modules.sh /usr/local/bin/python-install-modules \
+    && ln -s ${SHELLS}/go-install-modules.sh /usr/local/bin/go-install-modules \
+    && python-install-modules \
+    && go-install-modules
 
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
-RUN chmod +x ${BINARIES}/* && \
-    mv ${BINARIES}/* /usr/local/bin/ && \
-    wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
-    unzip 1.7.2.zip && \
-    cd ttyd-1.7.2 && mkdir build && cd build && \
-    cmake .. && make && make install &&\
-    ## Install tools using curl or wget 
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+RUN chmod +x ${BINARIES}/* \
+    && mv ${BINARIES}/* /usr/local/bin/ \
+    && wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip \
+    && unzip 1.7.7.zip \
+    && cd ttyd-1.7.7 && mkdir build && cd build && cmake .. && make && make install \
+    && curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
-# Stage 4: Setup Metasploit
+## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
 
 WORKDIR ${METASPLOIT_TOOL}
@@ -124,19 +78,36 @@ COPY configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 COPY configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
-# Stage 5: Final Image
+## Go builder stage: build Go backend binary
+FROM golang:1.24.4-alpine3.22 AS go_builder
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /src
+COPY gui/go_backend/go.mod gui/go_backend/go.sum ./
+RUN go mod download
+COPY gui/go_backend/main.go ./
+RUN go build -o app
+
+## Final stage: combine metasploit, Go backend binary and finalize setup
 FROM metasploit AS final
 
-EXPOSE 5432 8080 8081 7681
+# Copy Go backend binary
+COPY --from=go_builder /src/app /usr/local/bin/app
 
-COPY ../../../configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
+RUN chmod 700 /usr/local/bin/app \
+    && ln -s /usr/local/bin/app /app
 
-RUN \
-    xargs -a /tmp/vuln-library-purge apt-get purge -y && \
-    apt-get -y autoremove && \
-    apt-get -y clean && \
-    rm -rf /tmp/* /var/lib/apt/lists/* && \
-    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat && \
-    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
+WORKDIR /app
 
-WORKDIR /home
+COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
+
+RUN xargs -a /tmp/vuln-library-purge apt-get purge -y \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /tmp/* /var/lib/apt/lists/* \
+    && ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat \
+    && echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
+
+EXPOSE 8765
+ENTRYPOINT ["/app"]

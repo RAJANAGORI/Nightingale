@@ -1,10 +1,9 @@
-# docker-compose.yml
 version: '3.8'
 
 services:
   nightingale:
-    image: ghcr.io/rajanagori/nightingale:${NIGHTINGALE_TAG}
-    container_name: nightingale-${NIGHTINGALE_TAG}
+    image: ghcr.io/rajanagori/nightingale:arm64
+    container_name: nightingale
     command: ["ttyd", "-p", "7681", "bash"]
     ports:
       - "8080:7681"
