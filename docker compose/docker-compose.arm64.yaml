@@ -1,6 +1,7 @@
 services:
   backend:
     image: ghcr.io/rajanagori/nightingale_backend:arm64
+    platform: linux/arm64
     # Mount the host project into /home so File Explorer can see it
     volumes:
       - backend_data_home:/home    # adjust path if your compose file isn’t one level down
@@ -12,6 +13,7 @@ services:
 
   frontend:
     image: ghcr.io/rajanagori/nightingale_frontend:arm64
+    platform: linux/arm64
     volumes:
       - frontend_data_app:/app
       - frontend_data_app_node_nodules:/app/node_modules  # keep container’s node_modules intact
