@@ -1,0 +1,35 @@
+name: 🖥️ GUI Issue Report
+description: Submit an issue related to the Nightingale GUI
+title: "[GUI]: "
+labels: [gui, nightingale]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a GUI issue in **Nightingale**! Please fill out the details below.
+
+  - type: input
+    id: issue-title
+    attributes:
+      label: Issue Title
+      placeholder: Brief, descriptive title of the issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A detailed explanation of the issue you're facing.
+      placeholder: Describe what happened, what you expected to happen, and any error messages.
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot (Optional)
+      description: If applicable, drag and drop or paste a screenshot that shows the issue.
+      placeholder: "Paste your screenshot here or use markdown: ![image](url)"
+    validations:
+      required: false
