@@ -1,7 +1,8 @@
 name: 🖥️ GUI Issue Report
 description: Submit an issue related to the Nightingale GUI
 title: "[GUI]: "
-labels: [gui, nightingale]
+labels: [gui]
+assignees: [RAJANAGORI]
 body:
   - type: markdown
     attributes:
