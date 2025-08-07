@@ -51,12 +51,18 @@ The best part is that you can either create an altered Docker image or pull the 
 Some of the best features are listed below; I would highly recommend going through them before starting to penetrate the application. **Link to access tool list**: ([tool list](https://github.com/RAJANAGORI/Nightingale/wiki/6-%F0%9F%9B%A0%EF%B8%8F-Tools-list))
 
 ### Pros
-- No need to install multiple programming language supports and modules.
-- The booting process is very fast due to the virtualization concept.
-- Uses resources from the host machine as needed.
-- All pre-installed tools are ready, and you can install new software or tools if required.
-- You can perform vulnerability assessments and penetration testing on any scope.
-- You can access this Docker container via a browser by calling your local address.
+- Pre-installed penetration testing tools and frameworks
+- ﻿﻿Consistent and repeatable testing environments via Docker
+- ﻿﻿Fast booting and tearing down of testing environments
+- ﻿﻿Resource-efficient operation suitable for users with limited resources
+- ﻿﻿Browser-based access using the local IP address
+- ﻿﻿Platform independence, enhancing accessibility and usability
+- ﻿﻿Go binary support for deploying Nightingale on any architecture.
+- ﻿﻿Compatibility with both AMD and ARM architectures.
+- ﻿﻿C/CD integration for automated vulnerability scanning.
+- ﻿﻿Maintenance of GitHub Advisories, ensuring consumers have access to the latest images.
+- ﻿﻿On-demand installation via a request form, allowing consumers to request specific tools.
+- ﻿﻿GUI based solution for those who has love-hate relation with CLI.
 
 ### Why?
 The reason behind creating this Docker image is to make a platform-independent penetration toolkit. It includes all the useful tools that a penetration tester might need (refer to the tool list section for details).
