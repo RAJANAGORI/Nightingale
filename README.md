@@ -3,6 +3,10 @@
 ![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
 
 ---
+## Nighitngale GUI update
+https://github.com/user-attachments/assets/845631f4-2fba-4614-8f8b-ec7b40d6fa02
+
+[Nightingale Wiki for GUI installation](https://github.com/RAJANAGORI/Nightingale/wiki/4.-Installation-and-Setup#nightingale-console---a-webapp-version-of-old-school-nigtingale-cli)
 
 ## Badges
 
