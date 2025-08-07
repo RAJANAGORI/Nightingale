@@ -1,9 +1,9 @@
-# Docker for Pentesters
+# Nightingale: Docker for Pentesters
 
 ![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
 
 ---
-## Nighitngale GUI update
+## Nighitngale GUI
 https://github.com/user-attachments/assets/845631f4-2fba-4614-8f8b-ec7b40d6fa02
 
 [Nightingale Wiki for GUI installation](https://github.com/RAJANAGORI/Nightingale/wiki/4.-Installation-and-Setup#nightingale-console---a-webapp-version-of-old-school-nigtingale-cli)
@@ -37,11 +37,9 @@ https://github.com/user-attachments/assets/845631f4-2fba-4614-8f8b-ec7b40d6fa02
 - IWCON - 2023
 - c0c0n - 2024
 
-## Project Name: Nightingale
-==================================================
-# Docker for Pentesters: Pentesting Framework
+## Docker for Pentesters
 
-## Description
+### Description
 In today's technological era, Docker is the most powerful technology across various domains, whether it's Development, Cybersecurity, DevOps, Automation, or Infrastructure.
 
 Considering the demand of the industry, I would like to introduce my idea to create **NIGHTINGALE**: a Docker image for pentesters.
@@ -52,7 +50,7 @@ The best part is that you can either create an altered Docker image or pull the 
 
 Some of the best features are listed below; I would highly recommend going through them before starting to penetrate the application. **Link to access tool list**: ([tool list](https://github.com/RAJANAGORI/Nightingale/wiki/6-%F0%9F%9B%A0%EF%B8%8F-Tools-list))
 
-## Pros
+### Pros
 - No need to install multiple programming language supports and modules.
 - The booting process is very fast due to the virtualization concept.
 - Uses resources from the host machine as needed.
@@ -60,7 +58,7 @@ Some of the best features are listed below; I would highly recommend going throu
 - You can perform vulnerability assessments and penetration testing on any scope.
 - You can access this Docker container via a browser by calling your local address.
 
-## Why?
+### Why?
 The reason behind creating this Docker image is to make a platform-independent penetration toolkit. It includes all the useful tools that a penetration tester might need (refer to the tool list section for details).
 
 Please feel free to contribute to the tool.
