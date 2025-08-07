@@ -48,7 +48,7 @@ This Docker image provides a ready-to-use environment with the tools required fo
 
 The best part is that you can either create an altered Docker image or pull the pre-built Docker image from the hub.
 
-Some of the best features are listed below; I would highly recommend going through them before starting to penetrate the application. **Link to access tool list**: ([tool list](https://github.com/RAJANAGORI/Nightingale/wiki/6-%F0%9F%9B%A0%EF%B8%8F-Tools-list))
+Some of the best features are listed below; I would highly recommend going through them before starting to penetrate the application. **Link to access tool list**: ([tool list](https://github.com/RAJANAGORI/Nightingale/wiki/6.-Tools-list))
 
 ### Pros
 - Pre-installed penetration testing tools and frameworks
