@@ -1,6 +1,6 @@
 # Nightingale: Docker for Pentesters
 
-![Nightingale Logo](https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png)
+![Nightingale Logo](https://github.com/RAJANAGORI/Nightingale/blob/acb63dd5da8e11063ea67342b9787cc2c985eec5/assets/images/Nightingale.png)
 
 ---
 ## Nighitngale GUI
