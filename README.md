@@ -20,16 +20,6 @@ https://github.com/user-attachments/assets/845631f4-2fba-4614-8f8b-ec7b40d6fa02
 
 ---
 
-### Events and Recognitions
-![BlackHat Asia 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2022.svg)  
-![BlackHat Asia 2023](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2023.svg)  
-![BlackHat Asia 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/blackhat_2024.svg)  
-![IWCON 2023](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/IWCON.svg)  
-![c0c0n 2024](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/c0c0n.svg)  
-![OWASP AppSec EU 2022](https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/Owasp_Global_Appsec_EU.svg)
-
----
-
 ### Social and Profiles
 [![Follow on LinkedIn](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/)  
 [![Follow on Twitter](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)  
