@@ -69,4 +69,4 @@ The reason behind creating this Docker image is to make a platform-independent p
 
 Please feel free to contribute to the tool.
 
-For more information [Nightingale Wiki](https://github.com/RAJANAGORI/Nightingale/wiki/1-%F0%9F%9A%80-Nightingale-Docker-for-Pentesters)
+For more information [Nightingale Wiki](https://github.com/RAJANAGORI/Nightingale/wiki/1.-Nightingale-Docker-for-Pentesters)
