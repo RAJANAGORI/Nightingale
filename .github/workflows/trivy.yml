@@ -139,11 +139,11 @@ jobs:
         with:
           name: trivy-scan-results-${{ env.IMAGE_NAME }}
           path: artifacts/
-    
+
   notify_sbom_parser:
     name: Notify sbom-parser repo
     runs-on: ubuntu-latest
-    needs: [scan]
+    needs: scan
     if: ${{ success() }}
     steps:
       - name: Trigger sbom-parser repository_dispatch
