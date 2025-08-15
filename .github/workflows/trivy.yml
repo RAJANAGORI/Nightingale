@@ -3,7 +3,7 @@ name: Trivy Scan
 on:
   schedule:
     - cron: 0 10 1 * *  # Every month at 10:00 AM UTC (on the 1st)
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -153,5 +153,5 @@ jobs:
           curl -i -s -X POST https://api.github.com/repos/sidbhasin13/sbom-parser/dispatches \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
-            -d '{"event_type":"nightingale-trivy-complete"}'
-
+            -d '{"event_type":"nightingale-trivy-complete",
+                 "client_payload":{"target_branch":"Sbom-Parser"}}' | head -n 1
