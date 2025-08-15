@@ -139,3 +139,13 @@ jobs:
         with:
           name: trivy-scan-results-${{ env.IMAGE_NAME }}
           path: artifacts/
+      
+      - name: Notify sbom-parser to sync
+        if: ${{ success() }}
+        env:
+          GH_TOKEN: ${{ secrets.SBOM_SYNC_TOKEN }}
+        run: |
+          curl -s -X POST https://api.github.com/repos/RAJANAGORI/sbom-parser/dispatches \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -d '{"event_type":"nightingale-trivy-complete"}'
