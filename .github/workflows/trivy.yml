@@ -141,11 +141,18 @@ jobs:
           path: artifacts/
       
       - name: Notify sbom-parser to sync
+        needs:
+          - Run Trivy Scan and Generate SBOM (ghcr.io/rajanagori/nightingale_backend:amd64)
+          - Run Trivy Scan and Generate SBOM (ghcr.io/rajanagori/nightingale_backend:arm64)
+          - Run Trivy Scan and Generate SBOM (ghcr.io/rajanagori/nightingale:arm64)
+          - Run Trivy Scan and Generate SBOM (ghcr.io/rajanagori/nightingale:stable)
         if: ${{ success() }}
-        env:
-          GH_TOKEN: ${{ secrets.SBOM_SYNC_TOKEN }}
-        run: |
-          curl -s -X POST https://api.github.com/repos/RAJANAGORI/sbom-parser/dispatches \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -d '{"event_type":"nightingale-trivy-complete"}'
+        steps:
+          - name: Trigger sbom-parser repository_dispatch
+            env:
+              GH_TOKEN: ${{ secrets.TOKEN }}
+            run: |
+              curl -i -s -X POST https://api.github.com/repos/sidbhasin13/sbom-parser/dispatches \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                -d '{"event_type":"nightingale-trivy-complete"}'
