@@ -16,7 +16,7 @@ jobs:
     outputs:
       commit_hash: ${{ github.sha }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Debug Environment Variables
       run: |
@@ -84,7 +84,7 @@ jobs:
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Debug Variables
       run: |
@@ -139,7 +139,7 @@ jobs:
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Validate Secrets
       run: |
