@@ -154,4 +154,4 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -d '{"event_type":"nightingale-trivy-complete",
-                 "client_payload":{"target_branch":"Sbom-Parser"}}' | head -n 1
+                 "client_payload":{"target_branch":"main"}}' | head -n 1
