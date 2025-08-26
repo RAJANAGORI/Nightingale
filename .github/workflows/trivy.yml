@@ -150,7 +150,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.TOKEN  }}
         run: |
-          curl -i -s -X POST https://api.github.com/repos/sidbhasin13/sbom-parser/dispatches \
+          curl -i -s -X POST https://api.github.com/repos/${{ secrets.USERNAME }}/sbom-parser/dispatches \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -d '{"event_type":"nightingale-trivy-complete",
