@@ -25,7 +25,7 @@ Welcome! Your contributions help make Nightingale a powerful, secure toolkit. Pl
 ## Reporting Bugs or Vulnerabilities
 
 - For regular bugs, open an issue.
-- For security issues, email [security@project-domain.tld].
+- For security issues, email [raja.nagori@owasp.org].
 
 ## Code of Conduct
 
