@@ -24,8 +24,7 @@ RUN apt-get update && \
     python3-pip \
     python3-venv \
     python3-dev \
-    python3-openssl \
-    python3-distutils && \
+    python3-openssl && \
     python3 -m venv /opt/venv3 && \
     pip install --upgrade pip && \
     pip install setuptools==58.2.0 && \
