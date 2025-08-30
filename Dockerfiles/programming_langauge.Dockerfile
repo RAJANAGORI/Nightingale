@@ -16,7 +16,7 @@ RUN apt-get update -y --fix-missing && \
 # FROM python:3.13-slim AS python2 
 
 # Stage 3: Python 3 stage
-FROM python:3.12-slim AS python3
+FROM python:3.11.13-slim AS python3
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -95,6 +95,10 @@ RUN apt-get update -y --fix-missing && \
     python3-dev \
     python3-openssl \
     pipx
+
+
+RUN \
+    echo "python3 --version"
 
 # Copy necessary files from other stages
 # Removed Python 2 environment variable as it is deprecated
