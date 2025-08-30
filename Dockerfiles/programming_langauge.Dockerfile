@@ -30,7 +30,7 @@ RUN apt-get update && \
     pip install setuptools==58.2.0 && \
     pip install pipx
 # Stage 4: Ruby stage
-FROM ruby:3.4.4-slim AS ruby-builder
+FROM ruby:3.4.5-slim AS ruby-builder
 
 RUN gem install nokogiri
 
