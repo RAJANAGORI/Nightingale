@@ -95,7 +95,6 @@ RUN apt-get update -y --fix-missing && \
     python3-venv \
     python3-dev \
     python3-openssl \
-    python3-distutils \
     pipx
 
 # Copy necessary files from other stages
