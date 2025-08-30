@@ -9,7 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends \
-        ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv \
+        ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data \
     && rm -rf /var/lib/apt/lists/*
 
 ## Intermediate stage: copy scripts, setup environment and directories, and import tools
@@ -86,7 +86,7 @@ EXPOSE 5432 8080 8081 7681
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
 RUN \
-    xargs -a /tmp/vuln-library-purge apt-get purge -y && \
+    xargs -a /tmp/vuln-library-purge apt-get purge -y --ignore-missing && \
     apt-get -y autoremove && \
     apt-get -y clean && \
     rm -rf /tmp/* /var/lib/apt/lists/* && \

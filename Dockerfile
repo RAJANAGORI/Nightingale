@@ -85,7 +85,7 @@ EXPOSE 5432 8080 8081 7681
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
 RUN \
-    xargs -a /tmp/vuln-library-purge apt-get purge -y && \
+    xargs -a /tmp/vuln-library-purge apt-get purge -y --ignore-missing && \
     apt-get -y autoremove && \
     apt-get -y clean && \
     rm -rf /tmp/* /var/lib/apt/lists/* && \

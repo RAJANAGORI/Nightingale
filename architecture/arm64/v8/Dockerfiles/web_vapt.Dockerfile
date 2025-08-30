@@ -12,7 +12,9 @@ RUN \
     whatweb \
     curl \
     wget \
-    pipx && \
+    pipx \
+    hashcat \
+    hashcat-data && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_web_vapt .gf 
@@ -48,9 +50,7 @@ RUN \
     #Install git leaks
     git clone --depth 1 https://github.com/gitleaks/gitleaks.git &&\
     # Install Ghauri
-    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git &&\
-    # Install Hashcat
-    git clone https://github.com/hashcat/hashcat.git
+    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git
 
 ### Installing Tools 
 RUN \
@@ -108,11 +108,6 @@ RUN \
     cd ghauri &&\
     while read p; do pipx install --include-deps "$p"; done < requirements.txt &&\
     python3 setup.py install
-
- RUN \
-    cd hashcat && \
-    make --silent && \
-    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat
 
 RUN \
 ### Installing Amass 
