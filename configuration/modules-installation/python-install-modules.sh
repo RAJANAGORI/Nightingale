@@ -75,7 +75,7 @@ echo "ReconSpider installation completed."
 cd "${TOOLS_OSINT}/recon-ng"
 python3 -m venv recon
 chmod +x recon/bin/activate
-./recon/bin/activate
+. ./recon/bin/activate
 install_tool_with_pipx "${TOOLS_OSINT}/recon-ng" "REQUIREMENTS"
 deactivate
 
