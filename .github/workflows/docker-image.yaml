@@ -19,15 +19,6 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
-    - name: Maximize runner disk space
-      run: |
-        set -eux
-        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
-        sudo docker system prune -af || true
-        sudo rm -rf /var/lib/docker || true
-        sudo rm -rf /var/lib/buildkit || true
-        df -h
-
     - name: Debug Environment Variables
       run: |
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
@@ -53,14 +44,13 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
-        echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
         install: true
-        buildkitd-flags: --debug --oci-worker-gc --oci-worker-gc-keepstorage 15GB
 
     - name: Build and Push Programming Image
       uses: docker/build-push-action@v6
@@ -69,8 +59,6 @@ jobs:
         file: Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/amd64
         push: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:stable
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
@@ -99,15 +87,6 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
-    - name: Maximize runner disk space
-      run: |
-        set -eux
-        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
-        sudo docker system prune -af || true
-        sudo rm -rf /var/lib/docker || true
-        sudo rm -rf /var/lib/buildkit || true
-        df -h
-
     - name: Debug Variables
       run: |
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
@@ -135,14 +114,13 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
-        echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
         install: true
-        buildkitd-flags: --debug --oci-worker-gc --oci-worker-gc-keepstorage 15GB
 
     - name: Build and Push Dependent Image
       uses: docker/build-push-action@v6
@@ -151,8 +129,6 @@ jobs:
         file: Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/amd64
         push: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:stable
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
@@ -165,15 +141,6 @@ jobs:
       COMMIT_HASH: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v5
-
-    - name: Maximize runner disk space
-      run: |
-        set -eux
-        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
-        sudo docker system prune -af || true
-        sudo rm -rf /var/lib/docker || true
-        sudo rm -rf /var/lib/buildkit || true
-        df -h
 
     - name: Validate Secrets
       run: |
@@ -194,14 +161,13 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
-        echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
+        echo "::set-output name=commit_hash::$COMMIT_HASH"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
         install: true
-        buildkitd-flags: --debug --oci-worker-gc --oci-worker-gc-keepstorage 15GB
 
     - name: Build and Push Final Image
       uses: docker/build-push-action@v6
@@ -210,8 +176,6 @@ jobs:
         file: Dockerfile
         platforms: linux/amd64
         push: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:stable
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
