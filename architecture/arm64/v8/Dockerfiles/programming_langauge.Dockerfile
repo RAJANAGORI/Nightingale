@@ -26,7 +26,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential && \
     rm -rf /var/lib/apt/lists/* && \
-    python -m venv /opt/venv3 && \
+    python -m venv /opt/venv3 --copies && \
     /opt/venv3/bin/pip install --upgrade pip setuptools==58.2.0 pipx
 
 # Stage 4: Ruby stage
@@ -97,7 +97,6 @@ RUN apt-get update -y --fix-missing && \
 # Copy necessary files from other stages
 # Removed Python 2 environment variable as it is deprecated
 # COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
-COPY --from=python3 /usr/bin/python3 /usr/bin/python3
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
@@ -110,8 +109,8 @@ RUN apt-get update && \
 # Set environment variables
 # Removed Python 2 environment variable as it is deprecated
 # ENV PYTHON2="/usr/local/bin/python2.7"
-ENV PYTHON3="/usr/bin/python3"
+ENV PYTHON3="/opt/venv3/bin/python"
 ENV GOROOT="/usr/local/go"
 ENV GOPATH="/home/go"
-ENV JAVA_HOME="/usr/local/openjdk-26"
-ENV PATH="$GOPATH/bin:$GOROOT/bin:$PYTHON3:$JAVA_HOME:$PATH"
+ENV JAVA_HOME="/usr/java/openjdk-26"
+ENV PATH="/opt/venv3/bin:$GOPATH/bin:$GOROOT/bin:$JAVA_HOME:$PATH"
