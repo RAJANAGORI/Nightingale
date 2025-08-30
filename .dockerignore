@@ -6,4 +6,68 @@ shells/try.sh
 shells/requirements_file_module.sh
 shell.bat
 Dockerfiles/*_copy.Dockerfile
+.git
+gui
+vulnerability
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+.eggs/
+.venv/
+venv/
+ENV/
+env/
+
+# Node / frontend
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+dist/
+build/
+
+# Logs & temp
+*.log
+*.tmp
+*.swp
+*.swo
+*.DS_Store
+
+# Tests, datasets, artifacts
+tests/
+test/
+**/testdata/
+*.coverage
+.coverage
+htmlcov/
+coverage.xml
+
+# Docker & CI junk
+.dockerignore
+.docker/
+docker-compose*.yml
+*.Dockerfile.save
+
+# Archives / binaries
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.gz
+*.xz
+*.bz2
+*.exe
+*.dll
+*.so
+*.dylib
+*.bin
 # testing.Dockerfile
