@@ -58,7 +58,6 @@ RUN apt-get update -y --fix-missing && \
     make \
     gcc \
     cmake \
-    software-properties-common \
     build-essential \
     libcurl4-openssl-dev \
     libexpat1-dev \
