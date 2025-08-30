@@ -20,15 +20,11 @@ FROM python:3.11.13-slim AS python3
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    python3-full \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    python3-openssl && \
-    python3 -m venv /opt/venv3 && \
-    pip install --upgrade pip && \
-    pip install setuptools==58.2.0 && \
-    pip install pipx
+    build-essential && \
+    rm -rf /var/lib/apt/lists/* && \
+    python -m venv /opt/venv3 && \
+    /opt/venv3/bin/pip install --upgrade pip setuptools==58.2.0 pipx
+
 # Stage 4: Ruby stage
 FROM ruby:3.4.5-slim AS ruby-builder
 
@@ -89,16 +85,8 @@ RUN apt-get update -y --fix-missing && \
     libncursesw5-dev \
     xz-utils \
     tk-dev \
-    python3-full \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    python3-openssl \
     pipx
 
-
-RUN \
-    echo "python3 --version"
 
 # Copy necessary files from other stages
 # Removed Python 2 environment variable as it is deprecated
