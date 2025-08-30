@@ -10,7 +10,9 @@ RUN \
     bundler \
     unzip \
     whatweb \
-    pipx && \
+    pipx \
+    hashcat \
+    hashcat-data && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_web_vapt .gf 
@@ -46,9 +48,10 @@ RUN \
     #Install git leaks
     git clone --depth 1 https://github.com/gitleaks/gitleaks.git &&\
     # Install Ghauri
-    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git &&\
-    # Install Hashcat
-    git clone https://github.com/hashcat/hashcat.git
+    git clone --depth 1 https://github.com/r0oth3x49/ghauri.git 
+# &&\
+#     # Install Hashcat
+#     git clone https://github.com/hashcat/hashcat.git
 
 
 ### Installing Tools 
@@ -120,9 +123,8 @@ RUN \
     while read p; do pipx install --include-deps "$p"; done < requirements.txt &&\
     python3 setup.py install
 
- RUN \
-    cd hashcat && \
-    make && \
-    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat
-    
+#  RUN \
+#     apt-get update && \
+#     apt-get install -y --no-install-recommends hashcat hashcat-data
+
 WORKDIR /home
