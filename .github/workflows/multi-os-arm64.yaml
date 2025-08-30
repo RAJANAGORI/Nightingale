@@ -1,4 +1,4 @@
-name: Multi OS Docker Images - ARM64 macOS #Test Main Action
+name: Docker image ARM64 #Test Main Action
 
 on:
   schedule:
