@@ -61,9 +61,6 @@ echo "Sublist3r installation completed."
 # Install XSStrike
 install_tool_with_pipx "${TOOLS_WEB_VAPT}/XSStrike" "requirements.txt"
 
-# Install SpiderFoot
-install_tool_with_pipx "${TOOLS_OSINT}/spiderfoot" "requirements.txt"
-
 # Install ReconSpider
 echo "Installing ReconSpider..."
 cd "${TOOLS_OSINT}/reconspider"
