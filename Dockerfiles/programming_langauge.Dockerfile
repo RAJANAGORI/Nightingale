@@ -92,6 +92,8 @@ RUN apt-get update -y --fix-missing && \
 # Removed Python 2 environment variable as it is deprecated
 # COPY --from=python2 /usr/local/bin/python2.7 /usr/local/bin/python2.7
 COPY --from=python3 /opt/venv3 /opt/venv3
+COPY --from=python3 /usr/local/lib/ /usr/local/lib/
+COPY --from=python3 /usr/local/bin/ /usr/local/bin/
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
 COPY --from=java /usr/java/openjdk-26 /usr/java/openjdk-26
