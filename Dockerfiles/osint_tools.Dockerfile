@@ -30,7 +30,7 @@ RUN cd recon-ng && \
     python3 -m venv recon && \
     chmod +x recon/bin/activate && \
     ./recon/bin/activate && \
-    while read p; do pipx install "$p"; done < REQUIREMENTS && \
+    while read p; do pip3 install "$p"; done < REQUIREMENTS && \
     deactivate && \
     cd ..
 
