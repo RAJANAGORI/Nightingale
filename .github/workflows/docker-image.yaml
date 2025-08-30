@@ -19,6 +19,20 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
+    - name: Maximize runner disk space
+      run: |
+        set -eux
+        echo "=== BEFORE CLEANUP ==="
+        df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
+        sudo docker system prune -af || true
+        sudo rm -rf /var/lib/docker || true
+        sudo rm -rf /var/lib/buildkit || true
+        echo "=== AFTER CLEANUP ==="
+        df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
+
     - name: Debug Environment Variables
       run: |
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
@@ -86,6 +100,19 @@ jobs:
       COMMIT_HASH: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v5
+    - name: Maximize runner disk space
+      run: |
+        set -eux
+        echo "=== BEFORE CLEANUP ==="
+        df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
+        sudo docker system prune -af || true
+        sudo rm -rf /var/lib/docker || true
+        sudo rm -rf /var/lib/buildkit || true
+        echo "=== AFTER CLEANUP ==="
+        df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
 
     - name: Debug Variables
       run: |
@@ -142,6 +169,19 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
+    - name: Maximize runner disk space
+      run: |
+        set -eux
+        echo "=== BEFORE CLEANUP ==="
+        df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
+        sudo docker system prune -af || true
+        sudo rm -rf /var/lib/docker || true
+        sudo rm -rf /var/lib/buildkit || true
+        echo "=== AFTER CLEANUP ==="
+        df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
     - name: Validate Secrets
       run: |
         if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
