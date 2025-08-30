@@ -72,7 +72,11 @@ python3 setup.py install
 echo "ReconSpider installation completed."
 
 # Install Recon-ng
+cd "${TOOLS_OSINT}/recon-ng"
+python3 -m venv recon-ng
+source recon-ng/bin/activate
 install_tool_with_pipx "${TOOLS_OSINT}/recon-ng" "REQUIREMENTS"
+deactivate
 
 # Install Metagoofil
 install_tool_with_pipx "${TOOLS_OSINT}/metagoofil" "requirements.txt"

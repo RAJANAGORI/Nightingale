@@ -8,7 +8,8 @@ RUN apt-get update -y --fix-missing && \
     tar \
     make \
     gcc \
-    ca-certificates
+    ca-certificates \
+    build-essential
 
 # Stage 2: Python 2 stage
 # Removed Python 2 stage as it is deprecated and not recommended for use.

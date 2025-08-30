@@ -13,7 +13,6 @@ RUN apt-get update -y --fix-missing && \
     make \
     gcc \
     ca-certificates \
-    software-properties-common \
     build-essential
 
 # Stage 2: Python 2 stage
