@@ -27,8 +27,8 @@ RUN git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
 
 # Install recon-ng requirements
 RUN cd recon-ng && \
-    python3 -m venv recon-ng && \
-    source recon-ng/bin/activate && \
+    python3 -m venv recon && \
+    source recon/bin/activate && \
     while read p; do pipx install "$p"; done < REQUIREMENTS && \
     deactivate && \
     cd ..
