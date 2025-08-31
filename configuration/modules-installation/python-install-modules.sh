@@ -84,9 +84,9 @@ install_tool_with_pipx "${TOOLS_OSINT}/theHarvester" "requirements/base.txt"
 
 # Install Ghauri
 cd "${TOOLS_WEB_VAPT}/ghauri"
-python3 -m venv ghauri
-chmod +x ghauri/bin/activate
-. ./ghauri/bin/activate
+python3 -m venv ghauri-env
+chmod +x ghauri-env/bin/activate
+. ./ghauri-env/bin/activate
 install_tool_with_pipx  "--include-deps ${TOOLS_WEB_VAPT}/ghauri" "requirements.txt"
 deactivate
 
