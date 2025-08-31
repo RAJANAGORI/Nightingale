@@ -26,8 +26,7 @@ jobs:
         df -h
         sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
-        sudo docker system prune -af || true
-        sudo rm -rf /var/lib/docker || true
+        sudo docker system prune -af --volumes || true
         sudo rm -rf /var/lib/buildkit || true
         echo "=== AFTER CLEANUP ==="
         df -h
@@ -80,6 +79,15 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:stable
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
 
+    - name: Post-build prune
+      if: always()
+      run: |
+        set -eux
+        docker buildx prune -af || true
+        docker builder prune -af || true
+        docker system prune -af --volumes || true
+        df -h
+
   # Step 2: Build Dependent Images
   build-dependent:
     needs: build-programming
@@ -110,8 +118,7 @@ jobs:
         df -h
         sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
-        sudo docker system prune -af || true
-        sudo rm -rf /var/lib/docker || true
+        sudo docker system prune -af --volumes || true
         sudo rm -rf /var/lib/buildkit || true
         echo "=== AFTER CLEANUP ==="
         df -h
@@ -166,6 +173,15 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:stable
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
+    - name: Post-build prune
+      if: always()
+      run: |
+        set -eux
+        docker buildx prune -af || true
+        docker builder prune -af || true
+        docker system prune -af --volumes || true
+        df -h
+
   # Step 3: Build Final Image Using Main Dockerfile
   build-main:
     needs: build-dependent
@@ -182,8 +198,7 @@ jobs:
         df -h
         sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
-        sudo docker system prune -af || true
-        sudo rm -rf /var/lib/docker || true
+        sudo docker system prune -af --volumes || true
         sudo rm -rf /var/lib/buildkit || true
         echo "=== AFTER CLEANUP ==="
         df -h
@@ -228,3 +243,12 @@ jobs:
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:stable
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
+
+    - name: Post-build prune
+      if: always()
+      run: |
+        set -eux
+        docker buildx prune -af || true
+        docker builder prune -af || true
+        docker system prune -af --volumes || true
+        df -h
