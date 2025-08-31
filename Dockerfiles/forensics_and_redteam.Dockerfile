@@ -26,5 +26,4 @@ RUN apt-get -y autoremove && \
     rm -rf /tmp/* /var/lib/apt/lists/* && \
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
-# Set working directory
 WORKDIR /home

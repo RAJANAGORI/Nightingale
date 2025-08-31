@@ -4,6 +4,14 @@ on:
   schedule:
     - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
   workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: docker-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 env:
   DOCKER_REGISTRY: ghcr.io
   ACTIONS_RUNNER_DEBUG: true
@@ -18,6 +26,14 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
+    - name: Maximize runner disk space
+      run: |
+        set -eux
+        echo "=== BEFORE CLEANUP ==="; df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
+        sudo docker system prune -af --volumes || true
+        echo "=== AFTER CLEANUP ==="; df -h
     - name: Debug Environment Variables
       run: |
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
@@ -30,9 +46,12 @@ jobs:
           echo "Error: Missing registry credentials"
           exit 1
         fi
-
-    - name: GitHub Login
-      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.TOKEN }}
 
     - name: Set Username to Lowercase
       run: |
@@ -49,18 +68,51 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
+        driver: docker-container
         install: true
+        use: true
 
-    - name: Build and Push Programming Image
+    - name: Check Buildx driver
+      id: bxl
+      run: |
+        set -e
+        docker buildx ls
+        DRIVER=$(docker buildx ls | awk '/\*/{print $2}')
+        echo "driver=$DRIVER" >> "$GITHUB_OUTPUT"
+    - name: Build and Push Programming Image (with cache)
+      if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
-        platforms: linux/arm64/v8
+        file: Dockerfiles/programming_langauge.Dockerfile
+        platforms: linux/arm64
+        push: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
+    - name: Build and Push Programming Image (no cache, docker driver)
+      if: steps.bxl.outputs.driver == 'docker'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfiles/programming_langauge.Dockerfile
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
+
+    - name: Post-build prune
+      if: always()
+      run: |
+        set -eux
+        docker buildx prune -af || true
+        docker builder prune -af || true
+        docker system prune -af --volumes || true
+        df -h
 
   # Step 2: Build Dependent Images
   build-dependent:
@@ -85,7 +137,14 @@ jobs:
       COMMIT_HASH: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v4
-
+    - name: Maximize runner disk space
+      run: |
+        set -eux
+        echo "=== BEFORE CLEANUP ==="; df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
+        sudo docker system prune -af --volumes || true
+        echo "=== AFTER CLEANUP ==="; df -h
     - name: Debug Variables
       run: |
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
@@ -93,7 +152,6 @@ jobs:
         echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
         echo "Matrix Name=${{ matrix.dockerfile.name }}"
         echo "Matrix File=${{ matrix.dockerfile.file }}"
-
     - name: Validate Secrets
       run: |
         if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
@@ -101,9 +159,12 @@ jobs:
           exit 1
         fi
 
-    - name: GitHub Login
-      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
-
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.TOKEN }}
     - name: Set Username to Lowercase
       run: |
         USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
@@ -119,19 +180,54 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
+        driver: docker-container
         install: true
+        use: true
 
-    - name: Build and Push Dependent Image
+    - name: Check Buildx driver
+      id: bxl
+      run: |
+        set -e
+        docker buildx ls
+        DRIVER=$(docker buildx ls | awk '/\*/{print $2}')
+        echo "driver=$DRIVER" >> "$GITHUB_OUTPUT"
+
+    - name: Build and Push Dependent Image (with cache)
+      if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/arm64/v8
+        file: Dockerfiles/${{ matrix.dockerfile.file }}
+        platforms: linux/arm64
+        push: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+
+    - name: Build and Push Dependent Image (no cache, docker driver)
+      if: steps.bxl.outputs.driver == 'docker'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfiles/${{ matrix.dockerfile.file }}
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
+    - name: Post-build prune
+      if: always()
+      run: |
+        set -eux
+        docker buildx prune -af || true
+        docker builder prune -af || true
+        docker system prune -af --volumes || true
+        df -h
+    
   # Step 3: Build Final Image Using Main Dockerfile
   build-main:
     needs: build-dependent
@@ -141,6 +237,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Maximize runner disk space
+      run: |
+        set -eux
+        echo "=== BEFORE CLEANUP ==="; df -h
+        sudo du -sh /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup 2>/dev/null || true
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
+        sudo docker system prune -af --volumes || true
+        echo "=== AFTER CLEANUP ==="; df -h
+
     - name: Validate Secrets
       run: |
         if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
@@ -148,8 +253,12 @@ jobs:
           exit 1
         fi
 
-    - name: GitHub Login
-      run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.TOKEN }}
 
     - name: Set Username to Lowercase
       run: |
@@ -166,15 +275,50 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
+        driver: docker-container
         install: true
+        use: true
 
-    - name: Build and Push Final Image
+    - name: Check Buildx driver
+      id: bxl
+      run: |
+        set -e
+        docker buildx ls
+        DRIVER=$(docker buildx ls | awk '/\*/{print $2}')
+        echo "driver=$DRIVER" >> "$GITHUB_OUTPUT"
+
+    - name: Build and Push Final Image (with cache)
+      if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: architecture/arm64/v8/Dockerfile
-        platforms: linux/arm64/v8
+        file: Dockerfile
+        platforms: linux/arm64
+        push: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
+
+    - name: Build and Push Final Image (no cache, docker driver)
+      if: steps.bxl.outputs.driver == 'docker'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
+
+    - name: Post-build prune
+      if: always()
+      run: |
+        set -eux
+        docker buildx prune -af || true
+        docker builder prune -af || true
+        docker system prune -af --volumes || true
+        df -h

@@ -12,7 +12,6 @@ permissions:
 concurrency:
   group: docker-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
-
 env:
   DOCKER_REGISTRY: ghcr.io
   ACTIONS_RUNNER_DEBUG: true

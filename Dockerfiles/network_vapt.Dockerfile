@@ -26,5 +26,4 @@ RUN git clone --depth 1 https://github.com/sullo/nikto.git && \
     rm -rf /tmp/* /var/lib/apt/lists/* && \
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
-# Set final working directory
 WORKDIR /home

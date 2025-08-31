@@ -104,9 +104,12 @@ RUN \
     make build
 
 RUN \
-    ## Installing Ghauri
-    cd ghauri &&\
-    while read p; do pipx install --include-deps "$p"; done < requirements.txt &&\
+    cd ghauri && \
+    python3 -m venv ghauri && \
+    chmod +x ghauri/bin/activate && \
+    . ./ghauri/bin/activate && \
+    while read p; do pipx install --include-deps "$p"; done < requirements.txt && \
+    deactivate && \
     python3 setup.py install
 
 RUN \

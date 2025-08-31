@@ -94,18 +94,6 @@ RUN \
     cd ..
 
 RUN \
-### Installing Amass 
-    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.2.0/amass_Linux_amd64.zip -O amass.zip &&\
-    unzip amass.zip && \
-    mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip && \
-    # Cleaning Unwanted libraries 
-    apt-get -y autoremove &&\
-    apt-get -y clean &&\
-    rm -rf /tmp/* &&\
-    rm -rf /var/lib/apt/lists/* &&\
-    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
-
-RUN \
 ### Installing Trufflehog
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
@@ -116,9 +104,24 @@ RUN \
     make build
 
 RUN \
-    ## Installing Ghauri
-    cd ghauri &&\
-    while read p; do pipx install --include-deps "$p"; done < requirements.txt &&\
+    cd ghauri && \
+    python3 -m venv ghauri && \
+    chmod +x ghauri/bin/activate && \
+    . ./ghauri/bin/activate && \
+    while read p; do pipx install --include-deps "$p"; done < requirements.txt && \
+    deactivate && \
     python3 setup.py install
+
+RUN \
+### Installing Amass 
+    wget --quiet https://github.com/owasp-amass/amass/releases/download/v4.2.0/amass_Linux_amd64.zip -O amass.zip &&\
+    unzip amass.zip && \
+    mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip && \
+    # Cleaning Unwanted libraries 
+    apt-get -y autoremove &&\
+    apt-get -y clean &&\
+    rm -rf /tmp/* &&\
+    rm -rf /var/lib/apt/lists/* &&\
+    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 WORKDIR /home

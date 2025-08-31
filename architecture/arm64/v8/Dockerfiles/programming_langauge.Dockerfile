@@ -15,10 +15,6 @@ RUN apt-get update -y --fix-missing && \
     ca-certificates \
     build-essential
 
-# Stage 2: Python 2 stage
-# Removed Python 2 stage as it is deprecated and not recommended for use.
-# FROM python:3.13-slim AS python2 
-
 # Stage 3: Python 3 stage
 FROM python:3.12.11-slim AS python3
 
@@ -104,13 +100,7 @@ COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
 COPY --from=java /usr/java/openjdk-26 /usr/java/openjdk-26
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends default-jdk && \
-    rm -rf /var/lib/apt/lists/*
-
 # Set environment variables
-# Removed Python 2 environment variable as it is deprecated
-# ENV PYTHON2="/usr/local/bin/python2.7"
 ENV PYTHON3="/opt/venv3/bin/python"
 ENV GOROOT="/usr/local/go"
 ENV GOPATH="/home/go"

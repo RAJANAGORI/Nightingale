@@ -85,12 +85,19 @@ EXPOSE 5432 8080 8081 7681
 
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
-RUN \
-    xargs -a /tmp/vuln-library-purge apt-get purge -y --ignore-missing && \
-    apt-get -y autoremove && \
-    apt-get -y clean && \
-    rm -rf /tmp/* /var/lib/apt/lists/* && \
-    ln -s ${TOOLS_WEB_VAPT}/hashcat/hashcat /usr/local/bin/hashcat && \
+RUN set -eux; \
+    export DEBIAN_FRONTEND=noninteractive; \
+    grep -Ev '^\s*(#|$)' /tmp/vuln-library-purge | while read -r pkg; do \
+      if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed'; then \
+        echo "Purging $pkg"; \
+        apt-get purge -y "$pkg" || echo "WARN: purge failed for $pkg (continuing)"; \
+      else \
+        echo "Skipping $pkg (not installed)"; \
+      fi; \
+    done; \
+    apt-get autoremove -y --purge; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/* && \
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc
 
 WORKDIR /home
