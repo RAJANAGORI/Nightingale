@@ -71,7 +71,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
-        buildkitd-flags: --debug --oci-worker-gc --oci-worker-gc-keepstorage 15GB
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
+        driver: docker-container
+        endpoint: builder-${{ github.run_id }}
         install: true
 
     - name: Check Buildx driver
@@ -187,7 +189,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
-        buildkitd-flags: --debug --oci-worker-gc --oci-worker-gc-keepstorage 15GB
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
+        driver: docker-container
+        endpoint: builder-${{ github.run_id }}
         install: true
 
     - name: Check Buildx driver
@@ -280,7 +284,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       with:
-        buildkitd-flags: --debug --oci-worker-gc --oci-worker-gc-keepstorage 15GB
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
+        driver: docker-container
+        endpoint: builder-${{ github.run_id }}
         install: true
 
     - name: Check Buildx driver
