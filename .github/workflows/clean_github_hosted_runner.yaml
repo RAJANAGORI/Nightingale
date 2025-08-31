@@ -1,0 +1,97 @@
+
+
+name: Clean GitHub Hosted Runner (Ubuntu)
+
+on:
+  workflow_dispatch:
+    inputs:
+      aggressive:
+        description: "Also remove large preinstalled SDKs (Android, .NET, Haskell, etc.)"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+      nuke_daemon_dirs:
+        description: "DANGEROUS – remove /var/lib/buildkit and /var/lib/docker (use only if not building in this job)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["true", "false"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clean-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  clean:
+    name: Clean Ubuntu Runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Show environment
+        run: |
+          set -eux
+          uname -a
+          df -h
+          echo "Runner temp: $RUNNER_TEMP"
+          echo "Aggressive: ${{ inputs.aggressive }}  Nuke daemon dirs: ${{ inputs.nuke_daemon_dirs }}"
+
+      - name: Stop & remove all Docker containers (safe)
+        run: |
+          set -eux
+          docker ps -a || true
+          docker ps -aq | xargs -r docker rm -f || true
+
+      - name: Prune Buildx/Builder/System caches (safe)
+        run: |
+          set -eux
+          docker buildx ls || true
+          docker buildx prune -af || true
+          docker builder prune -af || true
+          docker system prune -af --volumes || true
+
+      - name: Optional – remove BuildKit/Docker daemon data (dangerous toggle)
+        if: inputs.nuke_daemon_dirs == 'true'
+        run: |
+          set -eux
+          sudo systemctl stop docker || true
+          sudo rm -rf /var/lib/buildkit || true
+          sudo rm -rf /var/lib/docker || true
+          sudo systemctl start docker || true
+
+      - name: Optional – remove big preinstalled SDKs (aggressive)
+        if: inputs.aggressive == 'true'
+        run: |
+          set -eux
+          sudo du -sh \
+            /usr/share/dotnet \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /usr/local/.ghcup \
+            /usr/local/share/powershell \
+            /usr/share/swift \
+            2>/dev/null || true
+
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /usr/local/.ghcup \
+            /usr/local/share/powershell \
+            /usr/share/swift \
+            || true
+
+      - name: Clear APT caches & logs
+        run: |
+          set -eux
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/* /var/cache/apt/* || true
+          sudo rm -rf /var/log/* || true
+
+      - name: Post-clean disk report
+        run: |
+          set -eux
+          df -h

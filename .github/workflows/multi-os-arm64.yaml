@@ -1,4 +1,4 @@
-name: Docker image ARM64 #Test Main Action
+name: Docker Image ARM64
 
 on:
   schedule:
@@ -43,8 +43,8 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "::set-output name=commit_hash::$COMMIT_HASH"
-        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -84,7 +84,7 @@ jobs:
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v4
 
     - name: Debug Variables
       run: |
@@ -113,8 +113,8 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "::set-output name=commit_hash::$COMMIT_HASH"
-        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -139,7 +139,7 @@ jobs:
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v4
 
     - name: Validate Secrets
       run: |
@@ -160,8 +160,8 @@ jobs:
       id: vars
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "::set-output name=commit_hash::$COMMIT_HASH"
-        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
