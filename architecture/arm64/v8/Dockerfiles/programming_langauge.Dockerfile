@@ -20,7 +20,7 @@ RUN apt-get update -y --fix-missing && \
 # FROM python:3.13-slim AS python2 
 
 # Stage 3: Python 3 stage
-FROM python:3.11.13-slim AS python3
+FROM python:3.12.11-slim AS python3
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
