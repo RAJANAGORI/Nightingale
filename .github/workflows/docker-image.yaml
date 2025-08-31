@@ -73,8 +73,8 @@ jobs:
       with:
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
         driver: docker-container
-        endpoint: builder-${{ github.run_id }}
         install: true
+        use: true
 
     - name: Check Buildx driver
       id: bxl
@@ -191,8 +191,8 @@ jobs:
       with:
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
         driver: docker-container
-        endpoint: builder-${{ github.run_id }}
         install: true
+        use: true
 
     - name: Check Buildx driver
       id: bxl
@@ -286,8 +286,8 @@ jobs:
       with:
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
         driver: docker-container
-        endpoint: builder-${{ github.run_id }}
         install: true
+        use: true
 
     - name: Check Buildx driver
       id: bxl
