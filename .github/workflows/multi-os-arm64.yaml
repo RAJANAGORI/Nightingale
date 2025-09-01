@@ -85,8 +85,8 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/programming_langauge.Dockerfile
-        platforms: linux/arm64
+        file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
+        platforms: linux/arm64/v8
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -98,8 +98,8 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/programming_langauge.Dockerfile
-        platforms: linux/arm64
+        file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
+        platforms: linux/arm64/v8
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
@@ -198,8 +198,8 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/arm64
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
+        platforms: linux/arm64/v8
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -212,8 +212,8 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/arm64
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
+        platforms: linux/arm64/v8
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
@@ -293,8 +293,8 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfile
-        platforms: linux/arm64
+        file: architecture/arm64/v8/Dockerfile
+        platforms: linux/arm64/v8
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
