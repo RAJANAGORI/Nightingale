@@ -12,7 +12,8 @@ RUN \
     whatweb \
     pipx \
     hashcat \
-    hashcat-data && \
+    hashcat-data \
+    python3-setuptools && \
 ### Creating Directories
     cd /home && \
     mkdir -p tools_web_vapt .gf 
@@ -105,15 +106,15 @@ RUN \
 
 RUN \
     cd ghauri && \
-    # while read p; do pipx install --include-deps "$p"; done < requirements.txt && \
-    python3 setup.py install
+    pip3 install -r requirements.txt --break-system-packages && \
+    pip3 install .
 
 RUN \
-### Installing Amass 
-    wget --quiet https://github.com/owasp-amass/amass/releases/download/v5.0.0/amass_Linux_amd64.zip -O amass.zip &&\
-    unzip amass.zip && \
-    mv amass_Linux_amd64/amass /usr/local/bin && rm -rf amass_Linux_amd64 amass.zip && \
-    # Cleaning Unwanted libraries 
+### Installing Amass \
+    wget --quiet https://github.com/owasp-amass/amass/releases/download/v5.0.0/amass_linux_amd64.tar.gz -O amass.tar.gz &&\
+    tar -xzf amass.tar.gz && \
+    mv amass_linux_amd64/amass /usr/local/bin && rm -rf amass_linux_amd64 amass.tar.gz && \
+    # Cleaning Unwanted libraries \
     apt-get -y autoremove &&\
     apt-get -y clean &&\
     rm -rf /tmp/* &&\
