@@ -80,7 +80,10 @@ install_tool_with_pipx "${TOOLS_OSINT}/theHarvester" "requirements/base.txt"
 
 # Install Ghauri
 cd "${TOOLS_WEB_VAPT}/ghauri"
-install_tool_with_pipx  "--include-deps ${TOOLS_WEB_VAPT}/ghauri" "requirements.txt"
+# install_tool_with_pipx  "--include-deps ${TOOLS_WEB_VAPT}/ghauri" "requirements.txt"
+# pip3 install -r requirements.txt
+python3 setup.py install
+
 
 # Install objection, octosuite, dirsearch, sqlmap, and frida-tools from PyPI
 echo "Installing objection, octosuite, dirsearch, sqlmap, and frida-tools..."

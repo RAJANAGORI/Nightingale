@@ -105,7 +105,7 @@ RUN \
 
 RUN \
     cd ghauri && \
-    while read p; do pipx install --include-deps "$p"; done < requirements.txt && \
+    # while read p; do pipx install --include-deps "$p"; done < requirements.txt && \
     python3 setup.py install
 
 RUN \
