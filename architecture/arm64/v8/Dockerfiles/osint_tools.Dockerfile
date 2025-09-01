@@ -25,11 +25,7 @@ RUN git clone --depth 1 https://github.com/lanmaster53/recon-ng.git && \
 
 # Install recon-ng requirements
 RUN cd recon-ng && \
-    python3 -m venv recon && \
-    chmod +x recon/bin/activate && \
-    . ./recon/bin/activate && \
     while read p; do pip3 install "$p"; done < REQUIREMENTS && \
-    deactivate && \
     cd ..
 
 # Install metagoofil requirements

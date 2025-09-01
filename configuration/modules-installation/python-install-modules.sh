@@ -70,11 +70,7 @@ echo "ReconSpider installation completed."
 
 # Install Recon-ng
 cd "${TOOLS_OSINT}/recon-ng"
-python3 -m venv recon
-chmod +x recon/bin/activate
-. ./recon/bin/activate
 install_tool_with_pipx "${TOOLS_OSINT}/recon-ng" "REQUIREMENTS"
-deactivate
 
 # Install Metagoofil
 install_tool_with_pipx "${TOOLS_OSINT}/metagoofil" "requirements.txt"
@@ -84,11 +80,7 @@ install_tool_with_pipx "${TOOLS_OSINT}/theHarvester" "requirements/base.txt"
 
 # Install Ghauri
 cd "${TOOLS_WEB_VAPT}/ghauri"
-python3 -m venv ghauri-env
-chmod +x ghauri-env/bin/activate
-. ./ghauri-env/bin/activate
 install_tool_with_pipx  "--include-deps ${TOOLS_WEB_VAPT}/ghauri" "requirements.txt"
-deactivate
 
 # Install objection, octosuite, dirsearch, sqlmap, and frida-tools from PyPI
 echo "Installing objection, octosuite, dirsearch, sqlmap, and frida-tools..."
