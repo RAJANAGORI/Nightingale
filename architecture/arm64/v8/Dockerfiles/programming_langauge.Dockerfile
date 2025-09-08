@@ -16,7 +16,7 @@ RUN apt-get update -y --fix-missing && \
     build-essential
 
 # Stage 3: Python 3 stage
-FROM python:3.12.11-slim AS python3
+FROM python:3.13.7-slim AS python3
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
