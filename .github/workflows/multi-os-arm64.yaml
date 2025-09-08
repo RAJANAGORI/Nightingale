@@ -136,7 +136,7 @@ jobs:
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Maximize runner disk space
       run: |
         set -eux
@@ -235,7 +235,7 @@ jobs:
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Maximize runner disk space
       run: |
