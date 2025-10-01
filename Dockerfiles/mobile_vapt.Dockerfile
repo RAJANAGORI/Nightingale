@@ -14,6 +14,7 @@ RUN apt-get update -y && \
     make \
     cmake \
     bundler \
+    dos2unix \
     pipx && \
     bash /temp/node-installation-script.sh && \
     mkdir -p /home/tools_mobile_vapt
