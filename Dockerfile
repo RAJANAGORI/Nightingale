@@ -7,13 +7,12 @@
 ###############################################################################
 
 # Stage 1: Base Image with Dependencies
-FROM ghcr.io/rajanagori/nightingale_programming_image:stable AS base
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable-optimized AS base
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale" \
       org.opencontainers.image.description="Docker image for penetration testing with 100+ security tools" \
-      org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \
-      org.opencontainers.image.vendor="OWASP" \
+      org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \    
       org.opencontainers.image.licenses="GPL-3.0 license" \
       org.opencontainers.image.url="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
@@ -125,14 +124,14 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
 ENV PATH="${PATH}:/root/.local/bin:${BINARIES}"
 
 # Copy tool collections from pre-built images
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${GREP_PATTERNS} ${GREP_PATTERNS}
-COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:stable ${TOOLS_OSINT} ${TOOLS_OSINT}
-COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:stable ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:stable ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
-COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable ${WORDLIST} ${WORDLIST}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable-optimized ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable-optimized ${GREP_PATTERNS} ${GREP_PATTERNS}
+COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:stable-optimized ${TOOLS_OSINT} ${TOOLS_OSINT}
+COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:stable-optimized ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:stable-optimized ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable-optimized ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable-optimized ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable-optimized ${WORDLIST} ${WORDLIST}
 
 ###############################################################################
 # Stage 3: Module Installation
@@ -254,6 +253,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 CMD ["/bin/bash"]
 
 # Add final metadata
-LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable" \
-      org.opencontainers.image.ref.name="stable" \
+LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable-optimized" \
+      org.opencontainers.image.ref.name="stable-optimized" \
       stage="final"

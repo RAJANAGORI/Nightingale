@@ -108,7 +108,7 @@ FROM debian:stable-slim AS final
 LABEL org.opencontainers.image.title="Nightingale Programming Image" \
       org.opencontainers.image.description="Multi-language base image for Nightingale pentesting environment" \
       org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \
-      org.opencontainers.image.vendor="OWASP" \
+      
       org.opencontainers.image.licenses="GPL-3.0 license" \
       org.opencontainers.image.url="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
@@ -201,7 +201,7 @@ CMD ["/bin/bash"]
 
 ###############################################################################
 # Build Instructions:
-# docker build -f Dockerfiles/programming_langauge.Dockerfile -t nightingale_programming_image:arm64 .
+# docker build -f Dockerfiles/programming_langauge.Dockerfile -t nightingale_programming_image:arm64-optimized .
 #
 # Included Languages:
 # - Python 3.12.11

@@ -6,13 +6,12 @@
 ###############################################################################
 
 # Base image with programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale Web VAPT" \
       org.opencontainers.image.description="Web application security testing tools for Nightingale" \
       org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \
-      org.opencontainers.image.vendor="OWASP" \
       org.opencontainers.image.licenses="GPL-3.0 license" \
       org.opencontainers.image.url="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
@@ -243,5 +242,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/web_vapt.Dockerfile \
-#   -t nightingale_web_vapt_image:stable .
+#   -t nightingale_web_vapt_image:arm64-optimized .
 ###############################################################################

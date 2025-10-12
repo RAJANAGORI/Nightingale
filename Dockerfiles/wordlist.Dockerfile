@@ -6,13 +6,12 @@
 ###############################################################################
 
 # Base image with programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:stable
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable-optimized
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale Wordlists" \
       org.opencontainers.image.description="Comprehensive wordlists for security testing" \
-      org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \
-      org.opencontainers.image.vendor="OWASP" \
+      org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \  
       org.opencontainers.image.licenses="GPL-3.0 license" \
       org.opencontainers.image.url="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
