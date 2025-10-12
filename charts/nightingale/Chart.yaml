@@ -1,11 +1,116 @@
+###############################################################################
+# Nightingale Helm Chart Metadata
+# Chart for deploying Nightingale pentesting environment in Kubernetes
+###############################################################################
+
 apiVersion: v2
 name: nightingale
-description: A Helm chart for Kubernetes
+description: |
+  Nightingale - Docker for Pentesters
+  A comprehensive penetration testing environment with 100+ security tools.
+  Includes web VAPT, network testing, mobile security, OSINT, and forensics tools.
+
+# Chart type
 type: application
+
+# Project information
 home: https://github.com/RAJANAGORI/Nightingale
 icon: https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png
+
+# Source repositories
+sources:
+  - https://github.com/RAJANAGORI/Nightingale
+  - https://owasp.org/www-project-nightingale
+
+# Keywords for discoverability
+keywords:
+  - security
+  - pentesting
+  - penetration-testing
+  - vapt
+  - security-tools
+  - owasp
+  - docker
+  - kubernetes
+  - hacking-tools
+  - cybersecurity
+
+# Chart version (increment for each chart change)
 version: 1.0.0
-appVersion: "1.0.0"
+
+# Application version (Nightingale version)
+appVersion: "2.0.0"
+
+# Maintainers
 maintainers:
   - name: Raja Nagori
+    email: raja.nagori@owasp.org
+    url: https://github.com/RAJANAGORI
   - name: Jinesh Nagori
+    url: https://github.com/jinesh-nagori
+
+# Dependencies (none currently, add if needed)
+# dependencies:
+#   - name: postgresql
+#     version: "12.x.x"
+#     repository: "https://charts.bitnami.com/bitnami"
+#     condition: postgresql.enabled
+
+# Annotations for Artifact Hub
+annotations:
+  # Category in Artifact Hub
+  artifacthub.io/category: security
+  
+  # License
+  artifacthub.io/License: GPL-3.0
+  
+  # Links
+  artifacthub.io/links: |
+    - name: GitHub Repository
+      url: https://github.com/RAJANAGORI/Nightingale
+    - name: Documentation
+      url: https://github.com/RAJANAGORI/Nightingale/wiki
+    - name: OWASP Project
+      url: https://owasp.org/www-project-nightingale
+  
+  # Changes (update for each version)
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial Helm chart release
+    - kind: added
+      description: Support for HPA (Horizontal Pod Autoscaler)
+    - kind: added
+      description: Ingress configuration
+    - kind: security
+      description: Security best practices applied
+  
+  # Security updates
+  artifacthub.io/signKey: |
+    fingerprint: (GPG key fingerprint - add if signing releases)
+  
+  # Prerelease flag
+  artifacthub.io/prerelease: "false"
+  
+  # Operator flag
+  artifacthub.io/operator: "false"
+  
+  # Images
+  artifacthub.io/images: |
+    - name: nightingale
+      image: ghcr.io/rajanagori/nightingale:stable
+      whitelisted: true
+  
+  # Recommendations
+  artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/helm/bitnami/postgresql
+  
+  # Screenshots
+  artifacthub.io/screenshots: |
+    - title: Nightingale Terminal
+      url: https://raw.githubusercontent.com/RAJANAGORI/Nightingale/main/assets/images/cover.png
+
+# Kubernetes version compatibility
+kubeVersion: ">=1.19.0-0"
+
+# Deprecated flag (set to true when deprecating)
+deprecated: false

@@ -10,3 +10,15 @@ gui
 vulnerability
 feature/fix-image-update
 docker compose/nginx/certs
+CODE_IMPROVEMENT_SUMMARY.md
+CODE_QUALITY_REPORT.md
+create_presentation.py
+DOCKER_SIZE_OPTIMIZATION_REPORT.md
+Dockerfile.optimized
+FINAL_COMPLETION_REPORT.md
+measure_image_size.sh
+Nightingale_Presentation.pptx
+OPTIMIZATION_FILES_SUMMARY.txt
+OPTIMIZATION_INDEX.md
+optimize_dockerfiles.sh
+QUICK_START_OPTIMIZATION.md

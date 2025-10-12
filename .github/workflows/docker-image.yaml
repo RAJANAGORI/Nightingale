@@ -94,7 +94,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:stable
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:stable-optimized
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
 
     - name: Build and Push Programming Image (no cache, docker driver)
@@ -106,7 +106,7 @@ jobs:
         platforms: linux/amd64
         push: true
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:stable
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:stable-optimized
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
 
     - name: Post-build prune
@@ -212,7 +212,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:stable
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:stable-optimized
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
     - name: Build and Push Dependent Image (no cache, docker driver)
@@ -224,7 +224,7 @@ jobs:
         platforms: linux/amd64
         push: true
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:stable
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:stable-optimized
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
     - name: Post-build prune
@@ -307,7 +307,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:stable
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:stable-optimized
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
 
     - name: Build and Push Final Image (no cache, docker driver)
@@ -319,7 +319,7 @@ jobs:
         platforms: linux/amd64
         push: true
         tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:stable
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:stable-optimized
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
 
     - name: Post-build prune
