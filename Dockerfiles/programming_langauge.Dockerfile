@@ -166,9 +166,8 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy language environments from build stages
+COPY --from=python3 /usr/local /usr/local
 COPY --from=python3 /opt/venv3 /opt/venv3
-COPY --from=python3 /usr/local/lib/ /usr/local/lib/
-COPY --from=python3 /usr/local/bin/ /usr/local/bin/
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
 COPY --from=java /usr/java/openjdk-26 /usr/java/openjdk-26
@@ -178,7 +177,7 @@ ENV PYTHON3="/opt/venv3/bin/python" \
     GOROOT="/usr/local/go" \
     GOPATH="/home/go" \
     JAVA_HOME="/usr/java/openjdk-26"
-ENV PATH="/opt/venv3/bin:$GOPATH/bin:$GOROOT/bin:$JAVA_HOME/bin:$PATH"
+ENV PATH="/opt/venv3/bin:${GOPATH}/bin:${GOROOT}/bin:${JAVA_HOME}/bin:${PATH}"
 
 # Verify all installations
 RUN set -eux; \
