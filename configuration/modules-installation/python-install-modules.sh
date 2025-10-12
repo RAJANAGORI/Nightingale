@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 ###############################################################################
 # Nightingale Python Modules Installation Script
 # Description: Installs Python-based security tools using pipx and pip

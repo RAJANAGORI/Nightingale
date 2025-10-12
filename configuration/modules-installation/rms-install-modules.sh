@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 ###############################################################################
 # Runtime Mobile Security (RMS) Installation Script

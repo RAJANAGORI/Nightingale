@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 ###############################################################################
 # Nightingale Go Modules Installation Script
 # Description: Installs Go-based security tools using go install
