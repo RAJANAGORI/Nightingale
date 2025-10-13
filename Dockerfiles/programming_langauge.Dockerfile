@@ -22,7 +22,7 @@ RUN apt-get update && \
     /opt/venv3/bin/pip install --upgrade pip setuptools==58.2.0 pipx
 
 # Stage 4: Ruby stage
-FROM ruby:3.4.5-slim AS ruby-builder
+FROM ruby:3.4.7-slim AS ruby-builder
 
 RUN gem install nokogiri
 
