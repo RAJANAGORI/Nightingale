@@ -13,8 +13,7 @@ FROM ghcr.io/rajanagori/nightingale_programming_image:stable-optimized AS base
 LABEL org.opencontainers.image.title="Nightingale" \
       org.opencontainers.image.description="Docker image for penetration testing with 100+ security tools" \
       org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \
-      org.opencontainers.image.vendor="OWASP" \
-      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.licenses="GPL-3.0" \
       org.opencontainers.image.url="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.documentation="https://github.com/RAJANAGORI/Nightingale/wiki" \
@@ -42,6 +41,8 @@ RUN set -eux; \
         ca-certificates \
         # Build tools (will be removed in final stage)
         build-essential cmake \
+        # Libraries required for ttyd
+        libuv1-dev libwebsockets-dev \
         # System tools
         locate tree zsh figlet dos2unix pv \
         # Compression tools
@@ -279,8 +280,10 @@ RUN set -eux; \
             apt-get purge -y "$pkg" 2>/dev/null || echo "  WARN: purge failed for $pkg (continuing)"; \
         fi; \
     done; \
-    # Remove build dependencies (saves 200-300MB)
-    apt-get purge -y build-essential cmake gcc g++ make 2>/dev/null || true; \
+    # Remove build dependencies (saves 200-300MB) but keep essential libraries for ttyd
+    apt-get purge -y build-essential gcc g++ make 2>/dev/null || true; \
+    # Keep cmake, libuv1-dev, and libwebsockets-dev for ttyd functionality
+    # Note: These libraries are essential for ttyd to work properly
     # Aggressive cleanup (saves 200-400MB)
     apt-get autoremove -y --purge; \
     apt-get clean; \
@@ -312,8 +315,13 @@ RUN set -eux; \
     find ${TOOLS_RED_TEAMING} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
     find ${TOOLS_FORENSICS} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
     find ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    # Update PATH in bashrc
-    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc; \
+    # Update PATH in bashrc with proper formatting
+    echo '' >> ~/.bashrc; \
+    echo '# Nightingale PATH configuration' >> ~/.bashrc; \
+    echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
+    # Verify ttyd functionality
+    echo "Testing ttyd functionality..."; \
+    ttyd --version || { echo "ttyd version check failed"; exit 1; }; \
     # Final verification
     command -v ttyd >/dev/null || { echo "Final check: ttyd not found"; exit 1; }; \
     command -v nmap >/dev/null || { echo "Final check: nmap not found"; exit 1; }; \
