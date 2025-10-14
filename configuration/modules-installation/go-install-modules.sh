@@ -3,7 +3,7 @@
 # Nightingale Go Modules Installation Script
 # Description: Installs Go-based security tools using go install
 # Author: Raja Nagori <raja.nagori@owasp.org>
-# License: MIT
+# License: GPL 3.0
 # Usage: ./go-install-modules.sh
 ###############################################################################
 

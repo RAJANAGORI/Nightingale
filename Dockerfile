@@ -2,7 +2,7 @@
 # Nightingale: Docker for Pentesters - Main Dockerfile
 # Description: Multi-stage build for comprehensive pentesting environment
 # Author: Raja Nagori <raja.nagori@owasp.org>
-# License: MIT
+# License: GPL 3.0
 # GitHub: https://github.com/RAJANAGORI/Nightingale
 ###############################################################################
 
@@ -42,7 +42,7 @@ RUN set -eux; \
         # Build tools (will be removed in final stage)
         build-essential cmake \
         # Libraries required for ttyd
-        libuv1-dev libwebsockets-dev \
+        libuv1-dev libwebsockets-dev libuv1 \
         # System tools
         locate tree zsh figlet dos2unix pv \
         # Compression tools
@@ -92,6 +92,7 @@ RUN set -eux; \
     dos2unix "${HOME}/.bashrc" 2>/dev/null || true; \
     # Add banner to bashrc
     cat /tmp/banner.sh >> "${HOME}/.bashrc"; \
+    echo '' >> "${HOME}/.bashrc"; \
     # Create directory structure
     mkdir -p \
         /home/tools_web_vapt \
@@ -223,19 +224,34 @@ FROM modules AS ttyd-builder
 
 # Build ttyd in separate stage to avoid leaving build artifacts in final image
 RUN set -eux; \
-    # Download and build ttyd
+    # First, build libwebsockets from source with libuv support
+    echo "Building libwebsockets with libuv support..."; \
+    wget -q -L https://github.com/warmcat/libwebsockets/archive/refs/tags/v4.3.5.zip -O libwebsockets.zip; \
+    unzip -q libwebsockets.zip; \
+    cd libwebsockets-4.3.5; \
+    mkdir build && cd build; \
+    cmake -DCMAKE_BUILD_TYPE=Release -DLWS_WITH_LIBUV=ON -DLWS_WITHOUT_EXTENSIONS=OFF .. >/dev/null; \
+    make -j"$(nproc)" >/dev/null; \
+    make install >/dev/null; \
+    ldconfig; \
+    cd /; \
+    rm -rf /libwebsockets-4.3.5 /libwebsockets.zip; \
+    echo "libwebsockets built with libuv support"; \
+    # Now build ttyd with the custom libwebsockets
+    echo "Building ttyd with libuv support..."; \
     wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip -O ttyd.zip; \
     unzip -q ttyd.zip; \
     cd ttyd-1.7.7; \
     mkdir build && cd build; \
-    cmake .. >/dev/null; \
+    # Configure with explicit libuv support
+    cmake -DCMAKE_BUILD_TYPE=Release -DLWS_WITH_LIBUV=ON .. >/dev/null; \
     make -j"$(nproc)" >/dev/null; \
     # Move binary to temp location for copying
     mv ttyd /tmp/ttyd-binary; \
     cd /; \
     # Clean up build artifacts
     rm -rf /ttyd-1.7.7 /ttyd.zip; \
-    echo "ttyd build completed"
+    echo "ttyd build completed with libuv support"
 
 ###############################################################################
 # Stage 5: Metasploit Configuration
@@ -258,6 +274,10 @@ FROM metasploit AS final
 # Copy ttyd binary from builder stage (saves 50-100MB)
 COPY --from=ttyd-builder /tmp/ttyd-binary /usr/local/bin/ttyd
 RUN chmod +x /usr/local/bin/ttyd
+# Copy custom-built libwebsockets libraries
+COPY --from=ttyd-builder /usr/local/lib/libwebsockets* /usr/local/lib/
+COPY --from=ttyd-builder /usr/local/include/libwebsockets* /usr/local/include/
+RUN ldconfig
 
 # Expose required ports with documentation
 # 5432: PostgreSQL (Metasploit database)
@@ -282,8 +302,8 @@ RUN set -eux; \
     done; \
     # Remove build dependencies (saves 200-300MB) but keep essential libraries for ttyd
     apt-get purge -y build-essential gcc g++ make 2>/dev/null || true; \
-    # Keep cmake, libuv1-dev, and libwebsockets-dev for ttyd functionality
-    # Note: These libraries are essential for ttyd to work properly
+    # Keep cmake, libuv1-dev, libwebsockets-dev, and libuv1 for ttyd functionality
+    # Note: Both dev and runtime libraries are essential for ttyd to work properly
     # Aggressive cleanup (saves 200-400MB)
     apt-get autoremove -y --purge; \
     apt-get clean; \
@@ -319,8 +339,17 @@ RUN set -eux; \
     echo '' >> ~/.bashrc; \
     echo '# Nightingale PATH configuration' >> ~/.bashrc; \
     echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
-    # Verify ttyd functionality
+    echo '' >> ~/.bashrc; \
+    # Update dynamic linker cache to ensure libraries are found
+    ldconfig; \
+    # Verify ttyd functionality and library dependencies
     echo "Testing ttyd functionality..."; \
+    echo "Checking libuv library:"; \
+    ldconfig -p | grep libuv || echo "libuv not found in ldconfig"; \
+    echo "Checking libwebsockets library:"; \
+    ldconfig -p | grep libwebsockets || echo "libwebsockets not found in ldconfig"; \
+    echo "Checking installed packages:"; \
+    dpkg -l | grep -E "(libuv|libwebsockets)" || echo "No libuv/libwebsockets packages found"; \
     ttyd --version || { echo "ttyd version check failed"; exit 1; }; \
     # Final verification
     command -v ttyd >/dev/null || { echo "Final check: ttyd not found"; exit 1; }; \

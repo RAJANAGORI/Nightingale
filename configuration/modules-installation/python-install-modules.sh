@@ -3,7 +3,7 @@
 # Nightingale Python Modules Installation Script
 # Description: Installs Python-based security tools using pipx and pip
 # Author: Raja Nagori <raja.nagori@owasp.org>
-# License: MIT
+# License: GPL 3.0
 # Usage: ./python-install-modules.sh
 ###############################################################################
 
