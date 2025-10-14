@@ -93,5 +93,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/forensics_and_redteam.Dockerfile \
-#   -t nightingale_forensic_and_red_teaming:stable .
+#   -t nightingale_forensic_and_red_teaming:stable-optimized .
 ###############################################################################

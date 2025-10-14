@@ -242,5 +242,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/web_vapt.Dockerfile \
-#   -t nightingale_web_vapt_image:stable .
+#   -t nightingale_web_vapt_image:stable-optimized .
 ###############################################################################

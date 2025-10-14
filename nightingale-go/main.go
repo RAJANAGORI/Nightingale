@@ -32,8 +32,8 @@ const (
 // Image registry configuration
 const (
 	registryBase = "ghcr.io/rajanagori/nightingale"
-	stableTag    = "stable"
-	arm64Tag     = "arm64"
+	stableTag    = "stable-optimized"
+	arm64Tag     = "arm64-optimized"
 )
 
 // Exit codes
@@ -158,9 +158,9 @@ func buildDockerImage(arch string) error {
 
 	switch arch {
 	case "amd":
-		cmd = shellCommand("cd Nightingale && docker build -t rajanagori/nightingale:stable .")
+		cmd = shellCommand("cd Nightingale && docker build -t rajanagori/nightingale:stable-optimized .")
 	case "arm":
-		cmd = shellCommand("cd Nightingale/architecture/arm64/v8 && docker buildx build --no-cache --platform linux/arm64 -t rajanagori/nightingale:arm64 .")
+		cmd = shellCommand("cd Nightingale/architecture/arm64/v8 && docker buildx build --no-cache --platform linux/arm64 -t rajanagori/nightingale:arm64-optimized .")
 	default:
 		return fmt.Errorf("unsupported architecture: %s", arch)
 	}

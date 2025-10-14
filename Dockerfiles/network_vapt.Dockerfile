@@ -100,5 +100,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/network_vapt.Dockerfile \
-#   -t nightingale_network_vapt_image:stable .
+#   -t nightingale_network_vapt_image:stable-optimized .
 ###############################################################################

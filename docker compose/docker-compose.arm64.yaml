@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/rajanagori/nightingale_backend:arm64
+    image: ghcr.io/rajanagori/nightingale_backend:arm64-optimized
     platform: linux/arm64
     # Mount the host project into /home so File Explorer can see it
     volumes:
@@ -12,7 +12,7 @@ services:
     restart: always
 
   frontend:
-    image: ghcr.io/rajanagori/nightingale_frontend:arm64
+    image: ghcr.io/rajanagori/nightingale_frontend:arm64-optimized
     platform: linux/arm64
     volumes:
       - frontend_data_app:/app

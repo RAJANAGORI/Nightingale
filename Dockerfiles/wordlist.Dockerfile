@@ -125,5 +125,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/wordlist.Dockerfile \
-#   -t nightingale_wordlist_image:stable .
+#   -t nightingale_wordlist_image:stable-optimized .
 ###############################################################################

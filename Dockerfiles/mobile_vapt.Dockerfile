@@ -144,7 +144,7 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/mobile_vapt.Dockerfile \
-#   -t nightingale_mobile_vapt_image:stable .
+#   -t nightingale_mobile_vapt_image:stable-optimized .
 #
 # Start MobSF:
 # cd ${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF

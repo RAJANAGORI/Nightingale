@@ -97,7 +97,7 @@ annotations:
   # Images
   artifacthub.io/images: |
     - name: nightingale
-      image: ghcr.io/rajanagori/nightingale:stable
+      image: ghcr.io/rajanagori/nightingale:stable-optimized
       whitelisted: true
   
   # Recommendations

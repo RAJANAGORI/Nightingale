@@ -137,5 +137,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/osint_tools.Dockerfile \
-#   -t nightingale_osint_tools_image:stable .
+#   -t nightingale_osint_tools_image:stable-optimized .
 ###############################################################################
