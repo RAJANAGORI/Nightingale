@@ -3,12 +3,13 @@
 # Nightingale Python Modules Installation Script
 # Description: Installs Python-based security tools using pipx and pip
 # Author: Raja Nagori <raja.nagori@owasp.org>
-# License: GPL-3.0
+# License: MIT
 # Usage: ./python-install-modules.sh
 ###############################################################################
 
 # Strict error handling
-set -euo pipefail
+# Note: We use set -eo pipefail (not -u) to allow checking for unset variables gracefully
+set -eo pipefail
 
 # Secure PATH
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -142,6 +143,9 @@ main() {
     local successful_tools=0
     local failed_tools=0
     
+    # Disable errexit temporarily for arithmetic operations to prevent premature exit
+    set +e
+    
     # Prerequisites check
     log_info "Checking prerequisites..."
     command_exists python3 || error_exit "python3 is not installed"
@@ -156,7 +160,7 @@ main() {
     
     # Install MobSF (if directory exists)
     if [[ -n "${TOOLS_MOBILE_VAPT:-}" ]] && [[ -d "${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF" ]]; then
-        ((total_tools++))
+        total_tools=$((total_tools + 1))
         log_info "Setting up MobSF..."
         
         if cd "${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF" 2>/dev/null; then
@@ -168,19 +172,19 @@ main() {
                 log_info "Installing MobSF..."
                 if bash -c "source venv/bin/activate && ./setup.sh" 2>&1 | tee -a "${LOG_FILE}"; then
                     log_success "✓ MobSF installed successfully"
-                    ((successful_tools++))
+                    successful_tools=$((successful_tools + 1))
                 else
                     log_warn "✗ MobSF installation failed"
-                    ((failed_tools++))
+                    failed_tools=$((failed_tools + 1))
                 fi
             else
                 log_warn "MobSF setup.sh not found or not executable"
-                ((failed_tools++))
+                failed_tools=$((failed_tools + 1))
             fi
             cd - >/dev/null || true
         else
             log_warn "Cannot access MobSF directory"
-            ((failed_tools++))
+            failed_tools=$((failed_tools + 1))
         fi
     else
         log_info "MobSF directory not present, skipping (will be available after image copy)..."
@@ -193,34 +197,34 @@ main() {
     log_info "═══ Installing Web VAPT Tools ═══"
     
     # Install Arjun
-    ((total_tools++))
+    total_tools=$((total_tools + 1))
     log_info "Installing Arjun..."
     if pipx install arjun 2>&1 | tee -a "${LOG_FILE}"; then
         log_success "✓ Arjun installed"
-        ((successful_tools++))
+        successful_tools=$((successful_tools + 1))
     else
         log_warn "✗ Arjun installation failed"
-        ((failed_tools++))
+        failed_tools=$((failed_tools + 1))
     fi
     
     # Install HawkScan (if directory exists)
     if [[ -n "${TOOLS_WEB_VAPT:-}" ]] && [[ -d "${TOOLS_WEB_VAPT}/HawkScan" ]]; then
-        ((total_tools++))
+        total_tools=$((total_tools + 1))
         log_info "Installing HawkScan..."
         if cd "${TOOLS_WEB_VAPT}/HawkScan" 2>/dev/null; then
             if [[ -f setup.py ]]; then
                 if python3 setup.py install 2>&1 | tee -a "${LOG_FILE}"; then
                     log_success "✓ HawkScan installed"
-                    ((successful_tools++))
+                    successful_tools=$((successful_tools + 1))
                 else
                     log_warn "✗ HawkScan installation failed"
-                    ((failed_tools++))
+                    failed_tools=$((failed_tools + 1))
                 fi
             fi
             cd - >/dev/null || true
         else
             log_warn "Cannot access HawkScan directory"
-            ((failed_tools++))
+            failed_tools=$((failed_tools + 1))
         fi
     else
         log_info "HawkScan not present, skipping..."
@@ -228,92 +232,92 @@ main() {
     
     # Install LinkFinder (if directory exists)
     if [[ -n "${TOOLS_WEB_VAPT:-}" ]] && [[ -d "${TOOLS_WEB_VAPT}/LinkFinder" ]]; then
-        ((total_tools++))
+        total_tools=$((total_tools + 1))
         log_info "Installing LinkFinder..."
         if cd "${TOOLS_WEB_VAPT}/LinkFinder" 2>/dev/null; then
             if [[ -f setup.py ]]; then
                 if python3 setup.py install 2>&1 | tee -a "${LOG_FILE}"; then
                     log_success "✓ LinkFinder installed"
-                    ((successful_tools++))
+                    successful_tools=$((successful_tools + 1))
                 else
                     log_warn "✗ LinkFinder installation failed"
-                    ((failed_tools++))
+                    failed_tools=$((failed_tools + 1))
                 fi
             fi
             cd - >/dev/null || true
         else
             log_warn "Cannot access LinkFinder directory"
-            ((failed_tools++))
+            failed_tools=$((failed_tools + 1))
         fi
     else
         log_info "LinkFinder not present, skipping..."
     fi
     
     # Install Striker
-    ((total_tools++))
+    total_tools=$((total_tools + 1))
     if install_tool_with_pipx "${TOOLS_WEB_VAPT}/Striker" "requirements.txt"; then
-        ((successful_tools++))
+        successful_tools=$((successful_tools + 1))
     else
-        ((failed_tools++))
+        failed_tools=$((failed_tools + 1))
     fi
     
     # Install jwt_tool
-    ((total_tools++))
+    total_tools=$((total_tools + 1))
     if install_tool_with_pipx "${TOOLS_WEB_VAPT}/jwt_tool" "requirements.txt"; then
-        ((successful_tools++))
+        successful_tools=$((successful_tools + 1))
     else
-        ((failed_tools++))
+        failed_tools=$((failed_tools + 1))
     fi
     
     # Install Sublist3r (if directory exists)
     if [[ -n "${TOOLS_WEB_VAPT:-}" ]] && [[ -d "${TOOLS_WEB_VAPT}/Sublist3r" ]]; then
-        ((total_tools++))
+        total_tools=$((total_tools + 1))
         log_info "Installing Sublist3r..."
         if cd "${TOOLS_WEB_VAPT}/Sublist3r" 2>/dev/null; then
             if [[ -f setup.py ]]; then
                 if python3 setup.py install 2>&1 | tee -a "${LOG_FILE}"; then
                     log_success "✓ Sublist3r installed"
-                    ((successful_tools++))
+                    successful_tools=$((successful_tools + 1))
                 else
                     log_warn "✗ Sublist3r installation failed"
-                    ((failed_tools++))
+                    failed_tools=$((failed_tools + 1))
                 fi
             fi
             cd - >/dev/null || true
         else
             log_warn "Cannot access Sublist3r directory"
-            ((failed_tools++))
+            failed_tools=$((failed_tools + 1))
         fi
     else
         log_info "Sublist3r not present, skipping..."
     fi
     
     # Install XSStrike
-    ((total_tools++))
+    total_tools=$((total_tools + 1))
     if install_tool_with_pipx "${TOOLS_WEB_VAPT}/XSStrike" "requirements.txt"; then
-        ((successful_tools++))
+        successful_tools=$((successful_tools + 1))
     else
-        ((failed_tools++))
+        failed_tools=$((failed_tools + 1))
     fi
     
     # Install Ghauri (if directory exists)
     if [[ -n "${TOOLS_WEB_VAPT:-}" ]] && [[ -d "${TOOLS_WEB_VAPT}/ghauri" ]]; then
-        ((total_tools++))
+        total_tools=$((total_tools + 1))
         log_info "Installing Ghauri..."
         if cd "${TOOLS_WEB_VAPT}/ghauri" 2>/dev/null; then
             if [[ -f setup.py ]]; then
                 if python3 setup.py install 2>&1 | tee -a "${LOG_FILE}"; then
                     log_success "✓ Ghauri installed"
-                    ((successful_tools++))
+                    successful_tools=$((successful_tools + 1))
                 else
                     log_warn "✗ Ghauri installation failed"
-                    ((failed_tools++))
+                    failed_tools=$((failed_tools + 1))
                 fi
             fi
             cd - >/dev/null || true
         else
             log_warn "Cannot access Ghauri directory"
-            ((failed_tools++))
+            failed_tools=$((failed_tools + 1))
         fi
     else
         log_info "Ghauri not present, skipping..."
@@ -327,7 +331,7 @@ main() {
     
     # Install ReconSpider (if directory exists)
     if [[ -n "${TOOLS_OSINT:-}" ]] && [[ -d "${TOOLS_OSINT}/reconspider" ]]; then
-        ((total_tools++))
+        total_tools=$((total_tools + 1))
         log_info "Installing ReconSpider..."
         if cd "${TOOLS_OSINT}/reconspider" 2>/dev/null; then
             if [[ -f setup.py ]]; then
@@ -335,43 +339,43 @@ main() {
                 sed -i 's/urllib3/urllib3==1.26.13/g' setup.py 2>/dev/null || true
                 if python3 setup.py install 2>&1 | tee -a "${LOG_FILE}"; then
                     log_success "✓ ReconSpider installed"
-                    ((successful_tools++))
+                    successful_tools=$((successful_tools + 1))
                 else
                     log_warn "✗ ReconSpider installation failed"
-                    ((failed_tools++))
+                    failed_tools=$((failed_tools + 1))
                 fi
             fi
             cd - >/dev/null || true
         else
             log_warn "Cannot access ReconSpider directory"
-            ((failed_tools++))
+            failed_tools=$((failed_tools + 1))
         fi
     else
         log_info "ReconSpider not present, skipping..."
     fi
     
     # Install Recon-ng
-    ((total_tools++))
+    total_tools=$((total_tools + 1))
     if install_tool_with_pipx "${TOOLS_OSINT}/recon-ng" "REQUIREMENTS"; then
-        ((successful_tools++))
+        successful_tools=$((successful_tools + 1))
     else
-        ((failed_tools++))
+        failed_tools=$((failed_tools + 1))
     fi
     
     # Install Metagoofil
-    ((total_tools++))
+    total_tools=$((total_tools + 1))
     if install_tool_with_pipx "${TOOLS_OSINT}/metagoofil" "requirements.txt"; then
-        ((successful_tools++))
+        successful_tools=$((successful_tools + 1))
     else
-        ((failed_tools++))
+        failed_tools=$((failed_tools + 1))
     fi
     
     # Install theHarvester
-    ((total_tools++))
+    total_tools=$((total_tools + 1))
     if install_tool_with_pipx "${TOOLS_OSINT}/theHarvester" "requirements/base.txt"; then
-        ((successful_tools++))
+        successful_tools=$((successful_tools + 1))
     else
-        ((failed_tools++))
+        failed_tools=$((failed_tools + 1))
     fi
     
     # -------------------------------------------------------------------------
@@ -390,14 +394,14 @@ main() {
     )
     
     for tool in "${pypi_tools[@]}"; do
-        ((total_tools++))
+        total_tools=$((total_tools + 1))
         log_info "Installing ${tool}..."
         if pipx install "${tool}" 2>&1 | tee -a "${LOG_FILE}"; then
             log_success "✓ ${tool} installed"
-            ((successful_tools++))
+            successful_tools=$((successful_tools + 1))
         else
             log_warn "✗ ${tool} installation failed"
-            ((failed_tools++))
+            failed_tools=$((failed_tools + 1))
         fi
     done
     

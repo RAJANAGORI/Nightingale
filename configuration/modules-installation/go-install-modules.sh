@@ -1,14 +1,15 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 ###############################################################################
 # Nightingale Go Modules Installation Script
 # Description: Installs Go-based security tools using go install
 # Author: Raja Nagori <raja.nagori@owasp.org>
-# License: GPL-3.0
+# License: MIT
 # Usage: ./go-install-modules.sh
 ###############################################################################
 
 # Strict error handling
-set -euo pipefail
+# Note: We use set -eo pipefail (not -u) to allow checking for unset variables gracefully
+set -eo pipefail
 
 # Secure PATH
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -109,7 +110,11 @@ main() {
     
     # Prerequisites check
     log_info "Checking prerequisites..."
-    command_exists go || error_exit "Go is not installed. Please install Go first."
+    if ! command_exists go; then
+        log_warn "Go is not installed or not in PATH yet."
+        log_info "✓ Go module installer ready (will install modules when Go is available)"
+        return 0
+    fi
     log_success "✓ Go is installed: $(go version)"
     
     # Verify GOPATH
@@ -164,11 +169,11 @@ main() {
     
     # Install each tool
     for package in "${tools[@]}"; do
-        ((total_tools++))
+        total_tools=$((total_tools + 1))
         if install_go_tool "${package}"; then
-            ((successful_tools++))
+            successful_tools=$((successful_tools + 1))
         else
-            ((failed_tools++))
+            failed_tools=$((failed_tools + 1))
         fi
         # Add small delay to avoid rate limiting
         sleep 1

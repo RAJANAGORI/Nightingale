@@ -2,18 +2,19 @@
 # Nightingale: Docker for Pentesters - Main Dockerfile
 # Description: Multi-stage build for comprehensive pentesting environment
 # Author: Raja Nagori <raja.nagori@owasp.org>
-# License: GPL-3.0
+# License: MIT
 # GitHub: https://github.com/RAJANAGORI/Nightingale
 ###############################################################################
 
 # Stage 1: Base Image with Dependencies
-FROM ghcr.io/rajanagori/nightingale_programming_image:stable-optimized AS base
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable AS base
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale" \
       org.opencontainers.image.description="Docker image for penetration testing with 100+ security tools" \
-      org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \    
-      org.opencontainers.image.licenses="GPL-3.0 license" \
+      org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \
+      org.opencontainers.image.vendor="OWASP" \
+      org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.url="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.documentation="https://github.com/RAJANAGORI/Nightingale/wiki" \
@@ -134,26 +135,62 @@ COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable-optim
 COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable-optimized ${WORDLIST} ${WORDLIST}
 
 ###############################################################################
-# Stage 3: Module Installation
+# Stage 3a: Python Module Installation (Parallel Stage)
+# This stage can run in parallel with go-modules stage
 ###############################################################################
-FROM intermediate AS modules
+FROM intermediate AS python-modules
 
-# Copy module installation scripts
+# Copy Python module installation script
 COPY --chmod=755 configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
-COPY --chmod=755 configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
 
-# Setup and run module installers
+# Install Python modules
 RUN set -eux; \
     # Convert line endings
     dos2unix "${SHELLS}/python-install-modules.sh" || true; \
-    dos2unix "${SHELLS}/go-install-modules.sh" || true; \
-    # Create symlinks for convenience
+    # Create symlink for convenience
     ln -sf "${SHELLS}/python-install-modules.sh" /usr/local/bin/python-install-modules; \
+    # Run Python installer
+    python-install-modules; \
+    echo "Python modules installation completed"
+
+###############################################################################
+# Stage 3b: Go Module Installation (Parallel Stage)
+# This stage can run in parallel with python-modules stage
+###############################################################################
+FROM intermediate AS go-modules
+
+# Copy Go module installation script
+COPY --chmod=755 configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
+
+# Install Go modules
+RUN set -eux; \
+    # Convert line endings
+    dos2unix "${SHELLS}/go-install-modules.sh" || true; \
+    # Create symlink for convenience
     ln -sf "${SHELLS}/go-install-modules.sh" /usr/local/bin/go-install-modules; \
-    # Run installers
-    python-install-modules || { echo "Python modules installation failed"; exit 1; }; \
-    go-install-modules || { echo "Go modules installation failed"; exit 1; }; \
-    echo "Module installation completed"
+    # Run Go installer
+    go-install-modules; \
+    echo "Go modules installation completed"
+
+###############################################################################
+# Stage 3c: Combined Modules (Merge Parallel Stages)
+# This stage combines the results from both parallel stages
+###############################################################################
+FROM python-modules AS modules
+
+# Copy Go installations from parallel go-modules stage
+# This includes any Go binaries installed to GOPATH/bin
+COPY --from=go-modules /home/go /home/go
+# COPY --from=go-modules /root/.local /root/.local
+COPY --from=go-modules /usr/local/bin/go-install-modules /usr/local/bin/go-install-modules
+COPY --from=go-modules ${SHELLS}/go-install-modules.sh ${SHELLS}/go-install-modules.sh
+
+# Verify both installers are available
+RUN set -eux; \
+    echo "Verifying module installations..."; \
+    command -v python-install-modules >/dev/null || echo "Warning: python-install-modules not found"; \
+    command -v go-install-modules >/dev/null || echo "Warning: go-install-modules not found"; \
+    echo "Module installation stage completed"
 
 # Install binaries and tools
 WORKDIR ${BINARIES}
@@ -253,6 +290,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 CMD ["/bin/bash"]
 
 # Add final metadata
-LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable-optimized" \
-      org.opencontainers.image.ref.name="stable-optimized" \
+LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable" \
+      org.opencontainers.image.ref.name="stable" \
       stage="final"
