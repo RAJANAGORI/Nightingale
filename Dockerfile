@@ -119,10 +119,11 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     WORDLIST=/home/wordlist \
     METASPLOIT_CONFIG=/home/metasploit_config \
     METASPLOIT_TOOL=/home/metasploit \
-    SHELLS=/home/.shells
+    SHELLS=/home/.shells \
+    GOPATH=/root/go
 
 # Add custom binaries to PATH
-ENV PATH="${PATH}:/root/.local/bin:${BINARIES}"
+ENV PATH="${PATH}:/root/.local/bin:${BINARIES}:/root/go/bin"
 
 # Copy tool collections from pre-built images
 COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable-optimized ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
@@ -168,6 +169,10 @@ RUN set -eux; \
     dos2unix "${SHELLS}/go-install-modules.sh" || true; \
     # Create symlink for convenience
     ln -sf "${SHELLS}/go-install-modules.sh" /usr/local/bin/go-install-modules; \
+    # Ensure GOPATH directory exists
+    mkdir -p /root/go/bin /root/go/pkg; \
+    # Set GOPATH environment variable
+    export GOPATH="/root/go"; \
     # Run Go installer
     go-install-modules; \
     echo "Go modules installation completed"
@@ -180,14 +185,17 @@ FROM python-modules AS modules
 
 # Copy Go installations from parallel go-modules stage
 # This includes any Go binaries installed to GOPATH/bin
-COPY --from=go-modules /home/go /home/go
-# COPY --from=go-modules /root/.local /root/.local
+RUN mkdir -p /root/go
+COPY --from=go-modules /root/go /root/go
 COPY --from=go-modules /usr/local/bin/go-install-modules /usr/local/bin/go-install-modules
 COPY --from=go-modules ${SHELLS}/go-install-modules.sh ${SHELLS}/go-install-modules.sh
 
 # Verify both installers are available
 RUN set -eux; \
     echo "Verifying module installations..."; \
+    # Set GOPATH for Go tools
+    export GOPATH="/root/go"; \
+    export PATH="$PATH:/root/go/bin"; \
     command -v python-install-modules >/dev/null || echo "Warning: python-install-modules not found"; \
     command -v go-install-modules >/dev/null || echo "Warning: go-install-modules not found"; \
     echo "Module installation stage completed"

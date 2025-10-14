@@ -122,10 +122,11 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     WORDLIST=/home/wordlist \
     METASPLOIT_CONFIG=/home/metasploit_config \
     METASPLOIT_TOOL=/home/metasploit \
-    SHELLS=/home/.shells
+    SHELLS=/home/.shells \
+    GOPATH=/root/go
 
 # Add custom binaries to PATH
-ENV PATH="${PATH}:/root/.local/bin:${BINARIES}"
+ENV PATH="${PATH}:/root/.local/bin:${BINARIES}:/root/go/bin"
 
 # Copy tool collections from pre-built ARM64 images
 COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64-optimized ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
@@ -154,6 +155,11 @@ RUN set -eux; \
     # Create symlinks for convenience
     ln -sf "${SHELLS}/python-install-modules.sh" /usr/local/bin/python-install-modules; \
     ln -sf "${SHELLS}/go-install-modules.sh" /usr/local/bin/go-install-modules; \
+    # Ensure GOPATH directory exists
+    mkdir -p /root/go/bin /root/go/pkg; \
+    # Set GOPATH environment variable
+    export GOPATH="/root/go"; \
+    export PATH="$PATH:/root/go/bin"; \
     # Run installers
     python-install-modules || { echo "Python modules installation failed"; exit 1; }; \
     go-install-modules || { echo "Go modules installation failed"; exit 1; }; \
@@ -163,11 +169,24 @@ RUN set -eux; \
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}/
 
-# Build ttyd and install tools
+# Install binaries and tools (excluding ttyd - built separately)
 RUN set -eux; \
     # Make binaries executable and move to PATH
     chmod +x "${BINARIES}"/* || true; \
     mv "${BINARIES}"/* /usr/local/bin/ 2>/dev/null || true; \
+    # Install Trufflehog
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
+    # Verify installations
+    command -v trufflehog >/dev/null || { echo "trufflehog installation failed"; exit 1; }; \
+    echo "Tools installation completed"
+
+###############################################################################
+# Stage 4: ttyd Builder (Separate Stage for Optimization)
+###############################################################################
+FROM modules AS ttyd-builder
+
+# Build ttyd in separate stage to avoid leaving build artifacts in final image
+RUN set -eux; \
     # Download and build ttyd
     wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip -O ttyd.zip; \
     unzip -q ttyd.zip; \
@@ -175,16 +194,12 @@ RUN set -eux; \
     mkdir build && cd build; \
     cmake .. >/dev/null; \
     make -j"$(nproc)" >/dev/null; \
-    make install; \
+    # Move binary to temp location for copying
+    mv ttyd /tmp/ttyd-binary; \
     cd /; \
     # Clean up build artifacts
     rm -rf /ttyd-1.7.7 /ttyd.zip; \
-    # Install Trufflehog
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
-    # Verify installations
-    command -v ttyd >/dev/null || { echo "ttyd installation failed"; exit 1; }; \
-    command -v trufflehog >/dev/null || { echo "trufflehog installation failed"; exit 1; }; \
-    echo "Tools installation completed"
+    echo "ttyd build completed"
 
 ###############################################################################
 # Stage 4: Metasploit Configuration
@@ -200,9 +215,13 @@ COPY --chmod=755 configuration/msf-configuration/scripts/init.sh /usr/local/bin/
 COPY --chmod=600 configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/database.yml
 
 ###############################################################################
-# Stage 5: Final Production Image
+# Stage 6: Final Production Image
 ###############################################################################
 FROM metasploit AS final
+
+# Copy ttyd binary from builder stage (saves 50-100MB)
+COPY --from=ttyd-builder /tmp/ttyd-binary /usr/local/bin/ttyd
+RUN chmod +x /usr/local/bin/ttyd
 
 # Expose required ports with documentation
 # 5432: PostgreSQL (Metasploit database)
@@ -214,7 +233,7 @@ EXPOSE 5432 7681 8080 8081
 # Copy vulnerability mitigation list
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
-# Final cleanup and security hardening
+# Final cleanup and security hardening with aggressive optimization
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
     # Purge vulnerable packages
@@ -225,9 +244,9 @@ RUN set -eux; \
             apt-get purge -y "$pkg" 2>/dev/null || echo "  WARN: purge failed for $pkg (continuing)"; \
         fi; \
     done; \
-    # Remove build dependencies
-    apt-get purge -y build-essential cmake 2>/dev/null || true; \
-    # Aggressive cleanup
+    # Remove build dependencies (saves 200-300MB)
+    apt-get purge -y build-essential cmake gcc g++ make 2>/dev/null || true; \
+    # Aggressive cleanup (saves 200-400MB)
     apt-get autoremove -y --purge; \
     apt-get clean; \
     rm -rf \
@@ -238,13 +257,32 @@ RUN set -eux; \
         /root/.cache/* \
         /usr/share/doc/* \
         /usr/share/man/* \
-        /usr/share/info/*; \
+        /usr/share/info/* \
+        /usr/share/locale/* \
+        /usr/share/zoneinfo/*; \
+    # Clean Python caches (saves 50-150MB)
+    find /opt/venv3 -name "*.pyc" -delete 2>/dev/null || true; \
+    find /opt/venv3 -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
+    find /usr/local/lib/python* -name "*.pyc" -delete 2>/dev/null || true; \
+    find /usr/local/lib/python* -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
+    # Clean Go caches (saves 100-200MB)
+    go clean -cache -modcache -testcache 2>/dev/null || true; \
+    rm -rf /root/.cache/go-build 2>/dev/null || true; \
+    rm -rf /home/go/pkg/mod/cache 2>/dev/null || true; \
+    # Remove .git folders from tool directories (saves 200-500MB)
+    find ${TOOLS_WEB_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
+    find ${TOOLS_OSINT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
+    find ${TOOLS_MOBILE_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
+    find ${TOOLS_NETWORK_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
+    find ${TOOLS_RED_TEAMING} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
+    find ${TOOLS_FORENSICS} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
+    find ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
     # Update PATH in bashrc
-    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc; \
+    echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
     # Final verification
     command -v ttyd >/dev/null || { echo "Final check: ttyd not found"; exit 1; }; \
     command -v nmap >/dev/null || { echo "Final check: nmap not found"; exit 1; }; \
-    echo "Final image preparation completed successfully"
+    echo "Final image preparation completed successfully - Optimized for size!"
 
 # Set working directory
 WORKDIR /home
