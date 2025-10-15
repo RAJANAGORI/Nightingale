@@ -4,22 +4,6 @@ on:
   schedule:
     - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Select which build to run'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-        - all
-        - programming
-        - dependent
-        - main
-      force_rebuild:
-        description: 'Force rebuild even if images exist'
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -37,8 +21,6 @@ jobs:
   # Step 1: Build Programming Image
   build-programming:
     runs-on: ubuntu-latest
-    # Only run if: scheduled (cron) OR manual dispatch with 'all' or 'programming'
-    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.build_type == 'all' || inputs.build_type == 'programming')) }}
     outputs:
       commit_hash: ${{ github.sha }}
     steps:
@@ -55,10 +37,6 @@ jobs:
 
     - name: Debug Environment Variables
       run: |
-        echo "=== BUILD CONFIGURATION ==="
-        echo "Event: ${{ github.event_name }}"
-        echo "Build Type: ${{ inputs.build_type || 'all (scheduled)' }}"
-        echo "Force Rebuild: ${{ inputs.force_rebuild || 'false' }}"
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
         echo "USERNAME=${{ env.USERNAME }}"
         echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
@@ -144,8 +122,6 @@ jobs:
   build-dependent:
     needs: build-programming
     runs-on: ubuntu-latest
-    # Only run if: scheduled (cron) OR manual dispatch with 'all' or 'dependent'
-    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.build_type == 'all' || inputs.build_type == 'dependent')) }}
     strategy:
       matrix:
         dockerfile:
@@ -177,10 +153,6 @@ jobs:
 
     - name: Debug Variables
       run: |
-        echo "=== BUILD CONFIGURATION ==="
-        echo "Event: ${{ github.event_name }}"
-        echo "Build Type: ${{ inputs.build_type || 'all (scheduled)' }}"
-        echo "Force Rebuild: ${{ inputs.force_rebuild || 'false' }}"
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
         echo "USERNAME=${{ env.USERNAME }}"
         echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
@@ -268,19 +240,10 @@ jobs:
   build-main:
     needs: build-dependent
     runs-on: ubuntu-latest
-    # Only run if: scheduled (cron) OR manual dispatch with 'all' or 'main'
-    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.build_type == 'all' || inputs.build_type == 'main')) }}
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v4
-
-    - name: Debug Build Configuration
-      run: |
-        echo "=== BUILD CONFIGURATION ==="
-        echo "Event: ${{ github.event_name }}"
-        echo "Build Type: ${{ inputs.build_type || 'all (scheduled)' }}"
-        echo "Force Rebuild: ${{ inputs.force_rebuild || 'false' }}"
 
     - name: Maximize runner disk space
       run: |
