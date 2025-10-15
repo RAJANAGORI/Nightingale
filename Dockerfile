@@ -72,8 +72,7 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
     # Verify critical commands installed
     command -v git >/dev/null || { echo "git not installed"; exit 1; }; \
-    command -v curl >/dev/null || { echo "curl not installed"; exit 1; }; \
-    echo "Base packages installed successfully"
+    command -v curl >/dev/null || { echo "curl not installed"; exit 1; }
 
 ###############################################################################
 # Stage 2: Configuration and Scripts
@@ -175,9 +174,7 @@ RUN set -eux; \
     mkdir -p /root/go/bin /root/go/pkg; \
     # Set GOPATH environment variable
     export GOPATH="/root/go"; \
-    # Run Go installer
-    go-install-modules; \
-    echo "Go modules installation completed"
+    go-install-modules
 
 ###############################################################################
 # Stage 3c: Combined Modules (Merge Parallel Stages)
@@ -199,8 +196,7 @@ RUN set -eux; \
     export GOPATH="/root/go"; \
     export PATH="$PATH:/root/go/bin"; \
     command -v python-install-modules >/dev/null || echo "Warning: python-install-modules not found"; \
-    command -v go-install-modules >/dev/null || echo "Warning: go-install-modules not found"; \
-    echo "Module installation stage completed"
+    command -v go-install-modules >/dev/null || echo "Warning: go-install-modules not found"
 
 # Install binaries and tools
 WORKDIR ${BINARIES}
@@ -211,11 +207,8 @@ RUN set -eux; \
     # Make binaries executable and move to PATH
     chmod +x "${BINARIES}"/* || true; \
     mv "${BINARIES}"/* /usr/local/bin/ 2>/dev/null || true; \
-    # Install Trufflehog
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
-    # Verify installations
-    command -v trufflehog >/dev/null || { echo "trufflehog installation failed"; exit 1; }; \
-    echo "Tools installation completed"
+    command -v trufflehog >/dev/null || { echo "trufflehog installation failed"; exit 1; }
 
 ###############################################################################
 # Stage 4: ttyd Builder (Separate Stage for Optimization)
@@ -224,8 +217,6 @@ FROM modules AS ttyd-builder
 
 # Build ttyd in separate stage to avoid leaving build artifacts in final image
 RUN set -eux; \
-    # First, build libwebsockets from source with libuv support
-    echo "Building libwebsockets with libuv support..."; \
     wget -q -L https://github.com/warmcat/libwebsockets/archive/refs/tags/v4.3.5.zip -O libwebsockets.zip; \
     unzip -q libwebsockets.zip; \
     cd libwebsockets-4.3.5; \
@@ -236,22 +227,16 @@ RUN set -eux; \
     ldconfig; \
     cd /; \
     rm -rf /libwebsockets-4.3.5 /libwebsockets.zip; \
-    echo "libwebsockets built with libuv support"; \
-    # Now build ttyd with the custom libwebsockets
-    echo "Building ttyd with libuv support..."; \
     wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip -O ttyd.zip; \
     unzip -q ttyd.zip; \
     cd ttyd-1.7.7; \
     mkdir build && cd build; \
-    # Configure with explicit libuv support
     cmake -DCMAKE_BUILD_TYPE=Release -DLWS_WITH_LIBUV=ON .. >/dev/null; \
     make -j"$(nproc)" >/dev/null; \
     # Move binary to temp location for copying
     mv ttyd /tmp/ttyd-binary; \
     cd /; \
-    # Clean up build artifacts
-    rm -rf /ttyd-1.7.7 /ttyd.zip; \
-    echo "ttyd build completed with libuv support"
+    rm -rf /ttyd-1.7.7 /ttyd.zip
 
 ###############################################################################
 # Stage 5: Metasploit Configuration
@@ -274,6 +259,7 @@ FROM metasploit AS final
 # Copy ttyd binary from builder stage (saves 50-100MB)
 COPY --from=ttyd-builder /tmp/ttyd-binary /usr/local/bin/ttyd
 RUN chmod +x /usr/local/bin/ttyd
+
 # Copy custom-built libwebsockets libraries
 COPY --from=ttyd-builder /usr/local/lib/libwebsockets* /usr/local/lib/
 COPY --from=ttyd-builder /usr/local/include/libwebsockets* /usr/local/include/
@@ -296,15 +282,10 @@ RUN set -eux; \
     echo "Purging vulnerable packages..."; \
     grep -Ev '^\s*(#|$)' /tmp/vuln-library-purge | while read -r pkg; do \
         if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed'; then \
-            echo "  Purging: $pkg"; \
-            apt-get purge -y "$pkg" 2>/dev/null || echo "  WARN: purge failed for $pkg (continuing)"; \
+            apt-get purge -y "$pkg" 2>/dev/null || true; \
         fi; \
     done; \
-    # Remove build dependencies (saves 200-300MB) but keep essential libraries for ttyd
     apt-get purge -y build-essential gcc g++ make 2>/dev/null || true; \
-    # Keep cmake, libuv1-dev, libwebsockets-dev, and libuv1 for ttyd functionality
-    # Note: Both dev and runtime libraries are essential for ttyd to work properly
-    # Aggressive cleanup (saves 200-400MB)
     apt-get autoremove -y --purge; \
     apt-get clean; \
     rm -rf \
@@ -352,33 +333,18 @@ RUN set -eux; \
     echo 'man() { command man -P "less -R -X -F -K" "$@"; }' >> ~/.bashrc; \
     echo '' >> ~/.bashrc; \
     echo '# Smart command wrapper for known large output commands' >> ~/.bashrc; \
-    echo 'smart_cmd() { local cmd="$1"; shift; case "$cmd" in nmap|docker|kubectl|git|npm|pip|apt|yum|dnf|zypper|pacman|portage|brew|conda|pip3|node|python|python3|go|rustc|cargo|mvn|gradle|ant|make|cmake|ninja|gcc|g++|clang|clang++|ld|ar|nm|objdump|readelf|strace|ltrace|tcpdump|wireshark|tshark|nmap|masscan|zmap|nikto|sqlmap|burpsuite|metasploit|nmap|nmap|nmap) command "$cmd" "$@" | less -R -X -F -K ;; *) command "$cmd" "$@" ;; esac; }' >> ~/.bashrc; \
+    echo 'smart_cmd() { local cmd="$1"; shift; case "$cmd" in nmap|docker|kubectl|git|npm|pip|apt|yum|dnf|zypper|pacman|portage|brew|conda|pip3|node|python|python3|go|rustc|cargo|mvn|gradle|ant|make|cmake|ninja|gcc|g++|clang|clang++|ld|ar|nm|objdump|readelf|strace|ltrace|tcpdump|wireshark|tshark|nmap|masscan|zmap|nikto|sqlmap|burpsuite|metasploit) command "$cmd" "$@" | less -R -X -F -K ;; *) command "$cmd" "$@" ;; esac; }' >> ~/.bashrc; \
     echo '' >> ~/.bashrc; \
     echo '# Aliases for common large output scenarios' >> ~/.bashrc; \
     echo 'alias -- --help="help"' >> ~/.bashrc; \
     echo 'alias h="help"' >> ~/.bashrc; \
     echo 'alias ?="help"' >> ~/.bashrc; \
     echo '' >> ~/.bashrc; \
-    echo 'echo "🚀 Universal large output handling enabled!"' >> ~/.bashrc; \
-    echo 'echo "💡 Use: help <command> or <command> --help for paged help"' >> ~/.bashrc; \
-    echo 'echo "💡 Use: man <command> for paged manual pages"' >> ~/.bashrc; \
-    echo 'echo "💡 Large outputs will be automatically paged"' >> ~/.bashrc; \
-    echo '' >> ~/.bashrc; \
-    # Update dynamic linker cache to ensure libraries are found
     ldconfig; \
-    # Verify ttyd functionality and library dependencies
-    echo "Testing ttyd functionality..."; \
-    echo "Checking libuv library:"; \
-    ldconfig -p | grep libuv || echo "libuv not found in ldconfig"; \
-    echo "Checking libwebsockets library:"; \
-    ldconfig -p | grep libwebsockets || echo "libwebsockets not found in ldconfig"; \
-    echo "Checking installed packages:"; \
-    dpkg -l | grep -E "(libuv|libwebsockets)" || echo "No libuv/libwebsockets packages found"; \
     ttyd --version || { echo "ttyd version check failed"; exit 1; }; \
     # Final verification
     command -v ttyd >/dev/null || { echo "Final check: ttyd not found"; exit 1; }; \
-    command -v nmap >/dev/null || { echo "Final check: nmap not found"; exit 1; }; \
-    echo "Final image preparation completed successfully - Optimized for size!"
+    command -v nmap >/dev/null || { echo "Final check: nmap not found"; exit 1; }
 
 # Set working directory
 WORKDIR /home
