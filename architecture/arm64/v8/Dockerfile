@@ -329,8 +329,8 @@ WORKDIR /home
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD ttyd --version || exit 1
 
-# Set default command
-CMD ["/bin/bash"]
+# Set default command with writable mode
+CMD ["ttyd", "-p", "7681", "--writable", "bash"]
 
 # Add final metadata
 LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized" \
