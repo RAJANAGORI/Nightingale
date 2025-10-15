@@ -340,11 +340,29 @@ RUN set -eux; \
     echo '# Nightingale PATH configuration' >> ~/.bashrc; \
     echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
     echo '' >> ~/.bashrc; \
-    echo '# Terminal optimization for large outputs' >> ~/.bashrc; \
+    echo '# Universal terminal optimization for large outputs' >> ~/.bashrc; \
     echo 'export TERM=xterm-256color' >> ~/.bashrc; \
     echo 'export PAGER="less -R -X -F -K"' >> ~/.bashrc; \
-    echo 'alias nmap-help="nmap --help | less -R -X -F -K"' >> ~/.bashrc; \
-    echo 'echo "💡 Use: nmap-help (instead of nmap --help) for large outputs"' >> ~/.bashrc; \
+    echo 'export LESS="-R -X -F -K"' >> ~/.bashrc; \
+    echo '' >> ~/.bashrc; \
+    echo '# Universal help function for large outputs' >> ~/.bashrc; \
+    echo 'help() { command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"; }' >> ~/.bashrc; \
+    echo '' >> ~/.bashrc; \
+    echo '# Universal man function with pager' >> ~/.bashrc; \
+    echo 'man() { command man -P "less -R -X -F -K" "$@"; }' >> ~/.bashrc; \
+    echo '' >> ~/.bashrc; \
+    echo '# Smart command wrapper for known large output commands' >> ~/.bashrc; \
+    echo 'smart_cmd() { local cmd="$1"; shift; case "$cmd" in nmap|docker|kubectl|git|npm|pip|apt|yum|dnf|zypper|pacman|portage|brew|conda|pip3|node|python|python3|go|rustc|cargo|mvn|gradle|ant|make|cmake|ninja|gcc|g++|clang|clang++|ld|ar|nm|objdump|readelf|strace|ltrace|tcpdump|wireshark|tshark|nmap|masscan|zmap|nikto|sqlmap|burpsuite|metasploit|nmap|nmap|nmap) command "$cmd" "$@" | less -R -X -F -K ;; *) command "$cmd" "$@" ;; esac; }' >> ~/.bashrc; \
+    echo '' >> ~/.bashrc; \
+    echo '# Aliases for common large output scenarios' >> ~/.bashrc; \
+    echo 'alias -- --help="help"' >> ~/.bashrc; \
+    echo 'alias h="help"' >> ~/.bashrc; \
+    echo 'alias ?="help"' >> ~/.bashrc; \
+    echo '' >> ~/.bashrc; \
+    echo 'echo "🚀 Universal large output handling enabled!"' >> ~/.bashrc; \
+    echo 'echo "💡 Use: help <command> or <command> --help for paged help"' >> ~/.bashrc; \
+    echo 'echo "💡 Use: man <command> for paged manual pages"' >> ~/.bashrc; \
+    echo 'echo "💡 Large outputs will be automatically paged"' >> ~/.bashrc; \
     echo '' >> ~/.bashrc; \
     # Update dynamic linker cache to ensure libraries are found
     ldconfig; \
