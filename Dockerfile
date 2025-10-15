@@ -340,6 +340,12 @@ RUN set -eux; \
     echo '# Nightingale PATH configuration' >> ~/.bashrc; \
     echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
     echo '' >> ~/.bashrc; \
+    echo '# Terminal optimization for large outputs' >> ~/.bashrc; \
+    echo 'export TERM=xterm-256color' >> ~/.bashrc; \
+    echo 'export PAGER="less -R -X -F -K"' >> ~/.bashrc; \
+    echo 'alias nmap-help="nmap --help | less -R -X -F -K"' >> ~/.bashrc; \
+    echo 'echo "💡 Use: nmap-help (instead of nmap --help) for large outputs"' >> ~/.bashrc; \
+    echo '' >> ~/.bashrc; \
     # Update dynamic linker cache to ensure libraries are found
     ldconfig; \
     # Verify ttyd functionality and library dependencies
@@ -363,8 +369,8 @@ WORKDIR /home
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD ttyd --version || exit 1
 
-# Set default command with writable mode and buffer management
-# CMD ["ttyd", "--writable", "-p", "7681", "--max-clients", "10", "--buffer-size", "8192", "--scrollback", "10000", "/root/shells/terminal_wrapper.sh"]
+# Set default command with writable mode and proper shell
+CMD ["ttyd", "--writable", "-p", "7681", "--max-clients", "10", "bash"]
 
 # Add final metadata
 LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable-optimized" \
