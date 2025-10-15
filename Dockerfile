@@ -82,6 +82,7 @@ FROM base AS intermediate
 
 # Copy banner script
 COPY --chmod=755 shells/banner.sh /tmp/banner.sh
+COPY --chmod=755 shells/terminal_wrapper.sh /root/shells/terminal_wrapper.sh
 
 # Copy Node.js configuration
 COPY configuration/nodejs-env/ /temp/
@@ -363,8 +364,8 @@ WORKDIR /home
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD ttyd --version || exit 1
 
-# Set default command with writable mode
-CMD ["ttyd", "-p", "7681", "--writable", "bash"]
+# Set default command with writable mode and buffer management
+CMD ["ttyd", "--writable", "-p", "7681", "--max-clients", "10", "--buffer-size", "8192", "--scrollback", "10000", "/root/shells/terminal_wrapper.sh"]
 
 # Add final metadata
 LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable-optimized" \
