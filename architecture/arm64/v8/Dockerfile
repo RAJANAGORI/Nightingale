@@ -158,7 +158,10 @@ COPY binary/ ${BINARIES}
 
 RUN chmod +x ${BINARIES}/* \
     && mv ${BINARIES}/* /usr/local/bin/ \
-    && curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin \
+    && wget -q -O trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/download/v3.90.10/trufflehog_3.90.10_linux_arm64.tar.gz \
+    && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
+    && chmod +x /usr/local/bin/trufflehog \
+    && rm trufflehog.tar.gz \
     && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip -O ttyd.zip \
     && unzip -q ttyd.zip \
     && cd ttyd-1.7.7 && mkdir build && cd build \
@@ -194,10 +197,20 @@ RUN set -eux; \
     find /usr/share -name "*.pyc" -delete 2>/dev/null || true; \
     find /usr/share -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
     go clean -cache -modcache -testcache 2>/dev/null || true; \
-    find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
+    find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
+    echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
+    echo 'export PAGER="less -R -X -F -K"' >> ~/.bashrc; \
+    echo 'help() { command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"; }' >> ~/.bashrc; \
+    echo 'alias h="help"' >> ~/.bashrc
 
 WORKDIR /home
 
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD ttyd --version || exit 1
+
+# Set default command
+CMD ["ttyd", "--writable", "-p", "7681", "--max-clients", "10", "bash"]
 
 # Add final metadata
 LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized" \
