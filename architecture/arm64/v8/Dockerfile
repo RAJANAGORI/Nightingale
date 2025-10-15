@@ -107,8 +107,7 @@ RUN set -eux; \
         /home/wordlist \
         /home/binaries \
         /home/.gf \
-        /home/.shells; \
-    test -d /home/tools_web_vapt || { echo "Failed to create directories"; exit 1; }
+        /home/.shells
 
 # Environment variables for tool locations
 ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
@@ -138,191 +137,67 @@ COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64-optimi
 COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64-optimized ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
 COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:arm64-optimized ${WORDLIST} ${WORDLIST}
 
-###############################################################################
-# Stage 3: Module Installation
-###############################################################################
+## Modules stage: install Python and Go modules, setup binaries and additional tools
 FROM intermediate AS modules
 
-# Copy module installation scripts
-COPY --chmod=755 configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
-COPY --chmod=755 configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
+COPY configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
+COPY configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
 
-# Setup and run module installers
-RUN set -eux; \
-    # Convert line endings
-    dos2unix "${SHELLS}/python-install-modules.sh" || true; \
-    dos2unix "${SHELLS}/go-install-modules.sh" || true; \
-    # Create symlinks for convenience
-    ln -sf "${SHELLS}/python-install-modules.sh" /usr/local/bin/python-install-modules; \
-    ln -sf "${SHELLS}/go-install-modules.sh" /usr/local/bin/go-install-modules; \
-    # Ensure GOPATH directory exists
-    mkdir -p /root/go/bin /root/go/pkg; \
-    # Set GOPATH environment variable
-    export GOPATH="/root/go"; \
-    export PATH="$PATH:/root/go/bin"; \
-    # Run installers
-    python-install-modules || { echo "Python modules installation failed"; exit 1; }; \
-    go-install-modules || { echo "Go modules installation failed"; exit 1; }
+RUN dos2unix ${SHELLS}/python-install-modules.sh \
+    && dos2unix ${SHELLS}/go-install-modules.sh \
+    && chmod +x ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh \
+    && ln -s ${SHELLS}/python-install-modules.sh /usr/local/bin/python-install-modules \
+    && ln -s ${SHELLS}/go-install-modules.sh /usr/local/bin/go-install-modules \
+    && mkdir -p /root/go/bin /root/go/pkg \
+    && export GOPATH="/root/go" \
+    && python-install-modules \
+    && go-install-modules
 
-# Install binaries and tools
 WORKDIR ${BINARIES}
-COPY binary/ ${BINARIES}/
+COPY binary/ ${BINARIES}
 
-# Install binaries and tools (excluding ttyd - built separately)
-RUN set -eux; \
-    chmod +x "${BINARIES}"/* || true; \
-    mv "${BINARIES}"/* /usr/local/bin/ 2>/dev/null || true; \
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
-    # Verify installations
-    command -v trufflehog >/dev/null || { echo "trufflehog installation failed"; exit 1; }; \
-    echo "Tools installation completed"
+RUN chmod +x ${BINARIES}/* \
+    && mv ${BINARIES}/* /usr/local/bin/ \
+    && curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin \
+    && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip -O ttyd.zip \
+    && unzip -q ttyd.zip \
+    && cd ttyd-1.7.7 && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && make -j"$(nproc)" \
+    && make install \
+    && cd / && rm -rf ttyd-1.7.7 ttyd.zip
 
-###############################################################################
-# Stage 4: ttyd Builder (Separate Stage for Optimization)
-###############################################################################
-FROM modules AS ttyd-builder
-
-# Build ttyd in separate stage to avoid leaving build artifacts in final image
-RUN set -eux; \
-    wget -q -L https://github.com/warmcat/libwebsockets/archive/refs/tags/v4.3.5.zip -O libwebsockets.zip; \
-    unzip -q libwebsockets.zip; \
-    cd libwebsockets-4.3.5; \
-    mkdir build && cd build; \
-    cmake -DCMAKE_BUILD_TYPE=Release -DLWS_WITH_LIBUV=ON -DLWS_WITHOUT_EXTENSIONS=OFF .. >/dev/null; \
-    make -j"$(nproc)" >/dev/null; \
-    make install >/dev/null; \
-    ldconfig; \
-    cd /; \
-    rm -rf /libwebsockets-4.3.5 /libwebsockets.zip; \
-    wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip -O ttyd.zip; \
-    unzip -q ttyd.zip; \
-    cd ttyd-1.7.7; \
-    mkdir build && cd build; \
-    cmake -DCMAKE_BUILD_TYPE=Release -DLWS_WITH_LIBUV=ON .. >/dev/null; \
-    make -j"$(nproc)" >/dev/null; \
-    mv ttyd /tmp/ttyd-binary; \
-    cd /; \
-    # Clean up build artifacts
-    rm -rf /ttyd-1.7.7 /ttyd.zip; \
-    echo "ttyd build completed with libuv support"
-
-###############################################################################
-# Stage 5: Metasploit Configuration
-###############################################################################
+## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
 
-# Setup Metasploit directory
 WORKDIR ${METASPLOIT_TOOL}
-
-# Copy Metasploit configuration files
-COPY --chmod=644 configuration/msf-configuration/scripts/db.sql ./db.sql
+COPY --chmod=644 configuration/msf-configuration/scripts/db.sql .
 COPY --chmod=755 configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
-COPY --chmod=600 configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/database.yml
+COPY --chmod=600 configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
-###############################################################################
-# Stage 6: Final Production Image
-###############################################################################
+# Stage 5: Final Image
 FROM metasploit AS final
 
-# Copy ttyd binary from builder stage (saves 50-100MB)
-COPY --from=ttyd-builder /tmp/ttyd-binary /usr/local/bin/ttyd
-RUN chmod +x /usr/local/bin/ttyd
+EXPOSE 5432 8080 8081 7681
 
-# Copy custom-built libwebsockets libraries
-COPY --from=ttyd-builder /usr/local/lib/libwebsockets* /usr/local/lib/
-COPY --from=ttyd-builder /usr/local/include/libwebsockets* /usr/local/include/
-RUN ldconfig
-
-# Expose required ports with documentation
-# 5432: PostgreSQL (Metasploit database)
-# 7681: ttyd (web-based terminal)
-# 8080: Application main port
-# 8081: Alternative application port
-EXPOSE 5432 7681 8080 8081
-
-# Copy vulnerability mitigation list
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
-# Final cleanup and security hardening with aggressive optimization
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
     grep -Ev '^\s*(#|$)' /tmp/vuln-library-purge | while read -r pkg; do \
-        if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed'; then \
-            apt-get purge -y "$pkg" 2>/dev/null || true; \
-        fi; \
+      dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed' && apt-get purge -y "$pkg" || true; \
     done; \
-    # Remove build dependencies (saves 200-300MB) but keep essential libraries for ttyd
     apt-get purge -y build-essential gcc g++ make 2>/dev/null || true; \
     apt-get autoremove -y --purge; \
     apt-get clean; \
-    rm -rf \
-        /var/lib/apt/lists/* \
-        /var/cache/apt/archives/* \
-        /tmp/* \
-        /var/tmp/* \
-        /root/.cache/* \
-        /usr/share/doc/* \
-        /usr/share/man/* \
-        /usr/share/info/* \
-        /usr/share/locale/* \
-        /usr/share/zoneinfo/*; \
-    # Clean Python caches (saves 50-150MB)
-    find /opt/venv3 -name "*.pyc" -delete 2>/dev/null || true; \
-    find /opt/venv3 -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
-    find /usr/local/lib/python* -name "*.pyc" -delete 2>/dev/null || true; \
-    find /usr/local/lib/python* -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
-    # Clean Go caches (saves 100-200MB)
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
+    find /usr/share -name "*.pyc" -delete 2>/dev/null || true; \
+    find /usr/share -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
     go clean -cache -modcache -testcache 2>/dev/null || true; \
-    rm -rf /root/.cache/go-build 2>/dev/null || true; \
-    rm -rf /home/go/pkg/mod/cache 2>/dev/null || true; \
-    # Remove .git folders from tool directories (saves 200-500MB)
-    find ${TOOLS_WEB_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_OSINT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_MOBILE_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_NETWORK_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_RED_TEAMING} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_FORENSICS} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    # Update PATH in bashrc with proper formatting
-    echo '' >> ~/.bashrc; \
-    echo '# Nightingale PATH configuration' >> ~/.bashrc; \
-    echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
-    echo '' >> ~/.bashrc; \
-    echo '# Universal terminal optimization for large outputs' >> ~/.bashrc; \
-    echo 'export TERM=xterm-256color' >> ~/.bashrc; \
-    echo 'export PAGER="less -R -X -F -K"' >> ~/.bashrc; \
-    echo 'export LESS="-R -X -F -K"' >> ~/.bashrc; \
-    echo '' >> ~/.bashrc; \
-    echo '# Universal help function for large outputs' >> ~/.bashrc; \
-    echo 'help() { command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"; }' >> ~/.bashrc; \
-    echo '' >> ~/.bashrc; \
-    echo '# Universal man function with pager' >> ~/.bashrc; \
-    echo 'man() { command man -P "less -R -X -F -K" "$@"; }' >> ~/.bashrc; \
-    echo '' >> ~/.bashrc; \
-    echo '# Smart command wrapper for known large output commands' >> ~/.bashrc; \
-    echo 'smart_cmd() { local cmd="$1"; shift; case "$cmd" in nmap|docker|kubectl|git|npm|pip|apt|yum|dnf|zypper|pacman|portage|brew|conda|pip3|node|python|python3|go|rustc|cargo|mvn|gradle|ant|make|cmake|ninja|gcc|g++|clang|clang++|ld|ar|nm|objdump|readelf|strace|ltrace|tcpdump|wireshark|tshark|nmap|masscan|zmap|nikto|sqlmap|burpsuite|metasploit) command "$cmd" "$@" | less -R -X -F -K ;; *) command "$cmd" "$@" ;; esac; }' >> ~/.bashrc; \
-    echo '' >> ~/.bashrc; \
-    echo '# Aliases for common large output scenarios' >> ~/.bashrc; \
-    echo 'alias -- --help="help"' >> ~/.bashrc; \
-    echo 'alias h="help"' >> ~/.bashrc; \
-    echo 'alias ?="help"' >> ~/.bashrc; \
-    echo '' >> ~/.bashrc; \
-    # Update dynamic linker cache to ensure libraries are found
-    ldconfig; \
-    ttyd --version || { echo "ttyd version check failed"; exit 1; }; \
-    # Final verification
-    command -v ttyd >/dev/null || { echo "Final check: ttyd not found"; exit 1; }; \
-    command -v nmap >/dev/null || { echo "Final check: nmap not found"; exit 1; }
+    find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
 
-# Set working directory
 WORKDIR /home
 
-# Add healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD ttyd --version || exit 1
-
-# Set default command with writable mode and proper shell
-CMD ["ttyd", "--writable", "-p", "7681", "--max-clients", "10", "bash"]
 
 # Add final metadata
 LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized" \
@@ -337,4 +212,3 @@ LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_program
 #
 # Architecture: ARM64 / aarch64 (Apple Silicon, AWS Graviton, Raspberry Pi 4+)
 ###############################################################################
-
