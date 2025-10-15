@@ -190,13 +190,8 @@ RUN set -eux; \
     find /usr/share -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
     go clean -cache -modcache -testcache 2>/dev/null || true; \
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc && \
-    find ${TOOLS_WEB_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_OSINT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_MOBILE_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_NETWORK_VAPT} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_RED_TEAMING} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${TOOLS_FORENSICS} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    find ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true
+    find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
+
 
 WORKDIR /home
 
