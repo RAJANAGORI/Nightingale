@@ -42,7 +42,7 @@ RUN set -eux; \
         # Build tools (will be removed in final stage)
         build-essential cmake \
         # Libraries required for ttyd runtime
-        libuv1 \
+        libuv1 libwebsockets17 \
         # System tools
         locate tree zsh figlet dos2unix pv \
         # Compression tools
@@ -157,9 +157,9 @@ RUN chmod +x ${BINARIES}/* \
     && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
     && chmod +x /usr/local/bin/trufflehog \
     && rm trufflehog.tar.gz \
-    # Install ttyd 1.6.3 pre-built binary (most reliable approach)
-    && wget -q https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64 -O /usr/local/bin/ttyd \
-    && chmod +x /usr/local/bin/ttyd \
+    # Install ttyd using system package (most compatible approach)
+    && apt-get update \
+    && apt-get install -y ttyd \
     && ttyd --version
 
 ## Metasploit stage: setup Metasploit configuration and scripts
