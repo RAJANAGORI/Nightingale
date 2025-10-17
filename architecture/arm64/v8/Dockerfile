@@ -46,7 +46,7 @@ RUN set -eux; \
         # Build tools (will be removed in final stage)
         build-essential cmake \
         # Libraries required for ttyd runtime
-        libuv1 libwebsockets17 \
+        libuv1 \
         # System tools
         locate tree zsh figlet dos2unix pv \
         # Compression tools
