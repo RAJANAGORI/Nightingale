@@ -45,8 +45,10 @@ RUN set -eux; \
         ca-certificates \
         # Build tools (will be removed in final stage)
         build-essential cmake \
-        # Libraries required for ttyd runtime
-        libuv1 \
+        # Libraries required for ttyd compilation and runtime
+        libuv1-dev libuv1 libwebsockets-dev \
+        # Additional dependencies for building ttyd
+        libssl-dev zlib1g-dev \
         # System tools
         locate tree zsh figlet dos2unix pv \
         # Compression tools
@@ -162,10 +164,21 @@ RUN chmod +x ${BINARIES}/* \
     && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
     && chmod +x /usr/local/bin/trufflehog \
     && rm trufflehog.tar.gz \
-    # Install ttyd using system package (most compatible approach)
-    && apt-get update \
-    && apt-get install -y ttyd \
-    && ttyd --version
+    # Install ttyd 1.6.3 from source with proper dependencies
+    && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.6.3.zip -O ttyd.zip \
+    && unzip -q ttyd.zip \
+    && cd ttyd-1.6.3 && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release \
+        -DLWS_WITH_LIBUV=ON \
+        -DLWS_WITH_LIBEV=OFF \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_C_FLAGS="-Wno-error=enum-int-mismatch -Wno-error=deprecated-declarations" \
+        .. \
+    && make -j"$(nproc)" \
+    && make install \
+    && ldconfig \
+    && ttyd --version \
+    && cd / && rm -rf ttyd-1.6.3 ttyd.zip
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
