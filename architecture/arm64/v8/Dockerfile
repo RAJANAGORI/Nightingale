@@ -45,8 +45,8 @@ RUN set -eux; \
         ca-certificates \
         # Build tools (will be removed in final stage)
         build-essential cmake \
-        # Libraries required for ttyd (using compatible versions)
-        libuv1-dev libuv1 \
+        # Libraries required for ttyd (using system libwebsockets)
+        libuv1-dev libuv1 libwebsockets-dev \
         # Additional dependencies for building libwebsockets and ttyd
         libssl-dev zlib1g-dev \
         # System tools
@@ -164,26 +164,7 @@ RUN chmod +x ${BINARIES}/* \
     && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
     && chmod +x /usr/local/bin/trufflehog \
     && rm trufflehog.tar.gz \
-    # Install compatible libwebsockets version for ttyd 1.6.3
-    && wget -q https://github.com/warmcat/libwebsockets/archive/v3.2.3.tar.gz -O libwebsockets.tar.gz \
-    && tar -xzf libwebsockets.tar.gz \
-    && cd libwebsockets-3.2.3 && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release \
-        -DLWS_WITH_LIBUV=ON \
-        -DLWS_WITH_LIBEV=OFF \
-        -DLWS_WITHOUT_TESTAPPS=ON \
-        -DLWS_WITHOUT_TEST_SERVER=ON \
-        -DLWS_WITHOUT_TEST_PING=ON \
-        -DLWS_WITHOUT_TEST_CLIENT=ON \
-        -DLWS_IPV6=OFF \
-        -DLWS_UNIX_SOCK=OFF \
-        -DLWS_WITHOUT_EXTENSIONS=ON \
-        .. \
-    && make -j"$(nproc)" \
-    && make install \
-    && ldconfig \
-    && cd / && rm -rf libwebsockets-3.2.3 libwebsockets.tar.gz \
-    # Install ttyd 1.6.3 with compatible libwebsockets
+    # Install ttyd 1.6.3 with system libwebsockets (compatible approach)
     && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.6.3.zip -O ttyd.zip \
     && unzip -q ttyd.zip \
     && cd ttyd-1.6.3 && mkdir build && cd build \
@@ -191,6 +172,7 @@ RUN chmod +x ${BINARIES}/* \
         -DLWS_WITH_LIBUV=ON \
         -DLWS_WITH_LIBEV=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_C_FLAGS="-Wno-error=enum-int-mismatch" \
         .. \
     && make -j"$(nproc)" \
     && make install \
