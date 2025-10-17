@@ -157,13 +157,13 @@ RUN chmod +x ${BINARIES}/* \
     && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
     && chmod +x /usr/local/bin/trufflehog \
     && rm trufflehog.tar.gz \
-    && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip -O ttyd.zip \
+    && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.6.3.zip -O ttyd.zip \
     && unzip -q ttyd.zip \
-    && cd ttyd-1.7.7 && mkdir build && cd build \
+    && cd ttyd-1.6.3 && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release .. \
     && make -j"$(nproc)" \
     && make install \
-    && cd / && rm -rf ttyd-1.7.7 ttyd.zip
+    && cd / && rm -rf ttyd-1.6.3 ttyd.zip
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
