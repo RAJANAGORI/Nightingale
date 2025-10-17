@@ -43,6 +43,8 @@ RUN set -eux; \
         build-essential cmake \
         # Libraries required for ttyd (using compatible versions)
         libuv1-dev libuv1 \
+        # Additional dependencies for building libwebsockets and ttyd
+        libssl-dev zlib1g-dev \
         # System tools
         locate tree zsh figlet dos2unix pv \
         # Compression tools
@@ -161,7 +163,17 @@ RUN chmod +x ${BINARIES}/* \
     && wget -q https://github.com/warmcat/libwebsockets/archive/v3.2.3.tar.gz -O libwebsockets.tar.gz \
     && tar -xzf libwebsockets.tar.gz \
     && cd libwebsockets-3.2.3 && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DLWS_WITH_LIBUV=ON -DLWS_WITH_LIBEV=OFF -DLWS_WITHOUT_TESTAPPS=ON .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release \
+        -DLWS_WITH_LIBUV=ON \
+        -DLWS_WITH_LIBEV=OFF \
+        -DLWS_WITHOUT_TESTAPPS=ON \
+        -DLWS_WITHOUT_TEST_SERVER=ON \
+        -DLWS_WITHOUT_TEST_PING=ON \
+        -DLWS_WITHOUT_TEST_CLIENT=ON \
+        -DLWS_IPV6=OFF \
+        -DLWS_UNIX_SOCK=OFF \
+        -DLWS_WITHOUT_EXTENSIONS=ON \
+        .. \
     && make -j"$(nproc)" \
     && make install \
     && ldconfig \
@@ -170,7 +182,11 @@ RUN chmod +x ${BINARIES}/* \
     && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.6.3.zip -O ttyd.zip \
     && unzip -q ttyd.zip \
     && cd ttyd-1.6.3 && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DLWS_WITH_LIBUV=ON -DLWS_WITH_LIBEV=OFF .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release \
+        -DLWS_WITH_LIBUV=ON \
+        -DLWS_WITH_LIBEV=OFF \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        .. \
     && make -j"$(nproc)" \
     && make install \
     && ldconfig \
