@@ -41,10 +41,8 @@ RUN set -eux; \
         ca-certificates \
         # Build tools (will be removed in final stage)
         build-essential cmake \
-        # Libraries required for ttyd (using system libwebsockets)
-        libuv1-dev libuv1 libwebsockets-dev \
-        # Additional dependencies for building libwebsockets and ttyd
-        libssl-dev zlib1g-dev \
+        # Libraries required for ttyd runtime
+        libuv1 \
         # System tools
         locate tree zsh figlet dos2unix pv \
         # Compression tools
@@ -159,21 +157,10 @@ RUN chmod +x ${BINARIES}/* \
     && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
     && chmod +x /usr/local/bin/trufflehog \
     && rm trufflehog.tar.gz \
-    # Install ttyd 1.6.3 with system libwebsockets (compatible approach)
-    && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.6.3.zip -O ttyd.zip \
-    && unzip -q ttyd.zip \
-    && cd ttyd-1.6.3 && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release \
-        -DLWS_WITH_LIBUV=ON \
-        -DLWS_WITH_LIBEV=OFF \
-        -DCMAKE_INSTALL_PREFIX=/usr/local \
-        -DCMAKE_C_FLAGS="-Wno-error=enum-int-mismatch" \
-        .. \
-    && make -j"$(nproc)" \
-    && make install \
-    && ldconfig \
-    && ttyd --version \
-    && cd / && rm -rf ttyd-1.6.3 ttyd.zip
+    # Install ttyd 1.6.3 pre-built binary (most reliable approach)
+    && wget -q https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64 -O /usr/local/bin/ttyd \
+    && chmod +x /usr/local/bin/ttyd \
+    && ttyd --version
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
