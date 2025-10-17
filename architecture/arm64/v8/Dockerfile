@@ -162,12 +162,15 @@ RUN chmod +x ${BINARIES}/* \
     && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
     && chmod +x /usr/local/bin/trufflehog \
     && rm trufflehog.tar.gz \
+    # Install ttyd 1.6.3 with proper libuv support
     && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.6.3.zip -O ttyd.zip \
     && unzip -q ttyd.zip \
     && cd ttyd-1.6.3 && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DLWS_WITH_LIBUV=ON -DLWS_WITH_LIBEV=OFF .. \
     && make -j"$(nproc)" \
     && make install \
+    && ldconfig \
+    && ttyd --version \
     && cd / && rm -rf ttyd-1.6.3 ttyd.zip
 
 ## Metasploit stage: setup Metasploit configuration and scripts
