@@ -72,3 +72,8 @@ Please feel free to contribute to the tool.
 For more information [Nightingale Wiki](https://github.com/RAJANAGORI/Nightingale/wiki/1.-Nightingale-Docker-for-Pentesters)
 
 Nightingale OWASP Project [Here](https://owasp.org/www-project-nightingale)
+
+
+---
+![Alt](https://repobeats.axiom.co/api/embed/d08113cac7394b77d8c3b788c9fc9d2b1a121488.svg "Repobeats analytics image")
+
