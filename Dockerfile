@@ -155,25 +155,11 @@ COPY binary/ ${BINARIES}
 
 RUN chmod +x ${BINARIES}/* \
     && mv ${BINARIES}/* /usr/local/bin/ \
-    && wget -q -O trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/download/v3.90.10/trufflehog_3.90.10_linux_amd64.tar.gz \
-    && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
-    && chmod +x /usr/local/bin/trufflehog \
-    && rm trufflehog.tar.gz \
-    # Install ttyd 1.6.3 from source with proper dependencies
-    && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.6.3.zip -O ttyd.zip \
-    && unzip -q ttyd.zip \
-    && cd ttyd-1.6.3 && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release \
-        -DLWS_WITH_LIBUV=ON \
-        -DLWS_WITH_LIBEV=OFF \
-        -DCMAKE_INSTALL_PREFIX=/usr/local \
-        -DCMAKE_C_FLAGS="-Wno-error=enum-int-mismatch -Wno-error=deprecated-declarations" \
-        .. \
-    && make -j"$(nproc)" \
-    && make install \
-    && ldconfig \
-    && ttyd --version \
-    && cd / && rm -rf ttyd-1.6.3 ttyd.zip
+    # Install ttyd 1.7.7 from source with proper dependencies
+    && wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip \
+    && unzip 1.7.7.zip \
+    && cd ttyd-1.7.7 && mkdir build && cd build && cmake .. && make && make install \
+    && curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
@@ -196,7 +182,7 @@ RUN set -eux; \
       dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed' && apt-get purge -y "$pkg" || true; \
     done; \
     # apt-get purge -y build-essential gcc g++ make 2>/dev/null || true; \
-    apt-get autoremove -y --purge; \
+    # apt-get autoremove -y --purge; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
     find /usr/share -name "*.pyc" -delete 2>/dev/null || true; \
