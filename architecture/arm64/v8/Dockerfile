@@ -34,49 +34,32 @@ ARG VCS_REF
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.revision="${VCS_REF}"
 
-# Install system dependencies with security best practices
-# hadolint ignore=DL3008,DL3009
+# Install essential packages only, remove unnecessary ones for size optimization
 RUN set -eux; \
-    # Update package lists
     apt-get update -y; \
-    # Install packages
     apt-get install -y --no-install-recommends \
-        # Core utilities
+        # Core utilities (minimal set)
         ca-certificates \
-        # Build tools (will be removed in final stage)
+        # Build tools (will be removed later)
         build-essential cmake \
-        # Libraries required for ttyd compilation and runtime
-        libuv1-dev libuv1 libwebsockets-dev \
-        # Additional dependencies for building ttyd
-        libssl-dev zlib1g-dev \
-        # System tools
-        locate tree zsh figlet dos2unix pv \
-        # Compression tools
-        unzip p7zip-full \
-        # Network services
-        ftp ssh openvpn tor \
-        # Development tools
-        git curl wget \
-        # Text editors
-        nano vim \
-        # File analysis
-        file \
-        # Security testing tools
-        dirb nmap htop john cewl hydra medusa hashcat \
-        # Network utilities
-        traceroute telnet net-tools iputils-ping tcpdump whois host dnsutils \
-        # Mobile testing
-        android-framework-res adb apktool \
-        # Forensics
+        # Essential system tools
+        tree zsh figlet unzip dos2unix \
+        # Network utilities (essential only)
+        curl wget git \
+        # Security tools (core only)
+        nmap htop \
+        # Mobile testing (essential)
+        adb apktool \
+        # Forensics (essential)
         exiftool steghide binwalk foremost \
-        # Database (client only for security)
+        # Database client only
         postgresql-client \
         # Python tools
         pipx; \
-    # Clean up to reduce image size
+    # Clean up immediately
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
-    # Verify critical commands installed
+    # Verify critical tools
     command -v git >/dev/null || { echo "git not installed"; exit 1; }; \
     command -v curl >/dev/null || { echo "curl not installed"; exit 1; }
 
@@ -145,40 +128,33 @@ FROM intermediate AS modules
 COPY configuration/modules-installation/python-install-modules.sh ${SHELLS}/python-install-modules.sh
 COPY configuration/modules-installation/go-install-modules.sh ${SHELLS}/go-install-modules.sh
 
-RUN dos2unix ${SHELLS}/python-install-modules.sh \
-    && dos2unix ${SHELLS}/go-install-modules.sh \
-    && chmod +x ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh \
-    && ln -s ${SHELLS}/python-install-modules.sh /usr/local/bin/python-install-modules \
-    && ln -s ${SHELLS}/go-install-modules.sh /usr/local/bin/go-install-modules \
-    && mkdir -p /root/go/bin /root/go/pkg \
-    && export GOPATH="/root/go" \
-    && python-install-modules \
-    && go-install-modules
+RUN set -eux; \
+    dos2unix ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh; \
+    chmod +x ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh; \
+    ln -s ${SHELLS}/python-install-modules.sh /usr/local/bin/python-install-modules; \
+    ln -s ${SHELLS}/go-install-modules.sh /usr/local/bin/go-install-modules; \
+    mkdir -p /root/go/bin /root/go/pkg; \
+    export GOPATH="/root/go"; \
+    python-install-modules; \
+    go-install-modules; \
+    # Clean up module installation scripts to save space
+    rm -f ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh
 
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
-RUN chmod +x ${BINARIES}/* \
-    && mv ${BINARIES}/* /usr/local/bin/ \
-    && wget -q -O trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/download/v3.90.10/trufflehog_3.90.10_linux_arm64.tar.gz \
-    && tar -xzf trufflehog.tar.gz -C /usr/local/bin/ trufflehog \
-    && chmod +x /usr/local/bin/trufflehog \
-    && rm trufflehog.tar.gz \
-    # Install ttyd 1.6.3 from source with proper dependencies
-    && wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.6.3.zip -O ttyd.zip \
-    && unzip -q ttyd.zip \
-    && cd ttyd-1.6.3 && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release \
-        -DLWS_WITH_LIBUV=ON \
-        -DLWS_WITH_LIBEV=OFF \
-        -DCMAKE_INSTALL_PREFIX=/usr/local \
-        -DCMAKE_C_FLAGS="-Wno-error=enum-int-mismatch -Wno-error=deprecated-declarations" \
-        .. \
-    && make -j"$(nproc)" \
-    && make install \
-    && ldconfig \
-    && ttyd --version \
-    && cd / && rm -rf ttyd-1.6.3 ttyd.zip
+RUN set -eux; \
+    chmod +x ${BINARIES}/*; \
+    mv ${BINARIES}/* /usr/local/bin/; \
+    # Install ttyd with minimal dependencies
+    wget -q -L https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.aarch64 -O /usr/local/bin/ttyd; \
+    chmod +x /usr/local/bin/ttyd; \
+    # Install trufflehog with minimal approach
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
+    # Clean up binaries directory
+    rm -rf ${BINARIES}/*; \
+    # Verify installations
+    ttyd --version && trufflehog --version
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
@@ -197,17 +173,34 @@ COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
 
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
-    grep -Ev '^\s*(#|$)' /tmp/vuln-library-purge | while read -r pkg; do \
-      dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed' && apt-get purge -y "$pkg" || true; \
-    done; \
-    apt-get purge -y build-essential gcc g++ make 2>/dev/null || true; \
+    # Remove build dependencies to reduce size
+    apt-get purge -y build-essential cmake gcc g++ make 2>/dev/null || true; \
+    # Remove unnecessary packages
+    apt-get purge -y \
+        linux-libc-dev \
+        libc6-dev \
+        libstdc++-14-dev \
+        libgcc-14-dev \
+        cpp-14 \
+        gcc-14 \
+        2>/dev/null || true; \
+    # Clean up package cache and temporary files
     apt-get autoremove -y --purge; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
-    find /usr/share -name "*.pyc" -delete 2>/dev/null || true; \
-    find /usr/share -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
+    # Remove documentation and man pages to save space
+    find /usr/share -name "*.md" -delete 2>/dev/null || true; \
+    find /usr/share -name "*.txt" -delete 2>/dev/null || true; \
+    find /usr/share -name "*.html" -delete 2>/dev/null || true; \
+    rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/* 2>/dev/null || true; \
+    # Clean up Python cache
+    find /usr -name "*.pyc" -delete 2>/dev/null || true; \
+    find /usr -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
+    # Clean up Go cache
     go clean -cache -modcache -testcache 2>/dev/null || true; \
+    # Remove .git directories from tools to save space
     find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
+    # Set up final environment
     echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
     echo 'export PAGER="less -R -X -F -K"' >> ~/.bashrc; \
     echo 'help() { command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"; }' >> ~/.bashrc; \
