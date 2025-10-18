@@ -195,7 +195,7 @@ RUN set -eux; \
     grep -Ev '^\s*(#|$)' /tmp/vuln-library-purge | while read -r pkg; do \
       dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed' && apt-get purge -y "$pkg" || true; \
     done; \
-    apt-get purge -y build-essential gcc g++ make 2>/dev/null || true; \
+    # apt-get purge -y build-essential gcc g++ make 2>/dev/null || true; \
     apt-get autoremove -y --purge; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
