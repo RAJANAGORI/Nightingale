@@ -120,18 +120,14 @@ COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
 
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
-    # Remove build dependencies to reduce size
-    apt-get purge -y build-essential cmake gcc g++ make 2>/dev/null || true; \
-    # Remove unnecessary packages
-    apt-get purge -y \
-        linux-libc-dev \
-        libc6-dev \
-        libstdc++-14-dev \
-        libgcc-14-dev \
-        cpp-14 \
-        gcc-14 \
-        2>/dev/null || true; \
-    # Clean up package cache and temporary files
+    grep -Ev '^\s*(#|$)' /tmp/vuln-library-purge | while read -r pkg; do \
+      if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed'; then \
+        echo "Purging $pkg"; \
+        apt-get purge -y "$pkg" || echo "WARN: purge failed for $pkg (continuing)"; \
+      else \
+        echo "Skipping $pkg (not installed)"; \
+      fi; \
+    done; \
     apt-get autoremove -y --purge; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
