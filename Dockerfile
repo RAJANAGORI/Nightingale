@@ -10,13 +10,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update -y; \
     apt-get install -y --no-install-recommends \
-        ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data; \
+        bash ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data; \
     # Clean up immediately
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
     # Verify critical tools
     command -v git >/dev/null || { echo "git not installed"; exit 1; }; \
-    command -v curl >/dev/null || { echo "curl not installed"; exit 1; }
+    command -v curl >/dev/null || { echo "curl not installed"; exit 1; }; \
+    command -v bash >/dev/null || { echo "bash not installed"; exit 1; }
 
 # Stage 2: Copy Scripts and Configurations
 FROM base AS intermediate
@@ -124,6 +125,8 @@ RUN set -eux; \
     apt-get autoremove -y --purge; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
+    # Ensure bash is still available after cleanup
+    command -v bash >/dev/null || { echo "ERROR: bash was removed during cleanup"; exit 1; }; \
     # Remove documentation and man pages to save space
     find /usr/share -name "*.md" -delete 2>/dev/null || true; \
     find /usr/share -name "*.txt" -delete 2>/dev/null || true; \
