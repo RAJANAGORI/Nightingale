@@ -136,6 +136,10 @@ RUN set -eux; \
     # Remove .git directories from tools to save space
     find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
     # Set up final environment
+    echo '' >> ~/.bashrc; \
+    echo 'export GOTTY_URL=https://nightingale.local' >> ~/.bashrc; \
+    echo 'export GOTTY_KEY=/root/.gotty.key' >> ~/.bashrc; \
+    echo 'export GOTTY_CERT=/root/.gotty.crt' >> ~/.bashrc; \
     echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc; \
     echo 'export PAGER="less -R -X -F -K"' >> ~/.bashrc; \
     echo 'help() { command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"; }' >> ~/.bashrc; \
