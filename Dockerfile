@@ -10,24 +10,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update -y; \
     apt-get install -y --no-install-recommends \
-        # Core utilities (minimal set)
-        ca-certificates \
-        # Build tools (will be removed later)
-        build-essential cmake \
-        # Essential system tools
-        tree zsh figlet unzip dos2unix \
-        # Network utilities (essential only)
-        curl wget git \
-        # Security tools (core only)
-        nmap htop \
-        # Mobile testing (essential)
-        adb apktool \
-        # Forensics (essential)
-        exiftool steghide binwalk foremost \
-        # Database client only
-        postgresql-client \
-        # Python tools
-        pipx; \
+        ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data; \
     # Clean up immediately
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
@@ -94,8 +77,9 @@ RUN set -eux; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
     # Install ttyd with minimal dependencies
-    wget -q -L https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64 -O /usr/local/bin/ttyd; \
-    chmod +x /usr/local/bin/ttyd; \
+    && wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip \
+    && unzip 1.7.7.zip \
+    && cd ttyd-1.7.7 && mkdir build && cd build && cmake .. && make && make install \
     # Install trufflehog with minimal approach
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
     # Clean up binaries directory
