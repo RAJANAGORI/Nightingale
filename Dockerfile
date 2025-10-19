@@ -77,9 +77,9 @@ RUN set -eux; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
     # Install ttyd with minimal dependencies
-    wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip; \
-    unzip 1.7.7.zip; \
-    cd ttyd-1.7.7 && mkdir build && cd build && cmake .. && make && make install; \
+    wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.4.zip; \
+    unzip 1.7.4.zip; \
+    cd ttyd-1.7.4 && mkdir build && cd build && cmake .. && make && make install; \
     # Install trufflehog with minimal approach
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
     # Clean up binaries directory
