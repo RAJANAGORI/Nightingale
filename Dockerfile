@@ -27,6 +27,7 @@ COPY configuration/nodejs-env/ /temp/
 RUN set -eux; \
     dos2unix ${HOME}/.bashrc; \
     cat /tmp/banner.sh >> ${HOME}/.bashrc; \
+    echo 'main' >> ${HOME}/.bashrc; \
     mkdir -p /home/tools_web_vapt /home/tools_osint /home/tools_mobile_vapt /home/tools_network_vapt \
         /home/tools_red_teaming /home/tools_forensics /home/wordlist /home/binaries /home/.gf /home/.shells; \
     # Clean up temporary files
@@ -134,15 +135,6 @@ RUN set -eux; \
     # Clean up Go cache
     go clean -cache -modcache -testcache 2>/dev/null || true; \
     # Remove .git directories from tools to save space
-    find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    # Set up final environment
-    echo '' >> ~/.bashrc; \
-    echo 'export GOTTY_URL=https://nightingale.local' >> ~/.bashrc; \
-    echo 'export GOTTY_KEY=/root/.gotty.key' >> ~/.bashrc; \
-    echo 'export GOTTY_CERT=/root/.gotty.crt' >> ~/.bashrc; \
-    echo 'export PATH="$PATH:/root/.local/bin"' >> ~/.bashrc; \
-    echo 'export PAGER="less -R -X -F -K"' >> ~/.bashrc; \
-    echo 'help() { command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"; }' >> ~/.bashrc; \
-    echo 'alias h="help"' >> ~/.bashrc
+    find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
 
 WORKDIR /home

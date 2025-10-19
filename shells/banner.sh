@@ -64,3 +64,18 @@ main() {
 
 # Execute main function
 main
+
+# Set up environment variables
+export GOTTY_URL=https://nightingale.local
+export GOTTY_KEY=/root/.gotty.key
+export GOTTY_CERT=/root/.gotty.crt
+export PATH="$PATH:/root/.local/bin"
+export PAGER="less -R -X -F -K"
+
+# Define help function
+help() { 
+    command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"
+}
+
+# Set up additional aliases
+alias h="help"

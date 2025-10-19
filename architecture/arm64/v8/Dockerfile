@@ -200,21 +200,9 @@ RUN set -eux; \
     # Clean up Go cache
     go clean -cache -modcache -testcache 2>/dev/null || true; \
     # Remove .git directories from tools to save space
-    find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
-    # Set up final environment
-    echo 'export PATH="$PATH:/root/.local/bin:/root/go/bin"' >> ~/.bashrc; \
-    echo 'export PAGER="less -R -X -F -K"' >> ~/.bashrc; \
-    echo 'help() { command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"; }' >> ~/.bashrc; \
-    echo 'alias h="help"' >> ~/.bashrc
+    find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
 
 WORKDIR /home
-
-# # Add healthcheck
-# HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-#     CMD ttyd --version || exit 1
-
-# # Set default command
-# CMD ["ttyd", "--writable", "-p", "7681", "--max-clients", "10", "bash"]
 
 # Add final metadata
 LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized" \
