@@ -76,15 +76,24 @@ COPY binary/ ${BINARIES}
 RUN set -eux; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
-    # Install stable ttyd version 1.7.4 binary
-    wget -L https://github.com/tsl0922/ttyd/releases/download/1.7.4/ttyd.x86_64 -O /usr/local/bin/ttyd; \
-    chmod +x /usr/local/bin/ttyd; \
+    # Install GoTTY (Go-based web terminal) with HTTPS support
+    wget -L https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz -O gotty.tar.gz; \
+    tar -xzf gotty.tar.gz; \
+    mv gotty /usr/local/bin/; \
+    chmod +x /usr/local/bin/gotty; \
+    # Generate self-signed SSL certificates for HTTPS
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+        -keyout /root/.gotty.key \
+        -out /root/.gotty.crt \
+        -subj "/C=US/ST=State/L=City/O=Organization/CN=nightingale.local"; \
+    # Clean up
+    rm -f gotty.tar.gz; \
     # Install trufflehog with minimal approach
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
     # Clean up binaries directory
     rm -rf ${BINARIES}/*; \
     # Verify installations
-    ttyd --version && trufflehog --version
+    gotty --version && trufflehog --version
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit

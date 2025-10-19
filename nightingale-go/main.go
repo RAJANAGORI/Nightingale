@@ -25,7 +25,7 @@ const (
 	defaultContainerName = "Nightingale"
 	defaultPort          = "8080"
 	containerPort        = "7681"
-	ttydCommand          = "ttyd"
+	gottyCommand         = "gotty"
 	defaultShell         = "bash"
 )
 
@@ -275,7 +275,7 @@ func startDockerContainer(arch string) error {
 
 	if isRunning {
 		printWarning("Container is already running")
-		printInfo(fmt.Sprintf("Access it at: http://localhost:%s", defaultPort))
+		printInfo(fmt.Sprintf("Access it at: https://localhost:%s", defaultPort))
 		return nil
 	}
 
@@ -293,14 +293,14 @@ func startDockerContainer(arch string) error {
 		"--name", containerName,
 		"-p", fmt.Sprintf("%s:%s", defaultPort, containerPort),
 		"-d", image,
-		ttydCommand, "-p", containerPort, defaultShell)
+		gottyCommand, "-p", containerPort, "-t", defaultShell)
 
 	if err := executeCommand(cmd); err != nil {
 		return fmt.Errorf("failed to start container: %w", err)
 	}
 
 	printSuccess(fmt.Sprintf("Container started successfully: %s", containerName))
-	printInfo(fmt.Sprintf("Access it at: http://localhost:%s", defaultPort))
+	printInfo(fmt.Sprintf("Access it at: https://localhost:%s", defaultPort))
 	return nil
 }
 
