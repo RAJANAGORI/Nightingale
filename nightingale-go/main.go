@@ -253,7 +253,7 @@ func containerExists(name string) (bool, bool, error) {
 }
 
 // startDockerContainer starts the Nightingale Docker container
-func startDockerContainer(arch string) error {
+func startDockerContainer(arch, protocol string) error {
 	printInfo("Starting Nightingale container...")
 
 	if !commandExists("docker") {
@@ -275,7 +275,7 @@ func startDockerContainer(arch string) error {
 
 	if isRunning {
 		printWarning("Container is already running")
-		printInfo(fmt.Sprintf("Access it at: http://localhost:%s", defaultPort))
+		printInfo(fmt.Sprintf("Access it at: %s://localhost:%s", protocol, defaultPort))
 		return nil
 	}
 
@@ -288,19 +288,31 @@ func startDockerContainer(arch string) error {
 
 	// Start new container
 	printInfo(fmt.Sprintf("Starting new container with image: %s", image))
+	printInfo(fmt.Sprintf("Protocol: %s", protocol))
 
-	cmd := exec.Command("docker", "run", "-it",
-		"--name", containerName,
-		"-p", fmt.Sprintf("%s:%s", defaultPort, containerPort),
-		"-d", image,
-		gottyCommand, "-p", containerPort, "-w", "--reconnect", "--reconnect-time", "1", "--timeout", "0", defaultShell, "-i")
+	var cmd *exec.Cmd
+	if protocol == "https" {
+		// HTTPS with TLS
+		cmd = exec.Command("docker", "run", "-it",
+			"--name", containerName,
+			"-p", fmt.Sprintf("%s:%s", defaultPort, containerPort),
+			"-d", image,
+			gottyCommand, "-p", containerPort, "-t", "--tls-crt", "/root/.gotty.crt", "--tls-key", "/root/.gotty.key", "-w", "--reconnect", "--reconnect-time", "1", "--timeout", "0", defaultShell, "-i")
+	} else {
+		// HTTP (default)
+		cmd = exec.Command("docker", "run", "-it",
+			"--name", containerName,
+			"-p", fmt.Sprintf("%s:%s", defaultPort, containerPort),
+			"-d", image,
+			gottyCommand, "-p", containerPort, "-w", "--reconnect", "--reconnect-time", "1", "--timeout", "0", defaultShell, "-i")
+	}
 
 	if err := executeCommand(cmd); err != nil {
 		return fmt.Errorf("failed to start container: %w", err)
 	}
 
 	printSuccess(fmt.Sprintf("Container started successfully: %s", containerName))
-	printInfo(fmt.Sprintf("Access it at: http://localhost:%s", defaultPort))
+	printInfo(fmt.Sprintf("Access it at: %s://localhost:%s", protocol, defaultPort))
 	return nil
 }
 
@@ -541,8 +553,8 @@ func displayHelp() {
 
 	fmt.Println("COMMANDS:")
 	printColored(colorGreen, "  Container Management:")
-	fmt.Println("    start local <arch>    Start Nightingale container (arch: amd/arm)")
-	fmt.Println("    access                Open web interface in browser")
+	fmt.Println("    start local <arch> [protocol]    Start Nightingale container (arch: amd/arm, protocol: http/https)")
+	fmt.Println("    access                           Open web interface in browser")
 	fmt.Println()
 
 	printColored(colorGreen, "  Module Management:")
@@ -565,6 +577,8 @@ func displayHelp() {
 
 	fmt.Println("EXAMPLES:")
 	fmt.Println("  nightingale-go start local amd")
+	fmt.Println("  nightingale-go start local amd https")
+	fmt.Println("  nightingale-go start local arm http")
 	fmt.Println("  nightingale-go update local arm")
 	fmt.Println("  nightingale-go activate")
 	fmt.Println("  nightingale-go metasploit")
@@ -634,14 +648,19 @@ func main() {
 
 	case "start":
 		if len(os.Args) < 4 {
-			printError("Usage: nightingale-go start local <arch>")
+			printError("Usage: nightingale-go start local <arch> [protocol]")
 			printInfo("Valid architectures: amd, arm")
+			printInfo("Valid protocols: http, https (default: http)")
 			os.Exit(exitError)
 		}
 		option := os.Args[2]
 		arch := os.Args[3]
+		protocol := "http" // default
+		if len(os.Args) >= 5 {
+			protocol = os.Args[4]
+		}
 		if option == "local" {
-			err = startDockerContainer(arch)
+			err = startDockerContainer(arch, protocol)
 		} else {
 			printError("Invalid option. Use 'local'")
 			os.Exit(exitError)
