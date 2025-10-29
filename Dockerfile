@@ -65,8 +65,8 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     METASPLOIT_TOOL=/home/metasploit \
     SHELLS=/home/.shells
 
-# Add custom binaries to PATH
-ENV PATH="${PATH}:/root/.local/bin:${BINARIES}:/root/go/bin"
+# # Add custom binaries to PATH
+# ENV PATH="${PATH}:/root/.local/bin:${BINARIES}:/root/go/bin"
 
 # Copy tool collections from pre-built AMD64 images
 COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable-optimized ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
@@ -99,27 +99,36 @@ RUN set -eux; \
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
-RUN set -eux; \
-    chmod +x ${BINARIES}/*; \
-    mv ${BINARIES}/* /usr/local/bin/; \
-    # Install GoTTY (Go-based web terminal) with HTTPS support
-    wget -L https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz -O gotty.tar.gz; \
-    tar -xzf gotty.tar.gz; \
-    mv gotty /usr/local/bin/; \
-    chmod +x /usr/local/bin/gotty; \
-    # Generate self-signed SSL certificates for HTTPS
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -keyout /root/.gotty.key \
-        -out /root/.gotty.crt \
-        -subj "/C=US/ST=State/L=City/O=Organization/CN=nightingale.local"; \
-    # Clean up
-    rm -f gotty.tar.gz; \
-    # Install trufflehog with minimal approach
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
-    # Clean up binaries directory
-    rm -rf ${BINARIES}/*; \
-    # Verify installations
-    gotty --version && trufflehog --version
+RUN chmod +x ${BINARIES}/* && \
+    mv ${BINARIES}/* /usr/local/bin/ && \
+    wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
+    unzip 1.7.2.zip && \
+    cd ttyd-1.7.2 && mkdir build && cd build && \
+    cmake .. && make && make install &&\
+    ## Install tools using curl or wget 
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+# RUN set -eux; \
+#     chmod +x ${BINARIES}/*; \
+#     mv ${BINARIES}/* /usr/local/bin/; \
+#     # Install GoTTY (Go-based web terminal) with HTTPS support
+#     wget -L https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz -O gotty.tar.gz; \
+#     tar -xzf gotty.tar.gz; \
+#     mv gotty /usr/local/bin/; \
+#     chmod +x /usr/local/bin/gotty; \
+#     # Generate self-signed SSL certificates for HTTPS
+#     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+#         -keyout /root/.gotty.key \
+#         -out /root/.gotty.crt \
+#         -subj "/C=US/ST=State/L=City/O=Organization/CN=nightingale.local"; \
+#     # Clean up
+#     rm -f gotty.tar.gz; \
+#     # Install trufflehog with minimal approach
+#     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
+#     # Clean up binaries directory
+#     rm -rf ${BINARIES}/*; \
+#     # Verify installations
+#     gotty --version && trufflehog --version
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
