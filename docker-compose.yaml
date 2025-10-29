@@ -63,7 +63,7 @@ services:
     
     # Health check
     healthcheck:
-      test: ["CMD", "ttyd", "--version"]
+      test: ["CMD-SHELL", "ps aux | grep -q ttyd || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

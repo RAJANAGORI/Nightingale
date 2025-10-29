@@ -99,14 +99,30 @@ RUN set -eux; \
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
-RUN chmod +x ${BINARIES}/* && \
+RUN set -eux; \
+    chmod +x ${BINARIES}/* && \
     mv ${BINARIES}/* /usr/local/bin/ && \
+    # Install dependencies for ttyd
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+        libwebsockets-dev \
+        libjson-c-dev \
+        libssl-dev && \
+    # Build and install ttyd
     wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
     unzip 1.7.2.zip && \
     cd ttyd-1.7.2 && mkdir build && cd build && \
-    cmake .. && make && make install &&\
-    ## Install tools using curl or wget 
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+    cmake .. && make && make install && \
+    cd / && rm -rf ttyd-1.7.2 1.7.2.zip && \
+    # Install trufflehog
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin && \
+    # Clean up dependencies to save space
+    apt-get remove -y libwebsockets-dev libjson-c-dev libssl-dev && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    # Verify ttyd installation
+    ttyd -V || (echo "ERROR: ttyd installation failed"; exit 1)
 
 # RUN set -eux; \
 #     chmod +x ${BINARIES}/*; \
