@@ -1,10 +1,23 @@
 # Stage 1: Base Image with Dependencies
 FROM ghcr.io/rajanagori/nightingale_programming_image:stable-optimized AS base
 
-LABEL maintainer="Raja Nagori" \
-    email="raja.nagori@owasp.org"
+# Metadata labels following OCI standards
+LABEL org.opencontainers.image.title="Nightingale AMD64" \
+      org.opencontainers.image.description="Docker image for penetration testing with 100+ security tools (AMD64)" \
+      org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \
+      org.opencontainers.image.licenses="GPL-3.0 license" \
+      org.opencontainers.image.url="https://github.com/RAJANAGORI/Nightingale" \
+      org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
+      org.opencontainers.image.documentation="https://github.com/RAJANAGORI/Nightingale/wiki" \
+      org.opencontainers.image.version="2.0.0" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      architecture="amd64"
 
+# Build arguments for flexibility
 ARG DEBIAN_FRONTEND=noninteractive
+ARG BUILD_DATE
+ARG VCS_REF
 
 # Install essential packages only, remove unnecessary ones for size optimization
 RUN set -eux; \
@@ -19,10 +32,15 @@ RUN set -eux; \
     command -v curl >/dev/null || { echo "curl not installed"; exit 1; }; \
     command -v bash >/dev/null || { echo "bash not installed"; exit 1; }
 
-# Stage 2: Copy Scripts and Configurations
+###############################################################################
+# Stage 2: Configuration and Scripts
+###############################################################################
 FROM base AS intermediate
 
-COPY shells/banner.sh /tmp/banner.sh
+# Copy banner script
+COPY --chmod=755 shells/banner.sh /tmp/banner.sh
+
+# Copy Node.js configuration
 COPY configuration/nodejs-env/ /temp/
 
 RUN set -eux; \
@@ -47,6 +65,10 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     METASPLOIT_TOOL=/home/metasploit \
     SHELLS=/home/.shells
 
+# Add custom binaries to PATH
+ENV PATH="${PATH}:/root/.local/bin:${BINARIES}:/root/go/bin"
+
+# Copy tool collections from pre-built AMD64 images
 COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable-optimized ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
 COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable-optimized ${GREP_PATTERNS} ${GREP_PATTERNS}
 COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:stable-optimized ${TOOLS_OSINT} ${TOOLS_OSINT}
@@ -67,6 +89,8 @@ RUN set -eux; \
     chmod +x ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh; \
     ln -s ${SHELLS}/python-install-modules.sh /usr/local/bin/python-install-modules; \
     ln -s ${SHELLS}/go-install-modules.sh /usr/local/bin/go-install-modules; \
+    mkdir -p /root/go/bin /root/go/pkg; \
+    export GOPATH="/root/go"; \
     python-install-modules; \
     go-install-modules; \
     # Clean up module installation scripts to save space
@@ -141,3 +165,17 @@ RUN set -eux; \
     find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
 
 WORKDIR /home
+
+# Add final metadata
+LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable-optimized" \
+      org.opencontainers.image.ref.name="stable-optimized" \
+      stage="final"
+
+###############################################################################
+# Build Instructions:
+# docker buildx build --platform linux/amd64 \
+#   -f Dockerfile \
+#   -t nightingale:stable-optimized .
+#
+# Architecture: AMD64 / x86_64 (Intel, AMD, etc.)
+###############################################################################

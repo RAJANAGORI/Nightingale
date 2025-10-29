@@ -21,8 +21,8 @@ LABEL org.opencontainers.image.title="Nightingale ARM64" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.documentation="https://github.com/RAJANAGORI/Nightingale/wiki" \
       org.opencontainers.image.version="2.0.0" \
-      maintainer="Raja Nagori" \
-      email="raja.nagori@owasp.org" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.revision="${VCS_REF}" \
       architecture="arm64"
 
 # Build arguments for flexibility
@@ -30,38 +30,18 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG BUILD_DATE
 ARG VCS_REF
 
-# Add build metadata
-LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.revision="${VCS_REF}"
-
 # Install essential packages only, remove unnecessary ones for size optimization
 RUN set -eux; \
     apt-get update -y; \
     apt-get install -y --no-install-recommends \
-        # Core utilities (minimal set)
-        ca-certificates \
-        # Build tools (will be removed later)
-        build-essential cmake \
-        # Essential system tools
-        tree zsh figlet unzip dos2unix \
-        # Network utilities (essential only)
-        curl wget git \
-        # Security tools (core only)
-        nmap htop \
-        # Mobile testing (essential)
-        adb apktool \
-        # Forensics (essential)
-        exiftool steghide binwalk foremost \
-        # Database client only
-        postgresql-client \
-        # Python tools
-        pipx; \
+        bash ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data; \
     # Clean up immediately
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
     # Verify critical tools
     command -v git >/dev/null || { echo "git not installed"; exit 1; }; \
-    command -v curl >/dev/null || { echo "curl not installed"; exit 1; }
+    command -v curl >/dev/null || { echo "curl not installed"; exit 1; } \
+    command -v bash >/dev/null || { echo "bash not installed"; exit 1; }
 
 ###############################################################################
 # Stage 2: Configuration and Scripts
@@ -74,25 +54,14 @@ COPY --chmod=755 shells/banner.sh /tmp/banner.sh
 # Copy Node.js configuration
 COPY configuration/nodejs-env/ /temp/
 
-# Setup environment and directories
 RUN set -eux; \
-    # Convert line endings for cross-platform compatibility
-    dos2unix "${HOME}/.bashrc" 2>/dev/null || true; \
-    # Add banner to bashrc
-    cat /tmp/banner.sh >> "${HOME}/.bashrc"; \
-    echo '' >> "${HOME}/.bashrc"; \
-    # Create directory structure
-    mkdir -p \
-        /home/tools_web_vapt \
-        /home/tools_osint \
-        /home/tools_mobile_vapt \
-        /home/tools_network_vapt \
-        /home/tools_red_teaming \
-        /home/tools_forensics \
-        /home/wordlist \
-        /home/binaries \
-        /home/.gf \
-        /home/.shells
+    dos2unix ${HOME}/.bashrc; \
+    cat /tmp/banner.sh >> ${HOME}/.bashrc; \
+    echo 'main' >> ${HOME}/.bashrc; \
+    mkdir -p /home/tools_web_vapt /home/tools_osint /home/tools_mobile_vapt /home/tools_network_vapt \
+        /home/tools_red_teaming /home/tools_forensics /home/wordlist /home/binaries /home/.gf /home/.shells; \
+    # Clean up temporary files
+    rm -f /tmp/banner.sh
 
 # Environment variables for tool locations
 ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
@@ -146,16 +115,24 @@ COPY binary/ ${BINARIES}
 RUN set -eux; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
-    # Install ttyd with minimal dependencies
-    wget -q -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.4.zip; \
-    unzip 1.7.4.zip; \
-    cd ttyd-1.7.4 && mkdir build && cd build && cmake .. && make && make install; \
+    # Install GoTTY (Go-based web terminal) with HTTPS support
+    wget -L https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_arm.tar.gz -O gotty.tar.gz; \
+    tar -xzf gotty.tar.gz; \
+    mv gotty /usr/local/bin/; \
+    chmod +x /usr/local/bin/gotty; \
+    # Generate self-signed SSL certificates for HTTPS
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+        -keyout /root/.gotty.key \
+        -out /root/.gotty.crt \
+        -subj "/C=US/ST=State/L=City/O=Organization/CN=nightingale.local"; \
+    # Clean up
+    rm -f gotty.tar.gz; \
     # Install trufflehog with minimal approach
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
     # Clean up binaries directory
     rm -rf ${BINARIES}/*; \
     # Verify installations
-    ttyd --version && trufflehog --version
+    gotty --version && trufflehog --version
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
