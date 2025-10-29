@@ -100,51 +100,12 @@ WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
 RUN set -eux; \
-    chmod +x ${BINARIES}/* && \
-    mv ${BINARIES}/* /usr/local/bin/ && \
-    # Install dependencies for ttyd
-    apt-get update -y && \
-    apt-get install -y --no-install-recommends \
-        libwebsockets-dev \
-        libjson-c-dev \
-        libssl-dev && \
-    # Build and install ttyd
-    wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.2.zip && \
-    unzip 1.7.2.zip && \
-    cd ttyd-1.7.2 && mkdir build && cd build && \
-    cmake .. && make && make install && \
-    cd / && rm -rf ttyd-1.7.2 1.7.2.zip && \
-    # Install trufflehog
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin && \
-    # Clean up dependencies to save space
-    apt-get remove -y libwebsockets-dev libjson-c-dev libssl-dev && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    # Verify ttyd installation
-    ttyd -V || (echo "ERROR: ttyd installation failed"; exit 1)
-
-# RUN set -eux; \
-#     chmod +x ${BINARIES}/*; \
-#     mv ${BINARIES}/* /usr/local/bin/; \
-#     # Install GoTTY (Go-based web terminal) with HTTPS support
-#     wget -L https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz -O gotty.tar.gz; \
-#     tar -xzf gotty.tar.gz; \
-#     mv gotty /usr/local/bin/; \
-#     chmod +x /usr/local/bin/gotty; \
-#     # Generate self-signed SSL certificates for HTTPS
-#     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-#         -keyout /root/.gotty.key \
-#         -out /root/.gotty.crt \
-#         -subj "/C=US/ST=State/L=City/O=Organization/CN=nightingale.local"; \
-#     # Clean up
-#     rm -f gotty.tar.gz; \
-#     # Install trufflehog with minimal approach
-#     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
-#     # Clean up binaries directory
-#     rm -rf ${BINARIES}/*; \
-#     # Verify installations
-#     gotty --version && trufflehog --version
+    chmod +x ${BINARIES}/*; \
+    mv ${BINARIES}/* /usr/local/bin/; \
+    # Install trufflehog with minimal approach
+    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
+    # Verify installation
+    trufflehog --version
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
@@ -157,7 +118,10 @@ COPY configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/meta
 # Stage 5: Final Image
 FROM metasploit AS final
 
-EXPOSE 5432 8080 8081 7681
+# Install WeTTY (web terminal)
+RUN npm install -g wetty
+
+EXPOSE 3000 5432 8080 8081 7681
 
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
@@ -171,9 +135,9 @@ RUN set -eux; \
         echo "Skipping $pkg (not installed)"; \
       fi; \
     done; \
-    apt-get autoremove -y --purge; \
-    apt-get clean; \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
+    # apt-get autoremove -y --purge; \
+    # apt-get clean; \
+    # rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
     # Ensure bash is still available after cleanup
     command -v bash >/dev/null || { echo "ERROR: bash was removed during cleanup"; exit 1; }; \
     # Remove documentation and man pages to save space

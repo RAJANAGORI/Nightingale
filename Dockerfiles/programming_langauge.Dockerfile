@@ -118,6 +118,10 @@ LABEL org.opencontainers.image.title="Nightingale Programming Image" \
 # Copy Node.js installation script
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
+# Allow overriding Node.js version (WeTTY recommends Node >= 18)
+ARG NODE_VERSION=v18.20.4
+ENV NODE_VERSION=${NODE_VERSION}
+
 # Install runtime dependencies and libraries
 # hadolint ignore=DL3008
 RUN set -eux; \
@@ -127,6 +131,8 @@ RUN set -eux; \
         wget unzip tar \
         # Build tools
         make gcc cmake build-essential \
+        # VCS and network tools required by node installer
+        git curl \
         # Development libraries (alphabetically organized)
         libcurl4-openssl-dev \
         libexpat1-dev \
@@ -179,6 +185,19 @@ ENV PYTHON3="/opt/venv3/bin/python" \
     GOPATH="/home/go" \
     JAVA_HOME="/usr/java/openjdk-26"
 ENV PATH="/opt/venv3/bin:${GOPATH}/bin:${GOROOT}/bin:${JAVA_HOME}/bin:${PATH}"
+
+# Install Node.js via NVM and expose node/npm globally
+RUN set -eux; \
+    chmod +x /temp/node-installation-script.sh; \
+    bash /temp/node-installation-script.sh; \
+    # Link node/npm/npx/pm2 to system PATH for non-login shells
+    ln -sf "/root/.nvm/versions/node/${NODE_VERSION}/bin/node" /usr/local/bin/node; \
+    ln -sf "/root/.nvm/versions/node/${NODE_VERSION}/bin/npm" /usr/local/bin/npm; \
+    ln -sf "/root/.nvm/versions/node/${NODE_VERSION}/bin/npx" /usr/local/bin/npx; \
+    if [ -f "/root/.nvm/versions/node/${NODE_VERSION}/bin/pm2" ]; then \
+      ln -sf "/root/.nvm/versions/node/${NODE_VERSION}/bin/pm2" /usr/local/bin/pm2; \
+    fi; \
+    node --version && npm --version
 
 # Ensure Python shared libraries are found
 RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/python3.conf && ldconfig
