@@ -72,6 +72,18 @@ export GOTTY_CERT=/root/.gotty.crt
 export PATH="$PATH:/root/.local/bin"
 export PAGER="less -R -X -F -K"
 
+# Fix output buffering issues for ttyd terminal
+# These settings prevent freezing after command execution
+export PYTHONUNBUFFERED=1
+export PYTHONIOENCODING=utf-8
+export STDBUF=1
+# Ensure unbuffered output for interactive shells
+if [ -t 1 ]; then
+    export TERM=xterm-256color
+    # Disable line buffering
+    stty -ixon -ixoff 2>/dev/null || true
+fi
+
 # Define help function
 help() { 
     command "$@" --help 2>/dev/null | less -R -X -F -K || command "$@"
