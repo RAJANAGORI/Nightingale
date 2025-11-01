@@ -193,11 +193,10 @@ RUN set -eux; \
     # Remove .git directories from tools to save space
     find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
 
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/local /usr/local
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /opt/venv3 /opt/venv3
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/local/go /home/go
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /home /home
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/java/openjdk-26 /usr/java/openjdk-26
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized /usr/local /usr/local
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized /opt/venv3 /opt/venv3
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized /usr/local/go /home/go
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized /usr/java/openjdk-26 /usr/java/openjdk-26
 
 WORKDIR /home
 

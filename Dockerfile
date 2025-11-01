@@ -195,7 +195,6 @@ RUN set -eux; \
 COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/local /usr/local
 COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /opt/venv3 /opt/venv3
 COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/local/go /home/go
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /home /home
 COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/java/openjdk-26 /usr/java/openjdk-26
 
 WORKDIR /home
