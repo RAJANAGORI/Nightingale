@@ -117,6 +117,10 @@ LABEL org.opencontainers.image.title="Nightingale Programming Image" \
 # Copy Node.js installation script
 COPY configuration/nodejs-env/node-installation-script.sh /temp/node-installation-script.sh
 
+# Allow overriding Node.js version (WeTTY recommends Node >= 18)
+ARG NODE_VERSION=v18.20.4
+ENV NODE_VERSION=${NODE_VERSION}
+
 # Install runtime dependencies and libraries
 # hadolint ignore=DL3008
 RUN set -eux; \
