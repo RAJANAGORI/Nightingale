@@ -1,5 +1,16 @@
+###############################################################################
+# Nightingale: Docker for Pentesters - AMD64 Architecture
+# Description: Multi-stage build for comprehensive pentesting environment
+# Author: Raja Nagori <raja.nagori@owasp.org>
+# License: GPL-3.0
+# GitHub: https://github.com/RAJANAGORI/Nightingale
+# Architecture: AMD64 / x86_64 (Intel, AMD, etc.)
+###############################################################################
+
+# syntax=docker/dockerfile:1.4
+
 # Stage 1: Base Image with Dependencies
-FROM ghcr.io/rajanagori/nightingale_programming_image:stable-optimized AS base
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable AS base
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale AMD64" \
@@ -10,14 +21,10 @@ LABEL org.opencontainers.image.title="Nightingale AMD64" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.documentation="https://github.com/RAJANAGORI/Nightingale/wiki" \
       org.opencontainers.image.version="2.0.0" \
-      org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.revision="${VCS_REF}" \
       architecture="amd64"
 
 # Build arguments for flexibility
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BUILD_DATE
-ARG VCS_REF
 
 # Install essential packages only, remove unnecessary ones for size optimization
 RUN set -eux; \
@@ -66,17 +73,17 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     SHELLS=/home/.shells
 
 # # Add custom binaries to PATH
-# ENV PATH="${PATH}:/root/.local/bin:${BINARIES}:/root/go/bin"
+ENV PATH="${PATH}:/home/.local/bin:${BINARIES}:/home/go/bin"
 
 # Copy tool collections from pre-built AMD64 images
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable-optimized ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable-optimized ${GREP_PATTERNS} ${GREP_PATTERNS}
-COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:stable-optimized ${TOOLS_OSINT} ${TOOLS_OSINT}
-COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:stable-optimized ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:stable-optimized ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable-optimized ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable-optimized ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
-COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable-optimized ${WORDLIST} ${WORDLIST}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${GREP_PATTERNS} ${GREP_PATTERNS}
+COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:stable ${TOOLS_OSINT} ${TOOLS_OSINT}
+COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:stable ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:stable ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:stable ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:stable ${WORDLIST} ${WORDLIST}
 
 ## Modules stage: install Python and Go modules, setup binaries and additional tools
 FROM intermediate AS modules
@@ -89,8 +96,8 @@ RUN set -eux; \
     chmod +x ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh; \
     ln -s ${SHELLS}/python-install-modules.sh /usr/local/bin/python-install-modules; \
     ln -s ${SHELLS}/go-install-modules.sh /usr/local/bin/go-install-modules; \
-    mkdir -p /root/go/bin /root/go/pkg; \
-    export GOPATH="/root/go"; \
+    mkdir -p /home/go/bin /home/go/pkg; \
+    export GOPATH="/home/go"; \
     python-install-modules; \
     go-install-modules; \
     # Clean up module installation scripts to save space
@@ -173,36 +180,29 @@ RUN set -eux; \
         echo "Skipping $pkg (not installed)"; \
       fi; \
     done; \
-    # apt-get autoremove -y --purge; \
-    # apt-get clean; \
-    # rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
-    # Ensure bash is still available after cleanup
-    command -v bash >/dev/null || { echo "ERROR: bash was removed during cleanup"; exit 1; }; \
+    apt-get autoremove -y --purge; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ; \
     # Remove documentation and man pages to save space
     find /usr/share -name "*.md" -delete 2>/dev/null || true; \
     find /usr/share -name "*.txt" -delete 2>/dev/null || true; \
     find /usr/share -name "*.html" -delete 2>/dev/null || true; \
     rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/* 2>/dev/null || true; \
-    # Clean up Python cache
-    find /usr -name "*.pyc" -delete 2>/dev/null || true; \
-    find /usr -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
-    # Clean up Go cache
-    go clean -cache -modcache -testcache 2>/dev/null || true; \
     # Remove .git directories from tools to save space
     find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
 
 WORKDIR /home
 
 # Add final metadata
-LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable-optimized" \
-      org.opencontainers.image.ref.name="stable-optimized" \
+LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:stable" \
+      org.opencontainers.image.ref.name="stable" \
       stage="final"
 
 ###############################################################################
 # Build Instructions:
 # docker buildx build --platform linux/amd64 \
 #   -f Dockerfile \
-#   -t nightingale:stable-optimized .
+#   -t nightingale:stable .
 #
 # Architecture: AMD64 / x86_64 (Intel, AMD, etc.)
 ###############################################################################
