@@ -123,7 +123,9 @@ RUN set -eux; \
     apt-get update -y --fix-missing; \
     apt-get install -y --no-install-recommends \
         # Download utilities
-        wget unzip tar \
+        wget curl unzip tar \
+        # Version control (required for NVM installation)
+        git \
         # Build tools
         make gcc cmake build-essential \
         # Development libraries (alphabetically organized)
