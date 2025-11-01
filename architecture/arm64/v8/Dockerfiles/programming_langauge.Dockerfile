@@ -108,7 +108,6 @@ FROM debian:stable-slim AS final
 LABEL org.opencontainers.image.title="Nightingale Programming Image" \
       org.opencontainers.image.description="Multi-language base image for Nightingale pentesting environment" \
       org.opencontainers.image.authors="Raja Nagori <raja.nagori@owasp.org>" \
-      
       org.opencontainers.image.licenses="GPL-3.0 license" \
       org.opencontainers.image.url="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
@@ -180,6 +179,22 @@ ENV PYTHON3="/opt/venv3/bin/python" \
     JAVA_HOME="/usr/java/openjdk-26"
 ENV PATH="/opt/venv3/bin:$GOPATH/bin:$GOROOT/bin:$JAVA_HOME/bin:$PATH"
 
+# Install Node.js via NVM and expose node/npm globally
+RUN set -eux; \
+    chmod +x /temp/node-installation-script.sh; \
+    bash /temp/node-installation-script.sh; \
+    # Link node/npm/npx/pm2 to system PATH for non-login shells
+    ln -sf "/root/.nvm/versions/node/${NODE_VERSION}/bin/node" /usr/local/bin/node; \
+    ln -sf "/root/.nvm/versions/node/${NODE_VERSION}/bin/npm" /usr/local/bin/npm; \
+    ln -sf "/root/.nvm/versions/node/${NODE_VERSION}/bin/npx" /usr/local/bin/npx; \
+    if [ -f "/root/.nvm/versions/node/${NODE_VERSION}/bin/pm2" ]; then \
+      ln -sf "/root/.nvm/versions/node/${NODE_VERSION}/bin/pm2" /usr/local/bin/pm2; \
+    fi; \
+    node --version && npm --version
+
+# Ensure Python shared libraries are found
+RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/python3.conf && ldconfig
+
 # Verify all installations
 RUN set -eux; \
     echo "Verifying installations..."; \
@@ -208,6 +223,7 @@ CMD ["/bin/bash"]
 # - Ruby 3.4.5
 # - Go 1.23.2
 # - Java OpenJDK 26
+# - Node.js 18.20.4
 #
 # Total Size: Optimized multi-stage build
 ###############################################################################

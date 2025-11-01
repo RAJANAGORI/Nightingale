@@ -230,6 +230,7 @@ CMD ["/bin/bash"]
 # - Ruby 3.4.5
 # - Go 1.23.2
 # - Java OpenJDK 26
+# - Node.js 18.20.4
 #
 # Total Size: Optimized multi-stage build
 ###############################################################################

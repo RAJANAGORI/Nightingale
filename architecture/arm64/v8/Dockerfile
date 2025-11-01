@@ -21,14 +21,10 @@ LABEL org.opencontainers.image.title="Nightingale ARM64" \
       org.opencontainers.image.source="https://github.com/RAJANAGORI/Nightingale" \
       org.opencontainers.image.documentation="https://github.com/RAJANAGORI/Nightingale/wiki" \
       org.opencontainers.image.version="2.0.0" \
-      org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.revision="${VCS_REF}" \
       architecture="arm64"
 
 # Build arguments for flexibility
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BUILD_DATE
-ARG VCS_REF
 
 # Install essential packages only, remove unnecessary ones for size optimization
 RUN set -eux; \
@@ -76,10 +72,10 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     METASPLOIT_CONFIG=/home/metasploit_config \
     METASPLOIT_TOOL=/home/metasploit \
     SHELLS=/home/.shells \
-    GOPATH=/root/go
+    GOPATH=/home/go
 
 # Add custom binaries to PATH
-ENV PATH="${PATH}:/root/.local/bin:${BINARIES}:/root/go/bin"
+ENV PATH="${PATH}:/home/.local/bin:${BINARIES}:/home/go/bin"
 
 # Copy tool collections from pre-built ARM64 images
 COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64-optimized ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
@@ -102,8 +98,8 @@ RUN set -eux; \
     chmod +x ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh; \
     ln -s ${SHELLS}/python-install-modules.sh /usr/local/bin/python-install-modules; \
     ln -s ${SHELLS}/go-install-modules.sh /usr/local/bin/go-install-modules; \
-    mkdir -p /root/go/bin /root/go/pkg; \
-    export GOPATH="/root/go"; \
+    mkdir -p /home/go/bin /home/go/pkg; \
+    export GOPATH="/home/go"; \
     python-install-modules; \
     go-install-modules; \
     # Clean up module installation scripts to save space
@@ -113,26 +109,53 @@ WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
 RUN set -eux; \
+    # Remove ttyd from binaries since it's incompatible with current OpenSSL version
+    # We'll build it from source with proper library linking
+    rm -f ${BINARIES}/ttyd; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
-    # Install GoTTY (Go-based web terminal) with HTTPS support
-    wget -L https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_arm.tar.gz -O gotty.tar.gz; \
-    tar -xzf gotty.tar.gz; \
-    mv gotty /usr/local/bin/; \
-    chmod +x /usr/local/bin/gotty; \
-    # Generate self-signed SSL certificates for HTTPS
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -keyout /root/.gotty.key \
-        -out /root/.gotty.crt \
-        -subj "/C=US/ST=State/L=City/O=Organization/CN=nightingale.local"; \
-    # Clean up
-    rm -f gotty.tar.gz; \
     # Install trufflehog with minimal approach
     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
-    # Clean up binaries directory
-    rm -rf ${BINARIES}/*; \
-    # Verify installations
-    gotty --version && trufflehog --version
+    # Verify installation
+    trufflehog --version
+
+# Build ttyd from source - the binary is incompatible with OpenSSL 3.x
+# First build libwebsockets with libuv support, then build ttyd
+RUN set -eux; \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        wget \
+        unzip \
+        libuv1-dev \
+        libssl-dev \
+        zlib1g-dev \
+        libjson-c-dev \
+        libcap-dev \
+        libzstd-dev \
+        git \
+        && rm -rf /var/lib/apt/lists/* && \
+    # Build libwebsockets from source with libuv support
+    cd /tmp && \
+    git clone --depth 1 --branch v4.3-stable https://github.com/warmcat/libwebsockets.git libwebsockets-src && \
+    cd libwebsockets-src && \
+    mkdir build && cd build && \
+    cmake .. -DLWS_WITH_LIBUV=ON -DLWS_WITH_LIBEVENT=OFF -DLWS_WITH_LIBEV=OFF -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && \
+    make install && \
+    ldconfig && \
+    cd /tmp && rm -rf libwebsockets-src && \
+    # Now build ttyd
+    wget -L https://github.com/tsl0922/ttyd/archive/refs/tags/1.7.7.zip && \
+    unzip 1.7.7.zip && \
+    cd ttyd-1.7.7 && mkdir build && cd build && \
+    cmake .. -DLWS_WITH_LIBUV=ON -DLWS_WITH_LIBEVENT=OFF -DLWS_WITH_LIBEV=OFF -DCMAKE_BUILD_TYPE=Release && \
+    make && make install && \
+    cd /tmp && rm -rf ttyd-1.7.7 1.7.7.zip && \
+    # Verify ttyd installation and that it can find required libraries
+    command -v ttyd >/dev/null || { echo "ERROR: ttyd build failed"; exit 1; }; \
+    ttyd --version || { echo "ERROR: ttyd cannot run - library dependency issue"; exit 1; }
 
 ## Metasploit stage: setup Metasploit configuration and scripts
 FROM modules AS metasploit
@@ -151,33 +174,30 @@ COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
 
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
-    # Remove build dependencies to reduce size
-    apt-get purge -y build-essential cmake gcc g++ make 2>/dev/null || true; \
-    # Remove unnecessary packages
-    apt-get purge -y \
-        linux-libc-dev \
-        libc6-dev \
-        libstdc++-14-dev \
-        libgcc-14-dev \
-        cpp-14 \
-        gcc-14 \
-        2>/dev/null || true; \
-    # Clean up package cache and temporary files
+    grep -Ev '^\s*(#|$)' /tmp/vuln-library-purge | while read -r pkg; do \
+      if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed'; then \
+        echo "Purging $pkg"; \
+        apt-get purge -y "$pkg" || echo "WARN: purge failed for $pkg (continuing)"; \
+      else \
+        echo "Skipping $pkg (not installed)"; \
+      fi; \
+    done; \
     apt-get autoremove -y --purge; \
     apt-get clean; \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/*; \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ; \
     # Remove documentation and man pages to save space
     find /usr/share -name "*.md" -delete 2>/dev/null || true; \
     find /usr/share -name "*.txt" -delete 2>/dev/null || true; \
     find /usr/share -name "*.html" -delete 2>/dev/null || true; \
     rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/* 2>/dev/null || true; \
-    # Clean up Python cache
-    find /usr -name "*.pyc" -delete 2>/dev/null || true; \
-    find /usr -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
-    # Clean up Go cache
-    go clean -cache -modcache -testcache 2>/dev/null || true; \
     # Remove .git directories from tools to save space
     find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
+
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/local /usr/local
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /opt/venv3 /opt/venv3
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/local/go /home/go
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /home /home
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable-optimized /usr/java/openjdk-26 /usr/java/openjdk-26
 
 WORKDIR /home
 
