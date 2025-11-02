@@ -110,7 +110,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/programming_langauge.Dockerfile
+        file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/arm64
         push: true
         cache-from: type=gha
@@ -124,7 +124,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/programming_langauge.Dockerfile
+        file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/arm64
         push: true
         tags: |
@@ -234,7 +234,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/${{ matrix.dockerfile.file }}
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64
         push: true
         cache-from: type=gha
@@ -248,7 +248,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/${{ matrix.dockerfile.file }}
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64
         push: true
         tags: |
@@ -338,7 +338,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfile
+        file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
         cache-from: type=gha
@@ -352,7 +352,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfile
+        file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
         tags: |
@@ -452,7 +452,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/${{ matrix.dockerfile.file }}
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64
         push: true
         cache-from: type=gha
@@ -466,7 +466,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfiles/${{ matrix.dockerfile.file }}
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64
         push: true
         tags: |
@@ -545,7 +545,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfile
+        file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
         cache-from: type=gha
@@ -559,7 +559,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfile
+        file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
         tags: |
