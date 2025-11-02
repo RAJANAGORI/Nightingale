@@ -111,7 +111,7 @@ jobs:
       with:
         context: .
         file: Dockerfiles/programming_langauge.Dockerfile
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -125,7 +125,7 @@ jobs:
       with:
         context: .
         file: Dockerfiles/programming_langauge.Dockerfile
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64-optimized
@@ -235,7 +235,7 @@ jobs:
       with:
         context: .
         file: Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -249,7 +249,7 @@ jobs:
       with:
         context: .
         file: Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-optimized
@@ -339,7 +339,7 @@ jobs:
       with:
         context: .
         file: Dockerfile
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -353,7 +353,7 @@ jobs:
       with:
         context: .
         file: Dockerfile
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64-optimized
@@ -453,7 +453,7 @@ jobs:
       with:
         context: .
         file: Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -467,7 +467,7 @@ jobs:
       with:
         context: .
         file: Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64-optimized
@@ -546,7 +546,7 @@ jobs:
       with:
         context: .
         file: Dockerfile
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -560,7 +560,7 @@ jobs:
       with:
         context: .
         file: Dockerfile
-        platforms: linux/amd64
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64-optimized
