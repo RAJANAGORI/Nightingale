@@ -36,7 +36,7 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
     # Verify critical tools
     command -v git >/dev/null || { echo "git not installed"; exit 1; }; \
-    command -v curl >/dev/null || { echo "curl not installed"; exit 1; } \
+    command -v curl >/dev/null || { echo "curl not installed"; exit 1; }; \
     command -v bash >/dev/null || { echo "bash not installed"; exit 1; }
 
 ###############################################################################
