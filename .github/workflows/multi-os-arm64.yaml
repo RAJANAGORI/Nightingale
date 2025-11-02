@@ -1,4 +1,4 @@
-name: Docker Image stable
+name: Docker Image ARM64
 
 on:
   schedule:
