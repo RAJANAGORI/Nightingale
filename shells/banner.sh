@@ -8,8 +8,18 @@
 # License: GPL-3.0
 ###############################################################################
 
-# Enable strict error handling
-set -euo pipefail
+# Enable strict error handling only for non-interactive shells
+# Interactive shells should not exit on non-zero statuses (which breaks ttyd)
+case $- in
+    *i*)
+        # Interactive: keep safer pipes but do not use -e or -u
+        set -o pipefail
+        ;;
+    *)
+        # Non-interactive scripts: use strict mode
+        set -euo pipefail
+        ;;
+esac
 
 # Set secure PATH
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
