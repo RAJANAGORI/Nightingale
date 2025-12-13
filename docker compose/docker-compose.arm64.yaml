@@ -1,23 +1,23 @@
 services:
   backend:
-    image: ghcr.io/rajanagori/nightingale_backend:arm64-optimized
+    image: ghcr.io/rajanagori/nightingale_backend:arm64
     platform: linux/arm64
     # Mount the host project into /home so File Explorer can see it
     volumes:
       - backend_data_home:/home    # adjust path if your compose file isn’t one level down
-      - backend_data:/app      # mount backend code for live edits
-    working_dir: /app
+      - backend_data:/home      # mount backend code for live edits
+    working_dir: /home
     ports:
       - "8765:8765"
     restart: always
 
   frontend:
-    image: ghcr.io/rajanagori/nightingale_frontend:arm64-optimized
+    image: ghcr.io/rajanagori/nightingale_frontend:arm64
     platform: linux/arm64
     volumes:
-      - frontend_data_app:/app
+      - frontend_data_app:/home/frontend
       - frontend_data_app_node_nodules:/app/node_modules  # keep container’s node_modules intact
-    working_dir: /app
+    working_dir: /home/frontend
     ports:
       - "3000:3000"
     environment:
