@@ -37,11 +37,11 @@ https://github.com/user-attachments/assets/845631f4-2fba-4614-8f8b-ec7b40d6fa02
 - IWCON - 2023
 - c0c0n - 2024
 
-## 🚀 **OPTIMIZATION UPDATE - v2.0.0**
+## 🚀 **OPTIMIZATION UPDATE**
 
 ### **Major Performance Improvements**
 
-Nightingale v2.0.0 introduces significant optimizations that deliver:
+Nightingale introduces significant optimizations that deliver:
 
 - **📦 Docker Image Size Reduction**: 35-65% smaller images (2.3GB → 700-900MB)
 - **🔒 Security Enhancements**: Fixed critical vulnerabilities and applied security best practices
