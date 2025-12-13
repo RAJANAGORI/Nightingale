@@ -6,7 +6,7 @@
 ###############################################################################
 
 # Base image with programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:stable-optimized
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale Network VAPT" \
@@ -100,5 +100,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/network_vapt.Dockerfile \
-#   -t nightingale_network_vapt_image:stable-optimized .
+#   -t nightingale_network_vapt_image:stable .
 ###############################################################################

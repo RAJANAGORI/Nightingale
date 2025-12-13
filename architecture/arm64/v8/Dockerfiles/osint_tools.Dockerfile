@@ -6,7 +6,7 @@
 ###############################################################################
 
 # Base image with programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale OSINT Tools" \
@@ -137,5 +137,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/osint_tools.Dockerfile \
-#   -t nightingale_osint_tools_image:arm64-optimized .
+#   -t nightingale_osint_tools_image:arm64 .
 ###############################################################################

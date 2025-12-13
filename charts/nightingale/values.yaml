@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/rajanagori/nightingale
-  tag: stable-optimized
+  tag: stable
   pullPolicy: IfNotPresent
 
 strategy:

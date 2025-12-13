@@ -23,7 +23,7 @@ services:
   ###########################################################################
   nightingale:
     <<: *common-settings
-    image: ghcr.io/rajanagori/nightingale:arm64-optimized
+    image: ghcr.io/rajanagori/nightingale:arm64
     container_name: nightingale
     hostname: nightingale
     

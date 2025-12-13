@@ -6,7 +6,7 @@
 ###############################################################################
 
 # Base image with programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:stable-optimized
+FROM ghcr.io/rajanagori/nightingale_programming_image:stable
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale Mobile VAPT" \
@@ -144,7 +144,7 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/mobile_vapt.Dockerfile \
-#   -t nightingale_mobile_vapt_image:stable-optimized .
+#   -t nightingale_mobile_vapt_image:stable .
 #
 # Start MobSF:
 # cd ${TOOLS_MOBILE_VAPT}/Mobile-Security-Framework-MobSF

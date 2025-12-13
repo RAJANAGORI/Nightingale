@@ -6,7 +6,7 @@
 ###############################################################################
 
 # Base image with programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale Web VAPT" \
@@ -242,5 +242,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/web_vapt.Dockerfile \
-#   -t nightingale_web_vapt_image:arm64-optimized .
+#   -t nightingale_web_vapt_image:arm64 .
 ###############################################################################

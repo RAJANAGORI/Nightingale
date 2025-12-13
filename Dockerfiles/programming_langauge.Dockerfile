@@ -222,7 +222,7 @@ CMD ["/bin/bash"]
 
 ###############################################################################
 # Build Instructions:
-# docker build -f Dockerfiles/programming_langauge.Dockerfile -t nightingale_programming_image:stable-optimized .
+# docker build -f Dockerfiles/programming_langauge.Dockerfile -t nightingale_programming_image:stable .
 #
 # Included Languages:
 # - Python 3.12.11

@@ -10,7 +10,7 @@
 # syntax=docker/dockerfile:1.4
 
 # Stage 1: Base Image with Dependencies
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized AS base
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64 AS base
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale ARM64" \
@@ -78,14 +78,14 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
 ENV PATH="${PATH}:/home/.local/bin:${BINARIES}:/home/go/bin"
 
 # Copy tool collections from pre-built ARM64 images
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64-optimized ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64-optimized ${GREP_PATTERNS} ${GREP_PATTERNS}
-COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:arm64-optimized ${TOOLS_OSINT} ${TOOLS_OSINT}
-COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:arm64-optimized ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:arm64-optimized ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64-optimized ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
-COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64-optimized ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
-COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:arm64-optimized ${WORDLIST} ${WORDLIST}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64 ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:arm64 ${GREP_PATTERNS} ${GREP_PATTERNS}
+COPY --from=ghcr.io/rajanagori/nightingale_osint_tools_image:arm64 ${TOOLS_OSINT} ${TOOLS_OSINT}
+COPY --from=ghcr.io/rajanagori/nightingale_mobile_vapt_image:arm64 ${TOOLS_MOBILE_VAPT} ${TOOLS_MOBILE_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_network_vapt_image:arm64 ${TOOLS_NETWORK_VAPT} ${TOOLS_NETWORK_VAPT}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64 ${TOOLS_RED_TEAMING} ${TOOLS_RED_TEAMING}
+COPY --from=ghcr.io/rajanagori/nightingale_forensic_and_red_teaming:arm64 ${TOOLS_FORENSICS} ${TOOLS_FORENSICS}
+COPY --from=ghcr.io/rajanagori/nightingale_wordlist_image:arm64 ${WORDLIST} ${WORDLIST}
 
 ## Modules stage: install Python and Go modules, setup binaries and additional tools
 FROM intermediate AS modules
@@ -193,23 +193,23 @@ RUN set -eux; \
     # Remove .git directories from tools to save space
     find ${TOOLS_WEB_VAPT} ${TOOLS_OSINT} ${TOOLS_MOBILE_VAPT} ${TOOLS_NETWORK_VAPT} ${TOOLS_RED_TEAMING} ${TOOLS_FORENSICS} ${WORDLIST} -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true;
 
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized /usr/local /usr/local
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized /opt/venv3 /opt/venv3
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized /usr/local/go /home/go
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized /usr/java/openjdk-26 /usr/java/openjdk-26
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64 /usr/local /usr/local
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64 /opt/venv3 /opt/venv3
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64 /usr/local/go /home/go
+COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64 /usr/java/openjdk-26 /usr/java/openjdk-26
 
 WORKDIR /home
 
 # Add final metadata
-LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized" \
-      org.opencontainers.image.ref.name="arm64-optimized" \
+LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:arm64" \
+      org.opencontainers.image.ref.name="arm64" \
       stage="final"
 
 ###############################################################################
 # Build Instructions:
 # docker buildx build --platform linux/arm64 \
 #   -f architecture/arm64/v8/Dockerfile \
-#   -t nightingale:arm64-optimized .
+#   -t nightingale:arm64 .
 #
 # Architecture: ARM64 / aarch64 (Apple Silicon, AWS Graviton, Raspberry Pi 4+)
 ###############################################################################

@@ -6,7 +6,7 @@
 ###############################################################################
 
 # Base image with programming language support
-FROM ghcr.io/rajanagori/nightingale_programming_image:arm64-optimized
+FROM ghcr.io/rajanagori/nightingale_programming_image:arm64
 
 # Metadata labels following OCI standards
 LABEL org.opencontainers.image.title="Nightingale Forensics & Red Team" \
@@ -93,5 +93,5 @@ CMD ["/bin/bash"]
 #
 # Usage:
 # docker build -f Dockerfiles/forensics_and_redteam.Dockerfile \
-#   -t nightingale_forensic_and_red_teaming:arm64-optimized .
+#   -t nightingale_forensic_and_red_teaming:arm64 .
 ###############################################################################

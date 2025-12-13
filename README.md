@@ -85,12 +85,12 @@ Nightingale v2.0.0 introduces significant optimizations that deliver:
 
 ```bash
 # Pull optimized images
-docker pull ghcr.io/rajanagori/nightingale:stable-optimized
-docker pull ghcr.io/rajanagori/nightingale:arm64-optimized
+docker pull ghcr.io/rajanagori/nightingale:stable
+docker pull ghcr.io/rajanagori/nightingale:arm64
 
 # Run with optimized image
-docker run -it --name Nightingale-optimized -p 8080:7681 \
-  ghcr.io/rajanagori/nightingale:stable-optimized ttyd -p 7681 bash
+docker run -it --name Nightingale -p 8080:7681 \
+  ghcr.io/rajanagori/nightingale:stable ttyd -p 7681 bash
 
 # Access via browser
 open http://localhost:8080
@@ -100,11 +100,11 @@ open http://localhost:8080
 
 ```bash
 # Build optimized main image
-docker build -t nightingale:stable-optimized .
+docker build -t nightingale:stable .
 
 # Build optimized ARM64 image
 cd architecture/arm64/v8
-docker buildx build --platform linux/arm64 -t nightingale:arm64-optimized .
+docker buildx build --platform linux/arm64 -t nightingale:arm64 .
 ```
 
 ---
