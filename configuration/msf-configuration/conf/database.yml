@@ -1,9 +1,101 @@
+###############################################################################
+# Metasploit Framework Database Configuration
+# Description: PostgreSQL connection settings for Metasploit
+# Author: Raja Nagori <raja.nagori@owasp.org>
+# License: GPL-3.0
+#
+# SECURITY WARNING:
+# - This file contains database credentials
+# - Change the default password in production environments
+# - Restrict file permissions: chmod 600 database.yml
+# - Do not commit real credentials to version control
+###############################################################################
+
+# Production environment configuration
 production:
+    # Database adapter (PostgreSQL required for Metasploit)
     adapter: postgresql
+    
+    # Database name
+    # Default: msfdb (created during Metasploit setup)
     database: msfdb
+    
+    # Database username
+    # Default: msf (created during setup)
     username: msf
+    
+    # Database password
+    # WARNING: Change this default password!
+    # For production: Use a strong password and store in secrets management
+    # Example: Use environment variable: <%= ENV['MSF_DB_PASSWORD'] %>
     password: $dockerforpentester$
+    
+    # Database host
+    # 0.0.0.0: Listen on all interfaces (for Docker networking)
+    # localhost: Local only (more secure if database is on same host)
+    # For production: Use specific IP or hostname
     host: 0.0.0.0
+    
+    # Database port
+    # Default PostgreSQL port: 5432
     port: 5432
+    
+    # Connection pool size
+    # Number of connections to maintain
+    # Adjust based on your workload (default: 75)
+    # Higher values = more concurrent operations but more memory
     pool: 75
+    
+    # Connection timeout (seconds)
+    # Time to wait for database connection before failing
+    # Increase if database is slow or network latency is high
     timeout: 5
+    
+    # Optional: Minimum connections to keep in pool
+    # min_messages: notice
+    
+    # Optional: Database encoding
+    # encoding: unicode
+    
+    # Optional: SSL mode for secure connections
+    # Uncomment for production environments with SSL
+    # sslmode: require
+    # sslcert: /path/to/client-cert.pem
+    # sslkey: /path/to/client-key.pem
+    # sslrootcert: /path/to/ca-cert.pem
+
+# Development environment configuration (optional)
+# Uncomment and customize for local development
+# development:
+#     adapter: postgresql
+#     database: msfdb_dev
+#     username: msf_dev
+#     password: dev_password
+#     host: localhost
+#     port: 5432
+#     pool: 25
+#     timeout: 5
+
+# Test environment configuration (optional)
+# Uncomment for running tests
+# test:
+#     adapter: postgresql
+#     database: msfdb_test
+#     username: msf_test
+#     password: test_password
+#     host: localhost
+#     port: 5432
+#     pool: 10
+#     timeout: 5
+
+###############################################################################
+# Best Practices:
+# 1. Use environment variables for sensitive data
+# 2. Enable SSL/TLS for production databases
+# 3. Use strong, unique passwords (minimum 16 characters)
+# 4. Restrict database user permissions to minimum required
+# 5. Regularly rotate passwords and update credentials
+# 6. Monitor database connections and performance
+# 7. Keep PostgreSQL updated to latest secure version
+# 8. Use secrets management tools (Vault, AWS Secrets Manager, etc.)
+###############################################################################

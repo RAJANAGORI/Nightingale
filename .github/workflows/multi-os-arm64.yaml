@@ -4,6 +4,22 @@ on:
   schedule:
     - cron: '0 23 * * 6' # Every Saturday at 11:00 PM UTC
   workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Select which build to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - programming
+        - dependent
+        - main
+      force_rebuild:
+        description: 'Force rebuild even if images exist'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -21,6 +37,8 @@ jobs:
   # Step 1: Build Programming Image
   build-programming:
     runs-on: ubuntu-latest
+    # Only run if: scheduled (cron) OR manual dispatch with 'all' or 'programming'
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.build_type == 'all' || inputs.build_type == 'programming')) }}
     outputs:
       commit_hash: ${{ github.sha }}
     steps:
@@ -34,8 +52,13 @@ jobs:
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
         sudo docker system prune -af --volumes || true
         echo "=== AFTER CLEANUP ==="; df -h
+
     - name: Debug Environment Variables
       run: |
+        echo "=== BUILD CONFIGURATION ==="
+        echo "Event: ${{ github.event_name }}"
+        echo "Build Type: ${{ inputs.build_type || 'all (scheduled)' }}"
+        echo "Force Rebuild: ${{ inputs.force_rebuild || 'false' }}"
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
         echo "USERNAME=${{ env.USERNAME }}"
         echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
@@ -46,6 +69,7 @@ jobs:
           echo "Error: Missing registry credentials"
           exit 1
         fi
+
     - name: Login to GHCR
       uses: docker/login-action@v3
       with:
@@ -80,26 +104,28 @@ jobs:
         docker buildx ls
         DRIVER=$(docker buildx ls | awk '/\*/{print $2}')
         echo "driver=$DRIVER" >> "$GITHUB_OUTPUT"
+
     - name: Build and Push Programming Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
-        platforms: linux/arm64/v8
+        platforms: linux/arm64
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
+
     - name: Build and Push Programming Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
-        platforms: linux/arm64/v8
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
@@ -118,6 +144,8 @@ jobs:
   build-dependent:
     needs: build-programming
     runs-on: ubuntu-latest
+    # Only run if: scheduled (cron) OR manual dispatch with 'all'
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.build_type == 'all') }}
     strategy:
       matrix:
         dockerfile:
@@ -137,6 +165,7 @@ jobs:
       COMMIT_HASH: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v4
+
     - name: Maximize runner disk space
       run: |
         set -eux
@@ -145,13 +174,19 @@ jobs:
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup || true
         sudo docker system prune -af --volumes || true
         echo "=== AFTER CLEANUP ==="; df -h
+
     - name: Debug Variables
       run: |
+        echo "=== BUILD CONFIGURATION ==="
+        echo "Event: ${{ github.event_name }}"
+        echo "Build Type: ${{ inputs.build_type || 'all (scheduled)' }}"
+        echo "Force Rebuild: ${{ inputs.force_rebuild || 'false' }}"
         echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
         echo "USERNAME=${{ env.USERNAME }}"
         echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
         echo "Matrix Name=${{ matrix.dockerfile.name }}"
         echo "Matrix File=${{ matrix.dockerfile.file }}"
+
     - name: Validate Secrets
       run: |
         if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
@@ -165,6 +200,7 @@ jobs:
         registry: ghcr.io
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.TOKEN }}
+
     - name: Set Username to Lowercase
       run: |
         USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
@@ -199,7 +235,7 @@ jobs:
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/arm64/v8
+        platforms: linux/arm64
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -213,7 +249,7 @@ jobs:
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
-        platforms: linux/arm64/v8
+        platforms: linux/arm64
         push: true
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
@@ -227,15 +263,24 @@ jobs:
         docker builder prune -af || true
         docker system prune -af --volumes || true
         df -h
-    
+
   # Step 3: Build Final Image Using Main Dockerfile
   build-main:
     needs: build-dependent
     runs-on: ubuntu-latest
+    # Only run if: scheduled (cron) OR manual dispatch with 'all'
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.build_type == 'all') }}
     env:
       COMMIT_HASH: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v4
+
+    - name: Debug Build Configuration
+      run: |
+        echo "=== BUILD CONFIGURATION ==="
+        echo "Event: ${{ github.event_name }}"
+        echo "Build Type: ${{ inputs.build_type || 'all (scheduled)' }}"
+        echo "Force Rebuild: ${{ inputs.force_rebuild || 'false' }}"
 
     - name: Maximize runner disk space
       run: |
@@ -294,7 +339,7 @@ jobs:
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
-        platforms: linux/arm64/v8
+        platforms: linux/arm64
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -307,7 +352,214 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: Dockerfile
+        file: architecture/arm64/v8/Dockerfile
+        platforms: linux/arm64
+        push: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
+
+    - name: Post-build prune
+      if: always()
+      run: |
+        set -eux
+        docker buildx prune -af || true
+        docker builder prune -af || true
+        docker system prune -af --volumes || true
+        df -h
+
+  # Standalone jobs for selective builds
+  build-dependent-standalone:
+    runs-on: ubuntu-latest
+    # Only run if: manual dispatch with 'dependent'
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_type == 'dependent' }}
+    strategy:
+      matrix:
+        dockerfile:
+          - name: nightingale_forensic_and_red_teaming
+            file: forensics_and_redteam.Dockerfile
+          - name: nightingale_mobile_vapt_image
+            file: mobile_vapt.Dockerfile
+          - name: nightingale_network_vapt_image
+            file: network_vapt.Dockerfile
+          - name: nightingale_osint_tools_image
+            file: osint_tools.Dockerfile
+          - name: nightingale_web_vapt_image
+            file: web_vapt.Dockerfile
+          - name: nightingale_wordlist_image
+            file: wordlist.Dockerfile
+    env:
+      COMMIT_HASH: ${{ github.sha }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Debug Variables
+      run: |
+        echo "=== BUILD CONFIGURATION ==="
+        echo "Event: ${{ github.event_name }}"
+        echo "Build Type: ${{ inputs.build_type || 'all (scheduled)' }}"
+        echo "Force Rebuild: ${{ inputs.force_rebuild || 'false' }}"
+        echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
+        echo "USERNAME=${{ env.USERNAME }}"
+        echo "COMMIT_HASH=${{ env.COMMIT_HASH }}"
+        echo "Matrix Name=${{ matrix.dockerfile.name }}"
+        echo "Matrix File=${{ matrix.dockerfile.file }}"
+
+    - name: Validate Secrets
+      run: |
+        if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
+          echo "Error: Missing registry credentials"
+          exit 1
+        fi
+
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.TOKEN }}
+
+    - name: Set Username to Lowercase
+      run: |
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+    - name: Get Commit Hash
+      id: vars
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
+        driver: docker-container
+        install: true
+        use: true
+
+    - name: Check Buildx driver
+      id: bxl
+      run: |
+        set -e
+        docker buildx ls
+        DRIVER=$(docker buildx ls | awk '/\*/{print $2}')
+        echo "driver=$DRIVER" >> "$GITHUB_OUTPUT"
+
+    - name: Build and Push Dependent Image (with cache)
+      if: steps.bxl.outputs.driver != 'docker'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
+        platforms: linux/arm64
+        push: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+
+    - name: Build and Push Dependent Image (no cache, docker driver)
+      if: steps.bxl.outputs.driver == 'docker'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
+        platforms: linux/arm64
+        push: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+
+    - name: Post-build prune
+      if: always()
+      run: |
+        set -eux
+        docker buildx prune -af || true
+        docker builder prune -af || true
+        docker system prune -af --volumes || true
+        df -h
+
+  build-main-standalone:
+    runs-on: ubuntu-latest
+    # Only run if: manual dispatch with 'main'
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_type == 'main' }}
+    env:
+      COMMIT_HASH: ${{ github.sha }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Debug Build Configuration
+      run: |
+        echo "=== BUILD CONFIGURATION ==="
+        echo "Event: ${{ github.event_name }}"
+        echo "Build Type: ${{ inputs.build_type || 'all (scheduled)' }}"
+        echo "Force Rebuild: ${{ inputs.force_rebuild || 'false' }}"
+
+    - name: Validate Secrets
+      run: |
+        if [[ -z "${{ secrets.TOKEN }}" || -z "${{ secrets.USERNAME }}" ]]; then
+          echo "Error: Missing registry credentials"
+          exit 1
+        fi
+
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.TOKEN }}
+
+    - name: Set Username to Lowercase
+      run: |
+        USERNAME_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        echo "USERNAME=$USERNAME_LOWER" >> $GITHUB_ENV
+
+    - name: Get Commit Hash
+      id: vars
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
+        driver: docker-container
+        install: true
+        use: true
+
+    - name: Check Buildx driver
+      id: bxl
+      run: |
+        set -e
+        docker buildx ls
+        DRIVER=$(docker buildx ls | awk '/\*/{print $2}')
+        echo "driver=$DRIVER" >> "$GITHUB_OUTPUT"
+
+    - name: Build and Push Final Image (with cache)
+      if: steps.bxl.outputs.driver != 'docker'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfile
+        platforms: linux/arm64
+        push: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
+
+    - name: Build and Push Final Image (no cache, docker driver)
+      if: steps.bxl.outputs.driver == 'docker'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
         tags: |

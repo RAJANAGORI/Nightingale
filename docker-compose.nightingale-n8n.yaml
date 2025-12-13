@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  ###########################################################################
+  # Nightingale Service
+  ###########################################################################
+  nightingale:
+    image: ghcr.io/rajanagori/nightingale:arm64
+    container_name: nightingale
+    hostname: nightingale
+    command: ["ttyd", "-p", "7681", "bash"]
+    restart: unless-stopped
+    ports:
+      - "8080:7681"  # ttyd web terminal
+    volumes:
+      - /mnt/RajaWD/home:/home
+    environment:
+      - TZ=UTC
+      - TERM=xterm-256color
+    # Note: Resource limits via 'deploy' section only work in Docker Swarm mode
+    # For docker-compose, use: docker run --cpus="4.0" --memory="8G" ...
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_PTRACE
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -q ttyd || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - nightingale-network
+    labels:
+      com.nightingale.description: "Nightingale pentesting environment"
+      com.nightingale.service: "main"
+
+  ###########################################################################
+  # Postgres for n8n
+  ###########################################################################
+  postgres-oss:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: n8n
+      POSTGRES_DB: n8n
+    volumes:
+      - /mnt/RajaWD/postgres_oss_storage:/var/lib/postgresql/data
+    networks:
+      - Nightingale-N8N-Network
+
+  ###########################################################################
+  # n8n OSS
+  ###########################################################################
+  n8n-oss:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres-oss
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: n8n
+      DB_POSTGRESDB_PASSWORD: n8n
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      N8N_SECURE_COOKIE: "false"
+    volumes:
+      - /mnt/RajaWD/n8n_oss_storage:/home/node/.n8n
+    # Fix permissions: Run on host before starting: sudo chown -R 1000:1000 /mnt/RajaWD/n8n_oss_storage
+    # Or use a named volume instead of bind mount to avoid permission issues
+    depends_on:
+      - postgres-oss
+    networks: ['Nightingale-N8N-Network']
+
+###############################################################################
+# Networks
+###############################################################################
+networks:
+  nightingale-network:
+    name: nightingale-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+  Nightingale-N8N-Network:
+    driver: bridge
+
+###############################################################################
+# Volumes
+###############################################################################
+volumes:
+  n8n_oss_storage:
+  postgres_oss_storage:
+
+
