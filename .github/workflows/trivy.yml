@@ -135,7 +135,7 @@ jobs:
           sarif_file: artifacts/trivy-results-${{ env.IMAGE_NAME }}.sarif
 
       - name: Upload Scan Results to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: trivy-scan-results-${{ env.IMAGE_NAME }}
           path: artifacts/
