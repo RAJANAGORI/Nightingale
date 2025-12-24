@@ -195,7 +195,8 @@ RUN set -eux; \
 COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable /usr/local /usr/local
 COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable /opt/venv3 /opt/venv3
 COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable /usr/local/go /home/go
-COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable /usr/java/openjdk-26 /usr/java/openjdk-26
+# Note: Java (OpenJDK 21) is already installed in the base programming image at /usr/lib/jvm/java-21-openjdk-amd64
+# JAVA_HOME and PATH are already configured in the base image, so no separate copy is needed
 
 WORKDIR /home
 
