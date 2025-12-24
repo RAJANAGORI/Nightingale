@@ -87,19 +87,7 @@ RUN set -eux; \
     /usr/local/go/bin/go version
 
 ###############################################################################
-# Stage 5: Java Environment
-# Purpose: OpenJDK 23 for Java-based security tools
-###############################################################################
-FROM openjdk:23-jdk-slim AS java
-
-LABEL stage="java" \
-      description="OpenJDK 23 environment"
-
-# Verify Java installation
-RUN java -version
-
-###############################################################################
-# Stage 6: Final Combined Environment
+# Stage 5: Final Combined Environment
 # Purpose: All programming languages in one optimized image
 ###############################################################################
 FROM debian:stable-slim AS final
@@ -132,6 +120,8 @@ RUN set -eux; \
         make gcc cmake build-essential \
         # VCS and network tools required by node installer
         git curl \
+        # Java runtime (OpenJDK 21 LTS)
+        openjdk-21-jdk \
         # Development libraries (alphabetically organized)
         libcurl4-openssl-dev \
         libexpat1-dev \
@@ -175,14 +165,16 @@ COPY --from=python3 /usr/local /usr/local
 COPY --from=python3 /opt/venv3 /opt/venv3
 COPY --from=go-builder /usr/local/go /usr/local/go
 COPY --from=go-builder /home /home
-COPY --from=java /usr/local/openjdk-23 /usr/local/openjdk-23
 
+# Set Java alternatives to ensure proper symlinks
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-21-openjdk-amd64/bin/java 1 && \
+    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac 1
 
 # Set environment variables for all languages
 ENV PYTHON3="/opt/venv3/bin/python" \
     GOROOT="/usr/local/go" \
     GOPATH="/home/go" \
-    JAVA_HOME="/usr/local/openjdk-23"
+    JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
 ENV PATH="/opt/venv3/bin:${GOPATH}/bin:${GOROOT}/bin:${JAVA_HOME}/bin:${PATH}"
 
 # Install Node.js via NVM and expose node/npm globally
@@ -228,7 +220,7 @@ CMD ["/bin/bash"]
 # - Python 3.12.11
 # - Ruby 3.4.5
 # - Go 1.23.2
-# - Java OpenJDK 23
+# - Java OpenJDK 21 LTS
 # - Node.js 18.20.4
 #
 # Total Size: Optimized multi-stage build
