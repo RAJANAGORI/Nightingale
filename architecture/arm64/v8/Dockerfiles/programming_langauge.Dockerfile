@@ -56,7 +56,7 @@ RUN set -eux; \
 # Stage 3: Ruby Environment
 # Purpose: Ruby 3.4 with nokogiri gem
 ###############################################################################
-FROM ruby:3.4.5-slim AS ruby-builder
+FROM ruby:4.0.0-slim AS ruby-builder
 
 LABEL stage="ruby" \
       description="Ruby 3.4 environment with nokogiri"
