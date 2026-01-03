@@ -1,13 +1,18 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: {{ .Release.Name }}-service
+  name: {{ include "nightingale.fullname" . }}
   labels:
-    app: nightingale
+    {{- include "nightingale.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: 7681
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
   selector:
-    app: nightingale
+    {{- include "nightingale.selectorLabels" . | nindent 4 }}

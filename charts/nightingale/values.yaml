@@ -1,83 +1,149 @@
-namespaceOverride: ""
+# Default values for nightingale.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
-# Deployment file
+# Global override for the name of the chart
+nameOverride: ""
+# Global override for the full name of the release
+fullnameOverride: ""
 
+# Number of replicas for the Nightingale deployment
+# In production, you might run multiple replicas for high availability, 
+# though sticky sessions might be needed for a stateful shell.
 replicaCount: 1
 
 image:
+  # The repository of the Nightingale image
   repository: ghcr.io/rajanagori/nightingale
-  tag: stable
+  # The tag of the image to deploy
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "stable"
+  # Image pull policy (Always, IfNotPresent, Never)
+  # Recommended to use IfNotPresent for stable tags or specific versions.
   pullPolicy: IfNotPresent
 
-strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 25%
-    maxSurge: 25%
+# ImagePullSecrets is an optional list of references to secrets in the same namespace 
+# to use for pulling any of the images used by this PodSpec.
+imagePullSecrets: []
 
-podSecurityContext: {}
+# Configuration for the ServiceAccount used by the pods
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # Annotations to add to the ServiceAccount
+  annotations: {}
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Annotations to add to the Pods
+podAnnotations: {}
+
+# SecurityContext holds pod-level security attributes and common container settings.
+podSecurityContext:
   # fsGroup: 2000
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # runAsGroup: 3000
 
-securityContext: {}
+# SecurityContext holds container-level security attributes
+securityContext:
   # capabilities:
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+  # allowPrivilegeEscalation: false
 
-resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 100m
-    memory: 200Mi
-  requests:
-    cpu: 50m
-    memory: 100Mi
-
-# Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
-
-tolerations: []
-
-affinity: {}
-
-# Service file
-
+# Service configuration
 service:
+  # Type of service (ClusterIP, NodePort, LoadBalancer)
   type: ClusterIP
+  # Port to expose the service on
   port: 80
+  # NodePort to expose if type is NodePort (optional)
+  # nodePort: 30000
 
-# Ingress file
-
+# Ingress configuration to expose the application externally
 ingress:
   enabled: false
-  ingressClassName: "nginx"
+  # Ingress Class Name (e.g., nginx, traefik, alb)
+  className: ""
+  # Annotations for the Ingress resource
   annotations: {}
-  host:
-    enabled: false
-    name: ""
-  tls:
-    enabled: false
-    secretName: ""
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  # List of hosts to expose
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # TLS configuration for the Ingress
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
-# HPA file
+# Resource requests and limits
+# It is highly recommended to set these for production workloads
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Autoscaling configuration (HPA)
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 10
-  cpuUtilization: 80
-  memoryUtilization: 95
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# NodeSelector for pod scheduling
+nodeSelector: {}
+
+# Tolerations for pod scheduling
+tolerations: []
+
+# Affinity settings for pod scheduling
+affinity: {}
+
+# Strategy for deployment updates
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 25%
+    maxSurge: 25%
+
+# Liveness Probe configuration
+# Checks if the container is running
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+# Readiness Probe configuration
+# Checks if the container is ready to accept traffic
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+# Volumes to attach to the pod
+volumes: []
+# - name: data
+#   emptyDir: {}
+
+# Volume mounts for the container
+volumeMounts: []
+# - name: data
+#   mountPath: /data
