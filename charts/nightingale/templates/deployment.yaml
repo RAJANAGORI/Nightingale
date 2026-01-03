@@ -40,7 +40,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["ttyd", "-p", "7681", "bash"]
+          command: ["ttyd", "-p", "7681", "-W", "bash"]
           ports:
             - name: http
               containerPort: 7681
