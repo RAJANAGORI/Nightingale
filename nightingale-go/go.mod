@@ -4,7 +4,7 @@ go 1.23.0
 
 toolchain go1.23.6
 
-require github.com/schollz/progressbar/v3 v3.18.0
+require github.com/schollz/progressbar/v3 v3.19.0
 
 require (
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
