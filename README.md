@@ -129,7 +129,7 @@ Some of the best features are listed below; I would highly recommend going throu
 - ﻿﻿Platform independence, enhancing accessibility and usability
 - ﻿﻿Go binary support for deploying Nightingale on any architecture.
 - ﻿﻿Compatibility with both AMD and ARM architectures.
-- ﻿﻿C/CD integration for automated vulnerability scanning.
+- ﻿﻿CI/CD integration for automated vulnerability scanning.
 - ﻿﻿Maintenance of GitHub Advisories, ensuring consumers have access to the latest images.
 - ﻿﻿On-demand installation via a request form, allowing consumers to request specific tools.
 - ﻿﻿GUI based solution for those who has love-hate relation with CLI.
