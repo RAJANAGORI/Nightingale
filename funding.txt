@@ -5,7 +5,7 @@
     "role": "owner",
     "name": "Raja Nagori",
     "email": "security@rajanagori.in",
-    "phone": "+919509082201",
+    "phone": "+",
     "description": "I'm a Product Security Engineer with a focus on penetration testing, threat modeling, and DevSecOps. I lead the OWASP-Nightingale project and actively contribute to the security community through events like Blackhat Arsenal. Passionate about making the digital world safer, I enjoy sharing knowledge, solving security challenges, and continuously learning. Outside of work, I play the guitar and love biking.",
     "webpageUrl": {
       "url": "https://github.com/RAJANAGORI/Nightingale",
