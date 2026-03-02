@@ -56,9 +56,9 @@ jobs:
       - name: Install Trivy
         run: |
           echo "Installing Trivy..."
-          wget https://github.com/aquasecurity/trivy/releases/download/v0.57.0/trivy_0.57.0_Linux-64bit.deb
-          sudo dpkg -i trivy_0.57.0_Linux-64bit.deb
-          rm trivy_0.57.0_Linux-64bit.deb
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.69.2/trivy_0.69.2_Linux-64bit.deb
+          sudo dpkg -i trivy_0.69.2_Linux-64bit.deb
+          rm trivy_0.69.2_Linux-64bit.deb
 
       - name: Cache Trivy DB
         uses: actions/cache@v4
