@@ -162,24 +162,12 @@ COPY  configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 COPY configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
-## Go builder stage: build Go backend binary
-FROM golang:1.24.4-alpine3.22 AS go_builder
-
 RUN apk add --no-cache ca-certificates
 
-WORKDIR /src
-COPY gui/go_backend/ ./
-RUN go mod download
-RUN go build -o app
-
-## Final stage: combine metasploit, Go backend binary and finalize setup
+## Final stage: combine metasploit and finalize setup
 FROM metasploit AS final
 
 WORKDIR /home
-# Copy Go backend binary
-COPY --from=go_builder /src/app /usr/local/bin/app
-
-RUN chmod +x /usr/local/bin/app
 
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 

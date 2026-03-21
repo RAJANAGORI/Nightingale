@@ -163,26 +163,8 @@ COPY --chmod=644 configuration/msf-configuration/scripts/db.sql .
 COPY --chmod=755 configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 COPY --chmod=600 configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
-## Go builder stage: build Go backend binary
-FROM golang:1.24.4-alpine3.22 AS go_builder
-
-RUN apk add --no-cache ca-certificates
-
-WORKDIR /src
-COPY gui/go_backend/go.mod gui/go_backend/go.sum ./
-RUN go mod download
-# Copy entire go_backend directory to preserve package structure
-COPY gui/go_backend/ ./
-RUN go build -o app
-
-## Final stage: combine metasploit, Go backend binary and finalize setup
+## Final stage: combine metasploit and finalize setup
 FROM metasploit AS final
-
-# Copy Go backend binary
-COPY --from=go_builder /src/app /usr/local/bin/app
-
-RUN chmod 700 /usr/local/bin/app \
-    && ln -s /usr/local/bin/app /app
 
 WORKDIR /home
 
@@ -230,27 +212,6 @@ RUN set -eux; \
     command -v python >/dev/null || command -v python3 >/dev/null || { echo "WARNING: Python not found"; }
 
 WORKDIR /home
-
-# Preserve original /home with all tools before volume mount
-# This allows us to initialize the shared volume on first startup
-RUN cp -a /home /original_home
-
-# Copy initialization script
-COPY gui/init-shared-home.sh /usr/local/bin/init-shared-home.sh
-RUN chmod +x /usr/local/bin/init-shared-home.sh
-
-# Copy entrypoint wrapper
-COPY gui/backend-entrypoint.sh /usr/local/bin/backend-entrypoint.sh
-RUN chmod +x /usr/local/bin/backend-entrypoint.sh
-
-# Copy VPN split-tunneling scripts and make them executable
-# These scripts are used to configure routing so only VPN networks go through the VPN tunnel
-COPY gui/go_backend/vpn_split_tunnel.sh /usr/local/bin/vpn_split_tunnel.sh
-COPY gui/go_backend/vpn_restore_routing.sh /usr/local/bin/vpn_restore_routing.sh
-RUN chmod +x /usr/local/bin/vpn_split_tunnel.sh /usr/local/bin/vpn_restore_routing.sh
-
-EXPOSE 8765
-ENTRYPOINT ["/usr/local/bin/backend-entrypoint.sh"]
 
 # Add final metadata
 LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:arm64" \

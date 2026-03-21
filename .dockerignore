@@ -7,9 +7,6 @@ shells/requirements_file_module.sh
 shell.bat
 Dockerfiles/*_copy.Dockerfile
 .git
-# Exclude gui tree except go_backend (Dockerfile go_builder copies gui/go_backend)
-gui/*
-!gui/go_backend
 vulnerability
 # Git
 .git
