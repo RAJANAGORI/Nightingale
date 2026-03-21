@@ -158,11 +158,9 @@ RUN set -eux; \
 FROM modules AS metasploit
 
 WORKDIR ${METASPLOIT_TOOL}
-COPY  configuration/msf-configuration/scripts/db.sql .
-COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
-COPY configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
-
-RUN apk add --no-cache ca-certificates
+COPY --chmod=644 configuration/msf-configuration/scripts/db.sql .
+COPY --chmod=755 configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
+COPY --chmod=600 configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
 ## Final stage: combine metasploit and finalize setup
 FROM metasploit AS final
@@ -198,6 +196,18 @@ COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable /usr/local/g
 # Note: Java (OpenJDK 21) is already installed in the base programming image at /usr/lib/jvm/java-21-openjdk-amd64
 # JAVA_HOME and PATH are already configured in the base image, so no separate copy is needed
 
+# Create python symlink so 'python' command works (many scripts expect 'python' not 'python3')
+RUN set -eux; \
+    if command -v python3 >/dev/null 2>&1 && ! command -v python >/dev/null 2>&1; then \
+        ln -s $(which python3) /usr/local/bin/python || \
+        ln -s /usr/bin/python3 /usr/local/bin/python || true; \
+    fi; \
+    if command -v pip3 >/dev/null 2>&1 && ! command -v pip >/dev/null 2>&1; then \
+        ln -s $(which pip3) /usr/local/bin/pip || \
+        ln -s /usr/bin/pip3 /usr/local/bin/pip || true; \
+    fi; \
+    command -v python >/dev/null || command -v python3 >/dev/null || { echo "WARNING: Python not found"; }
+
 WORKDIR /home
 
 # Add final metadata
@@ -213,6 +223,3 @@ LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_program
 #
 # Architecture: AMD64 / x86_64 (Intel, AMD, etc.)
 ###############################################################################
-
-EXPOSE 8765
-ENTRYPOINT ["app"]
