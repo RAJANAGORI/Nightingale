@@ -82,6 +82,8 @@ RUN set -eux; \
     git clone --depth 1 https://github.com/gitleaks/gitleaks.git; \
     # SQL injection tool
     git clone --depth 1 https://github.com/r0oth3x49/ghauri.git; \
+    # Web server vulnerability scanner
+    git clone --depth 1 https://github.com/sullo/nikto.git; \
     # Remove all .git folders to save significant space
     find . -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true; \
     echo "Web security tools cloned"

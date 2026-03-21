@@ -113,10 +113,8 @@ RUN set -eux; \
     rm -f ${BINARIES}/ttyd; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
-    # Install trufflehog with minimal approach
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
-    # Verify installation
-    trufflehog --version
+    # Install trufflehog (optional: GitHub release asset may 404; build continues without it)
+    ( curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin -v v3.93.2 && trufflehog --version ) || echo "WARNING: trufflehog install skipped (release asset unavailable)"
 
 # Build ttyd from source - the binary is incompatible with OpenSSL 3.x
 # First build libwebsockets with libuv support, then build ttyd
@@ -164,10 +162,24 @@ COPY  configuration/msf-configuration/scripts/db.sql .
 COPY configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 COPY configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
-# Stage 5: Final Image
+## Go builder stage: build Go backend binary
+FROM golang:1.24.4-alpine3.22 AS go_builder
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /src
+COPY gui/go_backend/ ./
+RUN go mod download
+RUN go build -o app
+
+## Final stage: combine metasploit, Go backend binary and finalize setup
 FROM metasploit AS final
 
-EXPOSE 3000 5432 8080 8081 7681
+WORKDIR /home
+# Copy Go backend binary
+COPY --from=go_builder /src/app /usr/local/bin/app
+
+RUN chmod +x /usr/local/bin/app
 
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
@@ -213,3 +225,6 @@ LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_program
 #
 # Architecture: AMD64 / x86_64 (Intel, AMD, etc.)
 ###############################################################################
+
+EXPOSE 8765
+ENTRYPOINT ["app"]

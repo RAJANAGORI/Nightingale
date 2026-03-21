@@ -30,7 +30,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update -y; \
     apt-get install -y --no-install-recommends \
-        bash ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data; \
+        bash ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data netcat-openbsd; \
     # Clean up immediately
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
@@ -114,10 +114,8 @@ RUN set -eux; \
     rm -f ${BINARIES}/ttyd; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
-    # Install trufflehog with minimal approach
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin; \
-    # Verify installation
-    trufflehog --version
+    # Install trufflehog (optional: GitHub release asset may 404; build continues without it)
+    ( curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin -v v3.93.2 && trufflehog --version ) || echo "WARNING: trufflehog install skipped (release asset unavailable)"
 
 # Build ttyd from source - the binary is incompatible with OpenSSL 3.x
 # First build libwebsockets with libuv support, then build ttyd
@@ -165,10 +163,28 @@ COPY --chmod=644 configuration/msf-configuration/scripts/db.sql .
 COPY --chmod=755 configuration/msf-configuration/scripts/init.sh /usr/local/bin/init.sh
 COPY --chmod=600 configuration/msf-configuration/conf/database.yml ${METASPLOIT_CONFIG}/metasploit-framework/config/
 
-# Stage 5: Final Image
+## Go builder stage: build Go backend binary
+FROM golang:1.24.4-alpine3.22 AS go_builder
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /src
+COPY gui/go_backend/go.mod gui/go_backend/go.sum ./
+RUN go mod download
+# Copy entire go_backend directory to preserve package structure
+COPY gui/go_backend/ ./
+RUN go build -o app
+
+## Final stage: combine metasploit, Go backend binary and finalize setup
 FROM metasploit AS final
 
-EXPOSE 5432 8080 8081 7681
+# Copy Go backend binary
+COPY --from=go_builder /src/app /usr/local/bin/app
+
+RUN chmod 700 /usr/local/bin/app \
+    && ln -s /usr/local/bin/app /app
+
+WORKDIR /home
 
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
 
@@ -199,7 +215,42 @@ COPY --from=ghcr.io/rajanagori/nightingale_programming_image:arm64 /usr/local/go
 # Note: Java (OpenJDK 21) is already installed in the base programming image at /usr/lib/jvm/java-21-openjdk-arm64
 # JAVA_HOME and PATH are already configured in the base image, so no separate copy is needed
 
+# Create python symlink so 'python' command works (many scripts expect 'python' not 'python3')
+RUN set -eux; \
+    if command -v python3 >/dev/null 2>&1 && ! command -v python >/dev/null 2>&1; then \
+        ln -s $(which python3) /usr/local/bin/python || \
+        ln -s /usr/bin/python3 /usr/local/bin/python || true; \
+    fi; \
+    # Also create pip symlink if pip3 exists but pip doesn't
+    if command -v pip3 >/dev/null 2>&1 && ! command -v pip >/dev/null 2>&1; then \
+        ln -s $(which pip3) /usr/local/bin/pip || \
+        ln -s /usr/bin/pip3 /usr/local/bin/pip || true; \
+    fi; \
+    # Verify python command is available
+    command -v python >/dev/null || command -v python3 >/dev/null || { echo "WARNING: Python not found"; }
+
 WORKDIR /home
+
+# Preserve original /home with all tools before volume mount
+# This allows us to initialize the shared volume on first startup
+RUN cp -a /home /original_home
+
+# Copy initialization script
+COPY gui/init-shared-home.sh /usr/local/bin/init-shared-home.sh
+RUN chmod +x /usr/local/bin/init-shared-home.sh
+
+# Copy entrypoint wrapper
+COPY gui/backend-entrypoint.sh /usr/local/bin/backend-entrypoint.sh
+RUN chmod +x /usr/local/bin/backend-entrypoint.sh
+
+# Copy VPN split-tunneling scripts and make them executable
+# These scripts are used to configure routing so only VPN networks go through the VPN tunnel
+COPY gui/go_backend/vpn_split_tunnel.sh /usr/local/bin/vpn_split_tunnel.sh
+COPY gui/go_backend/vpn_restore_routing.sh /usr/local/bin/vpn_restore_routing.sh
+RUN chmod +x /usr/local/bin/vpn_split_tunnel.sh /usr/local/bin/vpn_restore_routing.sh
+
+EXPOSE 8765
+ENTRYPOINT ["/usr/local/bin/backend-entrypoint.sh"]
 
 # Add final metadata
 LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_programming_image:arm64" \
@@ -210,7 +261,7 @@ LABEL org.opencontainers.image.base.name="ghcr.io/rajanagori/nightingale_program
 # Build Instructions:
 # docker buildx build --platform linux/arm64 \
 #   -f architecture/arm64/v8/Dockerfile \
-#   -t nightingale:arm64 .
+#   -t nightingale:arm64-optimized .
 #
 # Architecture: ARM64 / aarch64 (Apple Silicon, AWS Graviton, Raspberry Pi 4+)
 ###############################################################################
