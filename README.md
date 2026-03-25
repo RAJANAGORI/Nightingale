@@ -2,40 +2,52 @@
 
 ![Nightingale Logo](https://github.com/RAJANAGORI/Nightingale/blob/acb63dd5da8e11063ea67342b9787cc2c985eec5/assets/images/Nightingale.png)
 
----
-## Nighitngale GUI
-https://github.com/user-attachments/assets/845631f4-2fba-4614-8f8b-ec7b40d6fa02
+Nightingale is a ready-to-use, multi-architecture Docker toolkit for pentesting and security research.
+It gives you a reproducible environment with curated tools for web, network, mobile, API, OSINT, and forensics workflows.
 
-[Nightingale Wiki for GUI installation](https://github.com/RAJANAGORI/Nightingale/wiki/4.-Installation-and-Setup#nightingale-console---a-webapp-version-of-old-school-nigtingale-cli)
+## Quick Start (2 minutes)
 
-## Badges
+```bash
+docker pull ghcr.io/rajanagori/nightingale:stable
+docker run -it --name Nightingale -p 8080:7681 \
+  ghcr.io/rajanagori/nightingale:stable ttyd -p 7681 bash
+```
 
-### Project and CI/CD
+Open `http://localhost:8080` to access the browser terminal.
+
+## Why Nightingale
+
+- Reproducible pentest environment across AMD64 and ARM64
+- Browser and terminal-based workflows
+- Security-focused CI with Trivy and dependency maintenance
+- Community-driven tool additions and requests
+
+## Start Here (Wiki Navigation)
+
+- Installation and setup: [Wiki - Installation and Setup](https://github.com/RAJANAGORI/Nightingale/wiki/4.-Installation-and-Setup)
+- Architecture overview: [Wiki - Architecture of Nightingale](https://github.com/RAJANAGORI/Nightingale/wiki/3.-Architecture-of-Nightingale)
+- Full tool catalog: [Wiki - Tools list](https://github.com/RAJANAGORI/Nightingale/wiki/6.-Tools-list)
+- Kubernetes usage: [Wiki - Nightingale meets Kubernetes!](https://github.com/RAJANAGORI/Nightingale/wiki/5.-Nightingale-meets-Kubernetes!-%F0%9F%8C%A5%EF%B8%8F)
+- GUI setup: [Wiki - Nightingale Console setup](https://github.com/RAJANAGORI/Nightingale/wiki/4.-Installation-and-Setup#nightingale-console---a-webapp-version-of-old-school-nightingale-cli)
+
+## Why Fork Nightingale
+
+Forking is the easiest way to build your own internal security image quickly:
+
+- Add private/internal tooling for your engagement style
+- Pin different versions for training labs, enterprise testing, or CTF pipelines
+- Build team-specific profiles for web, API, mobile, OSINT, or cloud testing
+
+If Nightingale helps your work, please star the repo. If you customized it, fork it and share your profile with the community.
+
+## Project Health
+
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7881/badge)](https://www.bestpractices.dev/projects/7881)
-[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)  
-[![Docker Image CI](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml)  
-[![Multi OS Docker Images - ARM64 macOS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)  
-[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/nightingale)](https://artifacthub.io/packages/search?repo=nightingale)  
+[![OWASP Incubator](https://img.shields.io/badge/owasp-incubator-blue.svg)](https://www.owasp.org/index.php/Category:OWASP_Project#tab=Project_Inventory)
+[![Docker Image CI](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/docker-image.yaml)
+[![Multi OS Docker Images - ARM64 macOS](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/multi-os-arm64.yaml)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/nightingale)](https://artifacthub.io/packages/search?repo=nightingale)
 [![Trivy Scan](https://github.com/RAJANAGORI/Nightingale/actions/workflows/trivy.yml/badge.svg)](https://github.com/RAJANAGORI/Nightingale/actions/workflows/trivy.yml)
-
----
-
-### Social and Profiles
-[![Follow on LinkedIn](https://img.shields.io/badge/-Follow-black?style=social&logo=Linkedin)](https://www.linkedin.com/in/raja-nagori/)  
-[![Follow on Twitter](https://img.shields.io/twitter/follow/RajaNagori7?style=social&label=Follow)](https://twitter.com/RajaNagori7)  
-![Profile Views](https://komarev.com/ghpvc/?username=www-project-nightingale&color=blue)  
-[![Medium Badge](https://img.shields.io/badge/-@rajanagori-03a57a?style=flat-square&labelColor=000000&logo=Medium&link=https://medium.com/@rajanagori)](https://medium.com/@rajanagori)
-
-### Conferences
-- Blackhat Arsenal ASIA 2022
-- OWASP Global AppSec EU 2022
-- Docker community hands-on event
-- Blackhat Arsenal MEA 2022 (Shortlisted)
-- Blackhat Arsenal ASIA 2023
-- Blackhat Arsenal MEA 2023 (Shortlisted)
-- Blackhat Arsenal Asia 2024
-- IWCON - 2023
-- c0c0n - 2024
 
 ## 🚀 **OPTIMIZATION UPDATE**
 
@@ -52,6 +64,7 @@ Nightingale introduces significant optimizations that deliver:
 ### **Key Optimizations Applied**
 
 #### **Docker Image Optimizations**
+
 - ✅ **Multi-stage ttyd build** - Separate builder stage saves 50-100MB
 - ✅ **Removed .git folders** - Clean clones save 200-500MB
 - ✅ **Build dependencies purged** - Removed gcc, make, cmake saves 200-300MB
@@ -60,12 +73,14 @@ Nightingale introduces significant optimizations that deliver:
 - ✅ **Python/Go cache cleanup** - Language caches cleaned saves 150-300MB
 
 #### **Code Quality Improvements**
+
 - ✅ **Shell Scripts**: Enhanced with `set -euo pipefail`, error trapping, colored logging
 - ✅ **Go Application**: Refactored with constants, error wrapping, validation functions
 - ✅ **Dockerfiles**: OCI standard labels, healthchecks, multi-stage optimization
 - ✅ **Configuration**: Comprehensive comments, security warnings, best practices
 
 #### **Security Enhancements**
+
 - ✅ **Fixed insecure permissions**: `chmod 777` → `chmod 755`
 - ✅ **Secure PATH configuration** in all scripts
 - ✅ **Input validation** and command injection prevention
@@ -74,7 +89,7 @@ Nightingale introduces significant optimizations that deliver:
 ### **Expected Results**
 
 | Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
+| :--- | :--- | :--- | :--- |
 | **Image Size** | 2.3GB | 700-900MB | 35-65% reduction |
 | **Code Quality** | Grade C | Grade A | +111% improvement |
 | **Security Score** | Basic | Advanced | +400% improvement |
@@ -110,6 +125,7 @@ docker buildx build --platform linux/arm64 -t nightingale:arm64 .
 ---
 
 ### Description
+
 In today's technological era, Docker is the most powerful technology across various domains, whether it's Development, Cybersecurity, DevOps, Automation, or Infrastructure.
 
 Considering the demand of the industry, I would like to introduce my idea to create **NIGHTINGALE**: a Docker image for pentesters.
@@ -121,6 +137,7 @@ The best part is that you can either create an altered Docker image or pull the 
 Some of the best features are listed below; I would highly recommend going through them before starting to penetrate the application. **Link to access tool list**: ([tool list](https://github.com/RAJANAGORI/Nightingale/wiki/6.-Tools-list))
 
 ### Pros
+
 - Pre-installed penetration testing tools and frameworks
 - ﻿﻿Consistent and repeatable testing environments via Docker
 - ﻿﻿Fast booting and tearing down of testing environments
@@ -135,15 +152,14 @@ Some of the best features are listed below; I would highly recommend going throu
 - ﻿﻿GUI based solution for those who has love-hate relation with CLI.
 
 ### Why?
+
 The reason behind creating this Docker image is to make a platform-independent penetration toolkit. It includes all the useful tools that a penetration tester might need (refer to the tool list section for details).
 
 Please feel free to contribute to the tool.
 
 For more information [Nightingale Wiki](https://github.com/RAJANAGORI/Nightingale/wiki/1.-Nightingale-Docker-for-Pentesters)
 
-Nightingale OWASP Project [Here](https://owasp.org/www-project-nightingale)
-
+Nightingale OWASP Project: [OWASP Nightingale project page](https://owasp.org/www-project-nightingale)
 
 ---
 ![Alt](https://repobeats.axiom.co/api/embed/d08113cac7394b77d8c3b788c9fc9d2b1a121488.svg "Repobeats analytics image")
-

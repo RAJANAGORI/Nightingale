@@ -1,0 +1,73 @@
+name: Bug Report
+description: Report a reproducible bug in Nightingale CLI, images, or workflows
+title: "[BUG]: "
+labels: ["bug"]
+assignees:
+  - RAJANAGORI
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please provide enough detail to reproduce it quickly.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - CLI
+        - GUI
+        - Docker image build
+        - Container runtime
+        - Tooling inside image
+        - Documentation
+        - CI/CD workflow
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected to happen.
+      placeholder: "Observed behavior vs expected behavior"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide exact steps, commands, and inputs.
+      placeholder: |
+        1. Run ...
+        2. Execute ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: input
+    id: image-tag
+    attributes:
+      label: Nightingale image/tag used
+      placeholder: "ghcr.io/rajanagori/nightingale:stable"
+    validations:
+      required: false
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, architecture, and Docker version
+      placeholder: "macOS arm64, Docker 27.x"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Paste relevant logs or screenshots.
+      placeholder: "Paste logs here"
+    validations:
+      required: false
