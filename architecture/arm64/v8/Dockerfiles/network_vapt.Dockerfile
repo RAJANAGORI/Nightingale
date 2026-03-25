@@ -20,6 +20,7 @@ LABEL org.opencontainers.image.title="Nightingale Network VAPT" \
 
 # Build argument
 ARG DEBIAN_FRONTEND=noninteractive
+ARG NEO4J_VERSION=5.26.0
 
 # Install system dependencies
 # hadolint ignore=DL3008
@@ -57,7 +58,26 @@ RUN set -eux; \
     chmod +x nikto/program/nikto.pl 2>/dev/null || true; \
     # Verify cloning
     test -d nikto || exit 1; \
-    echo "Nikto installed successfully"
+    echo "Nikto installed successfully"; \
+    echo "Installing AD/Windows pentesting toolchain (Impacket, BloodHound, Neo4j)..."; \
+    python3 -m venv ${TOOLS_NETWORK_VAPT}/ad_tools_venv; \
+    ${TOOLS_NETWORK_VAPT}/ad_tools_venv/bin/pip install --no-cache-dir --upgrade pip; \
+    ${TOOLS_NETWORK_VAPT}/ad_tools_venv/bin/pip install --no-cache-dir \
+        impacket \
+        bloodhound \
+        bloodhound-cli \
+        neo4j; \
+    # Install Neo4j Community binaries under the network tools directory
+    curl -fsSL "https://dist.neo4j.org/neo4j-community-${NEO4J_VERSION}-unix.tar.gz" -o /tmp/neo4j.tgz; \
+    mkdir -p ${TOOLS_NETWORK_VAPT}/neo4j; \
+    tar -xzf /tmp/neo4j.tgz -C ${TOOLS_NETWORK_VAPT}/neo4j --strip-components=1; \
+    rm -f /tmp/neo4j.tgz; \
+    # Verify AD tooling installation
+    test -x ${TOOLS_NETWORK_VAPT}/ad_tools_venv/bin/impacket-secretsdump || exit 1; \
+    test -x ${TOOLS_NETWORK_VAPT}/ad_tools_venv/bin/bloodhound-python || exit 1; \
+    test -x ${TOOLS_NETWORK_VAPT}/ad_tools_venv/bin/bloodhound-cli || exit 1; \
+    test -x ${TOOLS_NETWORK_VAPT}/neo4j/bin/neo4j || exit 1; \
+    echo "AD/Windows pentesting tools installed successfully"
 
 # Final cleanup and configuration
 RUN set -eux; \
@@ -82,6 +102,9 @@ RUN set -eux; \
     if ! grep -q 'nikto' ~/.bashrc 2>/dev/null; then \
         echo 'export PATH="$PATH:${TOOLS_NETWORK_VAPT}/nikto/program"' >> ~/.bashrc; \
     fi; \
+    if ! grep -q 'ad_tools_venv/bin' ~/.bashrc 2>/dev/null; then \
+        echo 'export PATH="$PATH:${TOOLS_NETWORK_VAPT}/ad_tools_venv/bin:${TOOLS_NETWORK_VAPT}/neo4j/bin"' >> ~/.bashrc; \
+    fi; \
     echo "Network VAPT tools setup complete"
 
 # Set working directory
@@ -89,7 +112,9 @@ WORKDIR /home
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD test -d /home/tools_network_vapt/nikto || exit 1
+    CMD test -d /home/tools_network_vapt/nikto && \
+        test -x /home/tools_network_vapt/ad_tools_venv/bin/bloodhound-python && \
+        test -x /home/tools_network_vapt/neo4j/bin/neo4j || exit 1
 
 # Default command
 CMD ["/bin/bash"]
@@ -97,6 +122,10 @@ CMD ["/bin/bash"]
 ###############################################################################
 # Included Tools:
 # - Nikto: Web server scanner for dangerous files, outdated software, etc.
+# - Impacket: AD/SMB/Kerberos protocol tooling for Windows environments
+# - BloodHound.py: Python ingestor for BloodHound graph analysis
+# - bloodhound-cli: CLI for BloodHound query and operations
+# - Neo4j Community: Graph database engine used by BloodHound workflows
 #
 # Usage:
 # docker build -f Dockerfiles/network_vapt.Dockerfile \

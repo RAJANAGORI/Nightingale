@@ -73,7 +73,7 @@ ENV TOOLS_WEB_VAPT=/home/tools_web_vapt \
     SHELLS=/home/.shells
 
 # # Add custom binaries to PATH
-ENV PATH="${PATH}:/home/.local/bin:${BINARIES}:/home/go/bin"
+ENV PATH="${PATH}:/home/.local/bin:${BINARIES}:/home/go/bin:${TOOLS_NETWORK_VAPT}/ad_tools_venv/bin:${TOOLS_NETWORK_VAPT}/neo4j/bin"
 
 # Copy tool collections from pre-built AMD64 images
 COPY --from=ghcr.io/rajanagori/nightingale_web_vapt_image:stable ${TOOLS_WEB_VAPT} ${TOOLS_WEB_VAPT}

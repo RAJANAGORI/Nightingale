@@ -1153,6 +1153,10 @@ func listTools() {
 	fmt.Println("    - metasploit")
 	fmt.Println("    - Naabu")
 	fmt.Println("    - RustScan")
+	fmt.Println("    - impacket")
+	fmt.Println("    - bloodhound-python")
+	fmt.Println("    - bloodhound-cli")
+	fmt.Println("    - neo4j")
 
 	fmt.Println("\n  OSINT tools:")
 	fmt.Println("    - Reconspider")
