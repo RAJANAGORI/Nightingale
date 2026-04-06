@@ -71,8 +71,8 @@ RUN set -eux; \
     mkdir -p ${TOOLS_NETWORK_VAPT}/neo4j; \
     tar -xzf /tmp/neo4j.tgz -C ${TOOLS_NETWORK_VAPT}/neo4j --strip-components=1; \
     rm -f /tmp/neo4j.tgz; \
-    # Verify AD tooling installation
-    test -x /opt/venv3/bin/impacket-secretsdump || exit 1; \
+    # Verify AD tooling installation (Impacket 0.13+ installs example tools as *.py scripts, e.g. secretsdump.py)
+    test -x /opt/venv3/bin/secretsdump.py || exit 1; \
     test -x /opt/venv3/bin/bloodhound-python || exit 1; \
     test -x /opt/venv3/bin/bloodhound-cli || exit 1; \
     test -x ${TOOLS_NETWORK_VAPT}/neo4j/bin/neo4j || exit 1; \
