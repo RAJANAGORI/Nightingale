@@ -59,9 +59,9 @@ RUN set -eux; \
     # Clone node-dirbuster
     git clone --depth 1 https://github.com/daviddias/node-dirbuster.git; \
     rm -rf node-dirbuster/.git; \
-    # Clone dirb
-    git clone --depth 1 https://github.com/v0re/dirb.git; \
-    rm -rf dirb/.git; \
+    # # Clone dirb
+    # git clone --depth 1 https://github.com/v0re/dirb.git; \
+    # rm -rf dirb/.git; \
     echo "Wordlists cloned successfully"
 
 # Download RockYou wordlist
