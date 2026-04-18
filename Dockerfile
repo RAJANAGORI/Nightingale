@@ -196,6 +196,15 @@ COPY --from=ghcr.io/rajanagori/nightingale_programming_image:stable /usr/local/g
 # Note: Java (OpenJDK 21) is already installed in the base programming image at /usr/lib/jvm/java-21-openjdk-amd64
 # JAVA_HOME and PATH are already configured in the base image, so no separate copy is needed
 
+# Apply Debian security updates after tool layers and programming copy are merged
+RUN set -eux; \
+    export DEBIAN_FRONTEND=noninteractive; \
+    apt-get update; \
+    apt-get upgrade -y --no-install-recommends; \
+    apt-get autoremove -y --purge; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Create python symlink so 'python' command works (many scripts expect 'python' not 'python3')
 RUN set -eux; \
     if command -v python3 >/dev/null 2>&1 && ! command -v python >/dev/null 2>&1; then \

@@ -46,7 +46,7 @@ RUN set -eux; \
     # Upgrade pip and install essential tools
     /opt/venv3/bin/pip install --no-cache-dir --upgrade \
         pip \
-        setuptools==58.2.0 \
+        "setuptools>=75.8.0" \
         pipx; \
     # Cleanup
     apt-get clean; \
@@ -69,18 +69,18 @@ RUN set -eux; \
 
 ###############################################################################
 # Stage 4: Go Environment
-# Purpose: Go 1.23.2 compiler and tools
+# Purpose: Go 1.23.x compiler and tools (keep patch level current for stdlib CVEs)
 ###############################################################################
 FROM base AS go-builder
 
 LABEL stage="go" \
-      description="Go 1.23.2 environment"
+      description="Go 1.23.12 environment"
 
 WORKDIR /home
 
 # Install Go
 RUN set -eux; \
-    wget -q https://go.dev/dl/go1.23.2.linux-arm64.tar.gz -O go.tar.gz; \
+    wget -q https://go.dev/dl/go1.23.12.linux-arm64.tar.gz -O go.tar.gz; \
     tar -C /usr/local -xzf go.tar.gz; \
     rm go.tar.gz; \
     # Verify installation
@@ -220,7 +220,7 @@ CMD ["/bin/bash"]
 # Included Languages:
 # - Python 3.12.11
 # - Ruby 3.4.5
-# - Go 1.23.2
+# - Go 1.23.12
 # - Java OpenJDK 21 LTS
 # - Node.js 18.20.4
 #
