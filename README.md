@@ -1,6 +1,21 @@
 # Nightingale: Docker for Pentesters
 
-![Nightingale Logo](https://github.com/RAJANAGORI/Nightingale/blob/acb63dd5da8e11063ea67342b9787cc2c985eec5/assets/images/Nightingale.png)
+<!-- ![Nightingale Logo](https://github.com/RAJANAGORI/Nightingale/blob/acb63dd5da8e11063ea67342b9787cc2c985eec5/assets/images/Nightingale.png) -->
+
+This project is supported by:
+
+<table>
+<tr>
+<td align="left" valign="middle" width="50%">
+  <a href="https://www.digitalocean.com/?utm_medium=opensource&utm_source=Nightingale">
+    <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/PoweredByDO/DO_Powered_by_Badge_blue.svg" width="201" alt="Powered by DigitalOcean">
+  </a>
+</td>
+<td align="right" valign="middle" width="50%">
+  <img src="https://raw.githubusercontent.com/OWASP/www-project-nightingale/main/assets/images/Nightingale.png" width="240" alt="Nightingale">
+</td>
+</tr>
+</table>
 
 Nightingale is a ready-to-use, multi-architecture Docker toolkit for pentesting and security research.
 It gives you a reproducible environment with curated tools for web, network, mobile, API, OSINT, and forensics workflows.
