@@ -1,0 +1,49 @@
+name: 🌐 Hosted Nightingale GUI access
+description: Request access to try the Nightingale web console (e.g. nightingale-security.com). A maintainer will start the environment and follow up in this issue.
+title: "[Access] "
+labels: [gui]
+assignees: [RAJANAGORI]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to **request access** to the hosted Nightingale GUI. After you submit, a maintainer will **start the machine** when possible and **comment on this issue** with access details or questions.
+
+        **Example:** If you want to try the dashboard at **nightingale-security.com**, open this issue with the details below.
+
+  - type: input
+    id: name
+    attributes:
+      label: Your name or GitHub handle
+      description: How we should refer to you in replies (e.g. Sid, @username).
+      placeholder: e.g. Sid or @sid
+    validations:
+      required: true
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact (optional)
+      description: Email or other handle if we need to reach you outside GitHub (optional).
+      placeholder: email or Matrix, etc.
+    validations:
+      required: false
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: What do you want to try?
+      description: Short note on goals, features you care about, or time window (timezone helps).
+      placeholder: e.g. Try Security Scans + playbooks on a lab target; available UTC evenings this week.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Acknowledgement
+      description: Hosted access is discretionary and for evaluation only.
+      options:
+        - label: I understand access is on-demand, I’ll watch this issue for maintainer replies, and I won’t share any credentials—I’ll use the environment only for agreed testing.
+    validations:
+      required: true
