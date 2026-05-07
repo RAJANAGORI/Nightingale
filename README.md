@@ -30,6 +30,12 @@ docker run -it --name Nightingale -p 8080:7681 \
 
 Open `http://localhost:8080` to access the browser terminal.
 
+## Hosted GUI Access
+
+To request access to [https://nightingale-security.com/](https://nightingale-security.com/), please raise a GitHub issue using the hosted GUI access template. After the request is reviewed, access details will be shared in the issue.
+
+Before raising the request, you can review the GUI screenshots on [nightingale-security.com](https://nightingale-security.com/).
+
 ## Why Nightingale
 
 - Reproducible pentest environment across AMD64 and ARM64
