@@ -113,12 +113,15 @@ COPY binary/ ${BINARIES}
 RUN set -eux; \
     # Remove ttyd from binaries since it's incompatible with current OpenSSL version
     # We'll build it from source with proper library linking
-    rm -f ${BINARIES}/ttyd; \
+    rm -f ${BINARIES}/ttyd ${BINARIES}/xray ${BINARIES}/findomain; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
     chmod +x /tmp/install-trufflehog.sh; \
     /tmp/install-trufflehog.sh /usr/local/bin; \
-    rm -f /tmp/install-trufflehog.sh
+    rm -f /tmp/install-trufflehog.sh; \
+    export GOTOOLCHAIN=local GOPATH=/home/go; \
+    go install github.com/findomain/findomain/v4@v4.3.2; \
+    install -m 0755 /home/go/bin/findomain /usr/local/bin/findomain
 
 # Build ttyd from source - the binary is incompatible with OpenSSL 3.x
 # First build libwebsockets with libuv support, then build ttyd
@@ -174,7 +177,8 @@ WORKDIR /home
 COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
 COPY configuration/cve-mitigation/audit-go-binaries.sh \
      configuration/cve-mitigation/rebuild-go-binaries.sh \
-     /usr/local/bin/ 
+     configuration/cve-mitigation/prune-vulnerable-go-binaries.sh \
+     /usr/local/bin/
 
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
@@ -228,6 +232,8 @@ RUN set -eux; \
     command -v python >/dev/null || command -v python3 >/dev/null || { echo "WARNING: Python not found"; }
 
 RUN set -eux; \
+    chmod +x /usr/local/bin/prune-vulnerable-go-binaries.sh; \
+    TOOLS_MOBILE_VAPT=${TOOLS_MOBILE_VAPT} /usr/local/bin/prune-vulnerable-go-binaries.sh; \
     chmod +x /usr/local/bin/audit-go-binaries.sh /usr/local/bin/rebuild-go-binaries.sh; \
     /usr/local/bin/audit-go-binaries.sh --min-version 1.26.1 --strict
 

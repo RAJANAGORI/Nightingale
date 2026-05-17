@@ -62,6 +62,7 @@ RUN set -eux; \
     git clone --depth 1 https://github.com/m0bilesecurity/RMS-Runtime-Mobile-Security.git rms; \
     # Remove .git folders to save space
     rm -rf Mobile-Security-Framework-MobSF/.git rms/.git; \
+    find Mobile-Security-Framework-MobSF -type f \( -name 'CgbiPngFix_amd64' -o -name 'CgbiPngFix_arm64' \) -delete; \
     # Verify cloning
     test -d Mobile-Security-Framework-MobSF || exit 1; \
     test -d rms || exit 1; \
