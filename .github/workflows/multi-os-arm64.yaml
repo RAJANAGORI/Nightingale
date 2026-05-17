@@ -110,7 +110,7 @@ jobs:
     - name: Build and Push Programming Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-cache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
@@ -127,7 +127,7 @@ jobs:
     - name: Build and Push Programming Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-nocache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
@@ -139,12 +139,28 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
 
+    - name: Resolve pushed image digest
+      id: image
+      run: |
+        set -euo pipefail
+        digest=""
+        if [ -n "${{ steps.build-cache.outputs.digest }}" ]; then
+          digest="${{ steps.build-cache.outputs.digest }}"
+        elif [ -n "${{ steps.build-nocache.outputs.digest }}" ]; then
+          digest="${{ steps.build-nocache.outputs.digest }}"
+        fi
+        if [ -z "${digest}" ]; then
+          echo "ERROR: no image digest from build steps" >&2
+          exit 1
+        fi
+        echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+
     - name: Sign and attest container image
-      if: steps.build.outputs.digest != ''
+      if: steps.image.outputs.digest != ''
       uses: ./.github/actions/sign-and-attest-container
       with:
         image-name: ${{ env.USERNAME || 'default-user' }}/nightingale_programming_image
-        digest: ${{ steps.build.outputs.digest }}
+        digest: ${{ steps.image.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
@@ -250,7 +266,7 @@ jobs:
     - name: Build and Push Dependent Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-cache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
@@ -267,7 +283,7 @@ jobs:
     - name: Build and Push Dependent Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-nocache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
@@ -279,12 +295,28 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
+    - name: Resolve pushed image digest
+      id: image
+      run: |
+        set -euo pipefail
+        digest=""
+        if [ -n "${{ steps.build-cache.outputs.digest }}" ]; then
+          digest="${{ steps.build-cache.outputs.digest }}"
+        elif [ -n "${{ steps.build-nocache.outputs.digest }}" ]; then
+          digest="${{ steps.build-nocache.outputs.digest }}"
+        fi
+        if [ -z "${digest}" ]; then
+          echo "ERROR: no image digest from build steps" >&2
+          exit 1
+        fi
+        echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+
     - name: Sign and attest container image
-      if: steps.build.outputs.digest != ''
+      if: steps.image.outputs.digest != ''
       uses: ./.github/actions/sign-and-attest-container
       with:
         image-name: ${{ env.USERNAME }}/${{ matrix.dockerfile.name }}
-        digest: ${{ steps.build.outputs.digest }}
+        digest: ${{ steps.image.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
@@ -370,7 +402,7 @@ jobs:
     - name: Build and Push Final Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-cache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
@@ -387,7 +419,7 @@ jobs:
     - name: Build and Push Final Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-nocache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
@@ -399,12 +431,28 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
 
+    - name: Resolve pushed image digest
+      id: image
+      run: |
+        set -euo pipefail
+        digest=""
+        if [ -n "${{ steps.build-cache.outputs.digest }}" ]; then
+          digest="${{ steps.build-cache.outputs.digest }}"
+        elif [ -n "${{ steps.build-nocache.outputs.digest }}" ]; then
+          digest="${{ steps.build-nocache.outputs.digest }}"
+        fi
+        if [ -z "${digest}" ]; then
+          echo "ERROR: no image digest from build steps" >&2
+          exit 1
+        fi
+        echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+
     - name: Sign and attest container image
-      if: steps.build.outputs.digest != ''
+      if: steps.image.outputs.digest != ''
       uses: ./.github/actions/sign-and-attest-container
       with:
         image-name: ${{ env.USERNAME }}/nightingale
-        digest: ${{ steps.build.outputs.digest }}
+        digest: ${{ steps.image.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
@@ -509,7 +557,7 @@ jobs:
     - name: Build and Push Dependent Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-cache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
@@ -526,7 +574,7 @@ jobs:
     - name: Build and Push Dependent Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-nocache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
@@ -538,12 +586,28 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
 
+    - name: Resolve pushed image digest
+      id: image
+      run: |
+        set -euo pipefail
+        digest=""
+        if [ -n "${{ steps.build-cache.outputs.digest }}" ]; then
+          digest="${{ steps.build-cache.outputs.digest }}"
+        elif [ -n "${{ steps.build-nocache.outputs.digest }}" ]; then
+          digest="${{ steps.build-nocache.outputs.digest }}"
+        fi
+        if [ -z "${digest}" ]; then
+          echo "ERROR: no image digest from build steps" >&2
+          exit 1
+        fi
+        echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+
     - name: Sign and attest container image
-      if: steps.build.outputs.digest != ''
+      if: steps.image.outputs.digest != ''
       uses: ./.github/actions/sign-and-attest-container
       with:
         image-name: ${{ env.USERNAME }}/${{ matrix.dockerfile.name }}
-        digest: ${{ steps.build.outputs.digest }}
+        digest: ${{ steps.image.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
@@ -618,7 +682,7 @@ jobs:
     - name: Build and Push Final Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-cache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
@@ -635,7 +699,7 @@ jobs:
     - name: Build and Push Final Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
-      id: build
+      id: build-nocache
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
@@ -647,12 +711,28 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
 
+    - name: Resolve pushed image digest
+      id: image
+      run: |
+        set -euo pipefail
+        digest=""
+        if [ -n "${{ steps.build-cache.outputs.digest }}" ]; then
+          digest="${{ steps.build-cache.outputs.digest }}"
+        elif [ -n "${{ steps.build-nocache.outputs.digest }}" ]; then
+          digest="${{ steps.build-nocache.outputs.digest }}"
+        fi
+        if [ -z "${digest}" ]; then
+          echo "ERROR: no image digest from build steps" >&2
+          exit 1
+        fi
+        echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+
     - name: Sign and attest container image
-      if: steps.build.outputs.digest != ''
+      if: steps.image.outputs.digest != ''
       uses: ./.github/actions/sign-and-attest-container
       with:
         image-name: ${{ env.USERNAME }}/nightingale
-        digest: ${{ steps.build.outputs.digest }}
+        digest: ${{ steps.image.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
