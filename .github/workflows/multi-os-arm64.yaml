@@ -109,7 +109,7 @@ jobs:
 
     - name: Build and Push Programming Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-cache
       with:
         context: .
@@ -126,7 +126,7 @@ jobs:
 
     - name: Build and Push Programming Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-nocache
       with:
         context: .
@@ -265,7 +265,7 @@ jobs:
 
     - name: Build and Push Dependent Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-cache
       with:
         context: .
@@ -282,7 +282,7 @@ jobs:
 
     - name: Build and Push Dependent Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-nocache
       with:
         context: .
@@ -401,7 +401,7 @@ jobs:
 
     - name: Build and Push Final Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-cache
       with:
         context: .
@@ -418,7 +418,7 @@ jobs:
 
     - name: Build and Push Final Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-nocache
       with:
         context: .
@@ -556,7 +556,7 @@ jobs:
 
     - name: Build and Push Dependent Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-cache
       with:
         context: .
@@ -573,7 +573,7 @@ jobs:
 
     - name: Build and Push Dependent Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-nocache
       with:
         context: .
@@ -681,7 +681,7 @@ jobs:
 
     - name: Build and Push Final Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-cache
       with:
         context: .
@@ -698,7 +698,7 @@ jobs:
 
     - name: Build and Push Final Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       id: build-nocache
       with:
         context: .
