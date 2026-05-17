@@ -32,7 +32,7 @@ RUN set -eux; \
 # Stage 2: Python 3 Environment
 # Purpose: Python 3.12 with virtual environment and pipx
 ###############################################################################
-FROM python:3.14.3-slim AS python3
+FROM python:3.14.5-slim AS python3
 
 LABEL stage="python3" \
       description="Python 3.12 environment with pipx"
