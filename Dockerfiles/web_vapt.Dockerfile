@@ -153,11 +153,13 @@ RUN set -eux; \
     fi; \
     cd ..
 
-# Install Trufflehog (Secret Detection)
+# Install Trufflehog (Secret Detection) — compile with image Go to avoid stale prebuilt stdlib
 RUN set -eux; \
     echo "Installing Trufflehog..."; \
-    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | \
-    sh -s -- -b /usr/local/bin || echo "Warning: Trufflehog installation failed"
+    export GOTOOLCHAIN=local; \
+    go install github.com/trufflesecurity/trufflehog/v3@v3.93.2; \
+    install -m 0755 "${GOPATH:-/root/go}/bin/trufflehog" /usr/local/bin/trufflehog; \
+    command -v trufflehog
 
 # Build Gitleaks (Git Secret Scanner)
 RUN set -eux; \
@@ -179,15 +181,13 @@ RUN set -eux; \
     fi; \
     cd ..
 
-# Install Amass (Subdomain Discovery)
+# Install Amass (Subdomain Discovery) — compile with image Go (no prebuilt release binary)
 RUN set -eux; \
     echo "Installing Amass..."; \
-    wget -q https://github.com/owasp-amass/amass/releases/download/v5.0.0/amass_linux_amd64.tar.gz -O amass.tar.gz; \
-    tar -xzf amass.tar.gz; \
-    mv amass_linux_amd64/amass /usr/local/bin/; \
-    rm -rf amass_linux_amd64 amass.tar.gz; \
-    # Verify installation
-    command -v amass || echo "Warning: Amass not in PATH"
+    export GOTOOLCHAIN=local; \
+    go install github.com/owasp-amass/amass/v5/cmd/amass@v5.1.1; \
+    install -m 0755 "${GOPATH:-/root/go}/bin/amass" /usr/local/bin/amass; \
+    command -v amass
 
 # Final cleanup and configuration
 RUN set -eux; \

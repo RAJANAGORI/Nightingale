@@ -359,6 +359,14 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:stable
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
 
+    - name: Audit Go stdlib in final image
+      run: |
+        set -eux
+        IMAGE="${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:stable"
+        docker pull "${IMAGE}"
+        docker run --rm --entrypoint /usr/local/bin/audit-go-binaries.sh \
+          "${IMAGE}" --min-version 1.26.1 --strict
+
     - name: Post-build prune
       if: always()
       run: |

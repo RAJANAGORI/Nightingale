@@ -1,8 +1,8 @@
 module github.com/rajanagori/nightingale-go
 
-go 1.23.0
+go 1.26.0
 
-toolchain go1.23.6
+toolchain go1.26.1
 
 require github.com/schollz/progressbar/v3 v3.19.0
 

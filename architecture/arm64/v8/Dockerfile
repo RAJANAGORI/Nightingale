@@ -30,7 +30,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update -y; \
     apt-get install -y --no-install-recommends \
-        bash ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool steghide binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data netcat-openbsd; \
+        bash ca-certificates build-essential cmake locate snapd tree zsh figlet unzip p7zip-full ftp ssh git curl wget file nano vim dirb nmap htop traceroute telnet net-tools iputils-ping tcpdump openvpn whois host tor john cewl hydra medusa dnsutils android-framework-res adb apktool exiftool binwalk foremost dos2unix postgresql postgresql-client postgresql-contrib pipx pv hashcat hashcat-data netcat-openbsd; \
     # Clean up immediately
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
@@ -114,8 +114,11 @@ RUN set -eux; \
     rm -f ${BINARIES}/ttyd; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
-    # Install trufflehog (optional: GitHub release asset may 404; build continues without it)
-    ( curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin -v v3.93.2 && trufflehog --version ) || echo "WARNING: trufflehog install skipped (release asset unavailable)"
+    # Install trufflehog with image Go (avoids prebuilt binaries with outdated stdlib)
+    export GOTOOLCHAIN=local; \
+    ( go install github.com/trufflesecurity/trufflehog/v3@v3.93.2 && \
+      install -m 0755 "${GOPATH:-/home/go}/bin/trufflehog" /usr/local/bin/trufflehog && \
+      trufflehog --version ) || echo "WARNING: trufflehog install skipped"
 
 # Build ttyd from source - the binary is incompatible with OpenSSL 3.x
 # First build libwebsockets with libuv support, then build ttyd
@@ -168,7 +171,10 @@ FROM metasploit AS final
 
 WORKDIR /home
 
-COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge 
+COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
+COPY configuration/cve-mitigation/audit-go-binaries.sh \
+     configuration/cve-mitigation/rebuild-go-binaries.sh \
+     /usr/local/bin/ 
 
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
@@ -204,7 +210,8 @@ RUN set -eux; \
     apt-get upgrade -y --no-install-recommends; \
     apt-get autoremove -y --purge; \
     apt-get clean; \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
+    python3 -m pip install --upgrade --break-system-packages 'pyopenssl>=25.3.0' 'cryptography>=44.0.0' 2>/dev/null || true
 
 # Create python symlink so 'python' command works (many scripts expect 'python' not 'python3')
 RUN set -eux; \
@@ -219,6 +226,10 @@ RUN set -eux; \
     fi; \
     # Verify python command is available
     command -v python >/dev/null || command -v python3 >/dev/null || { echo "WARNING: Python not found"; }
+
+RUN set -eux; \
+    chmod +x /usr/local/bin/audit-go-binaries.sh /usr/local/bin/rebuild-go-binaries.sh; \
+    /usr/local/bin/audit-go-binaries.sh --min-version 1.26.1 --strict
 
 WORKDIR /home
 

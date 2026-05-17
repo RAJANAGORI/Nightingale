@@ -13,6 +13,8 @@ set -eo pipefail
 
 # Secure PATH
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+# Build with the image Go toolchain only (avoid pulling older stdlib via auto toolchain)
+export GOTOOLCHAIN=local
 
 # Configuration
 readonly SCRIPT_NAME="$(basename "${0}")"
@@ -142,7 +144,7 @@ main() {
     # Organized by category for better documentation
     local -a tools=(
         # OSINT & Reconnaissance
-        "github.com/owasp-amass/amass/v3/...@latest"
+        "github.com/owasp-amass/amass/v5/cmd/amass@v5.1.1"
         "github.com/tomnomnom/assetfinder@latest"
         "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
         "github.com/tomnomnom/httprobe@latest"

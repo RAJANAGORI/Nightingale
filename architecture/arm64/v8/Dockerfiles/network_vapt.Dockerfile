@@ -20,7 +20,7 @@ LABEL org.opencontainers.image.title="Nightingale Network VAPT" \
 
 # Build argument
 ARG DEBIAN_FRONTEND=noninteractive
-ARG NEO4J_VERSION=5.26.0
+ARG NEO4J_VERSION=5.26.12
 
 # Install system dependencies
 # hadolint ignore=DL3008

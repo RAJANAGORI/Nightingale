@@ -69,18 +69,20 @@ RUN set -eux; \
 
 ###############################################################################
 # Stage 4: Go Environment
-# Purpose: Go 1.23.x compiler and tools (keep patch level current for stdlib CVEs)
+# Purpose: Go 1.26.x compiler (current security branch for stdlib HIGH/CVE fixes)
 ###############################################################################
 FROM base AS go-builder
 
+ARG GO_VERSION=1.26.1
+
 LABEL stage="go" \
-      description="Go 1.23.12 environment"
+      description="Go ${GO_VERSION} environment"
 
 WORKDIR /home
 
 # Install Go
 RUN set -eux; \
-    wget -q https://go.dev/dl/go1.23.12.linux-amd64.tar.gz -O go.tar.gz; \
+    wget -q "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O go.tar.gz; \
     tar -C /usr/local -xzf go.tar.gz; \
     rm go.tar.gz; \
     # Verify installation
@@ -190,6 +192,12 @@ RUN set -eux; \
     fi; \
     node --version && npm --version
 
+COPY configuration/cve-mitigation/npm-global-hardening.sh /tmp/npm-global-hardening.sh
+RUN set -eux; \
+    chmod +x /tmp/npm-global-hardening.sh; \
+    bash /tmp/npm-global-hardening.sh; \
+    rm -f /tmp/npm-global-hardening.sh
+
 # Ensure Python shared libraries are found
 RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/python3.conf && ldconfig
 
@@ -219,7 +227,7 @@ CMD ["/bin/bash"]
 # Included Languages:
 # - Python 3.12.11
 # - Ruby 3.4.5
-# - Go 1.23.12
+# - Go 1.26.1
 # - Java OpenJDK 21 LTS
 # - Node.js 18.20.4
 #
