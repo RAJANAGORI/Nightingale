@@ -153,13 +153,12 @@ RUN set -eux; \
     fi; \
     cd ..
 
-# Install Trufflehog (Secret Detection) — compile with image Go to avoid stale prebuilt stdlib
+# Install Trufflehog (Secret Detection) — source build (go install fails: replace directives in go.mod)
+COPY configuration/cve-mitigation/install-trufflehog.sh /tmp/install-trufflehog.sh
 RUN set -eux; \
-    echo "Installing Trufflehog..."; \
-    export GOTOOLCHAIN=local; \
-    go install github.com/trufflesecurity/trufflehog/v3@v3.93.2; \
-    install -m 0755 "${GOPATH:-/root/go}/bin/trufflehog" /usr/local/bin/trufflehog; \
-    command -v trufflehog
+    chmod +x /tmp/install-trufflehog.sh; \
+    /tmp/install-trufflehog.sh /usr/local/bin; \
+    rm -f /tmp/install-trufflehog.sh
 
 # Build Gitleaks (Git Secret Scanner)
 RUN set -eux; \

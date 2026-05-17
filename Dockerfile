@@ -104,6 +104,8 @@ RUN set -eux; \
     # Clean up module installation scripts to save space
     rm -f ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh
 
+COPY configuration/cve-mitigation/install-trufflehog.sh /tmp/install-trufflehog.sh
+
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
 
@@ -113,11 +115,9 @@ RUN set -eux; \
     rm -f ${BINARIES}/ttyd; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
-    # Install trufflehog with image Go (avoids prebuilt binaries with outdated stdlib)
-    export GOTOOLCHAIN=local; \
-    ( go install github.com/trufflesecurity/trufflehog/v3@v3.93.2 && \
-      install -m 0755 "${GOPATH:-/home/go}/bin/trufflehog" /usr/local/bin/trufflehog && \
-      trufflehog --version ) || echo "WARNING: trufflehog install skipped"
+    chmod +x /tmp/install-trufflehog.sh; \
+    /tmp/install-trufflehog.sh /usr/local/bin; \
+    rm -f /tmp/install-trufflehog.sh
 
 # Build ttyd from source - the binary is incompatible with OpenSSL 3.x
 # First build libwebsockets with libuv support, then build ttyd
