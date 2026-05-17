@@ -105,6 +105,7 @@ RUN set -eux; \
     rm -f ${SHELLS}/python-install-modules.sh ${SHELLS}/go-install-modules.sh
 
 COPY configuration/cve-mitigation/install-trufflehog.sh /tmp/install-trufflehog.sh
+COPY configuration/cve-mitigation/install-findomain.sh /tmp/install-findomain.sh
 
 WORKDIR ${BINARIES}
 COPY binary/ ${BINARIES}
@@ -115,12 +116,10 @@ RUN set -eux; \
     rm -f ${BINARIES}/ttyd ${BINARIES}/xray ${BINARIES}/findomain; \
     chmod +x ${BINARIES}/*; \
     mv ${BINARIES}/* /usr/local/bin/; \
-    chmod +x /tmp/install-trufflehog.sh; \
+    chmod +x /tmp/install-trufflehog.sh /tmp/install-findomain.sh; \
     /tmp/install-trufflehog.sh /usr/local/bin; \
-    rm -f /tmp/install-trufflehog.sh; \
-    export GOTOOLCHAIN=local GOPATH=/home/go; \
-    go install github.com/findomain/findomain/v4@v4.3.2; \
-    install -m 0755 /home/go/bin/findomain /usr/local/bin/findomain
+    /tmp/install-findomain.sh /usr/local/bin; \
+    rm -f /tmp/install-trufflehog.sh /tmp/install-findomain.sh
 
 # Build ttyd from source - the binary is incompatible with OpenSSL 3.x
 # First build libwebsockets with libuv support, then build ttyd
@@ -177,6 +176,7 @@ COPY configuration/cve-mitigation/vuln-library-purge /tmp/vuln-library-purge
 COPY configuration/cve-mitigation/audit-go-binaries.sh \
      configuration/cve-mitigation/rebuild-go-binaries.sh \
      configuration/cve-mitigation/prune-vulnerable-go-binaries.sh \
+     configuration/cve-mitigation/install-findomain.sh \
      /usr/local/bin/
 
 RUN set -eux; \
