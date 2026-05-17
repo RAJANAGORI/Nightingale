@@ -1,0 +1,50 @@
+name: Sign and attest container image
+description: Cosign keyless signing and GitHub build provenance attestation for GHCR images
+inputs:
+  image-name:
+    description: 'Image path without registry (e.g. rajanagori/nightingale)'
+    required: true
+  digest:
+    description: 'Image digest from docker/build-push-action outputs.digest'
+    required: true
+  tags:
+    description: 'Newline-separated full image:tag references to Cosign-sign'
+    required: true
+  registry:
+    description: 'OCI registry hostname'
+    required: false
+    default: ghcr.io
+  push-to-registry:
+    description: 'Attach provenance attestation to the registry package'
+    required: false
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@d8111a1bfa788f9a3170779b65886abe978e9b05 # v3.7.1
+
+    - name: Sign image tags with Cosign (keyless)
+      shell: bash
+      env:
+        TAGS: ${{ inputs.tags }}
+      run: |
+        set -euo pipefail
+        if [[ -z "${{ inputs.digest }}" ]]; then
+          echo "ERROR: digest is empty; build-push-action may not have pushed an image" >&2
+          exit 1
+        fi
+        while IFS= read -r tag; do
+          tag="$(echo "${tag}" | xargs)"
+          [[ -z "${tag}" ]] && continue
+          echo "Cosign signing ${tag}"
+          cosign sign --yes "${tag}"
+        done <<< "${TAGS}"
+        echo "Also signed by digest: ${{ inputs.registry }}/${{ inputs.image-name }}@${{ inputs.digest }}"
+
+    - name: Attest build provenance (GitHub)
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-name: ${{ inputs.registry }}/${{ inputs.image-name }}
+        subject-digest: ${{ inputs.digest }}
+        push-to-registry: ${{ inputs.push-to-registry }}

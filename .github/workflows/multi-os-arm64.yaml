@@ -24,6 +24,8 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
+  attestations: write
 
 concurrency:
   group: docker-${{ github.workflow }}-${{ github.ref }}
@@ -108,11 +110,14 @@ jobs:
     - name: Build and Push Programming Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
@@ -122,11 +127,24 @@ jobs:
     - name: Build and Push Programming Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/programming_langauge.Dockerfile
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
+
+    - name: Sign and attest container image
+      if: steps.build.outputs.digest != ''
+      uses: ./.github/actions/sign-and-attest-container
+      with:
+        image-name: ${{ env.USERNAME || 'default-user' }}/nightingale_programming_image
+        digest: ${{ steps.build.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME || 'default-user' }}/nightingale_programming_image:${{ env.COMMIT_HASH }}
@@ -232,11 +250,14 @@ jobs:
     - name: Build and Push Dependent Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
@@ -246,11 +267,24 @@ jobs:
     - name: Build and Push Dependent Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+
+    - name: Sign and attest container image
+      if: steps.build.outputs.digest != ''
+      uses: ./.github/actions/sign-and-attest-container
+      with:
+        image-name: ${{ env.USERNAME }}/${{ matrix.dockerfile.name }}
+        digest: ${{ steps.build.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
@@ -336,11 +370,14 @@ jobs:
     - name: Build and Push Final Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
@@ -350,11 +387,24 @@ jobs:
     - name: Build and Push Final Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
+
+    - name: Sign and attest container image
+      if: steps.build.outputs.digest != ''
+      uses: ./.github/actions/sign-and-attest-container
+      with:
+        image-name: ${{ env.USERNAME }}/nightingale
+        digest: ${{ steps.build.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
@@ -459,11 +509,14 @@ jobs:
     - name: Build and Push Dependent Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
@@ -473,11 +526,24 @@ jobs:
     - name: Build and Push Dependent Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfiles/${{ matrix.dockerfile.file }}
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
+
+    - name: Sign and attest container image
+      if: steps.build.outputs.digest != ''
+      uses: ./.github/actions/sign-and-attest-container
+      with:
+        image-name: ${{ env.USERNAME }}/${{ matrix.dockerfile.name }}
+        digest: ${{ steps.build.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/${{ matrix.dockerfile.name }}:${{ env.COMMIT_HASH }}
@@ -552,11 +618,14 @@ jobs:
     - name: Build and Push Final Image (with cache)
       if: steps.bxl.outputs.driver != 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
@@ -566,11 +635,24 @@ jobs:
     - name: Build and Push Final Image (no cache, docker driver)
       if: steps.bxl.outputs.driver == 'docker'
       uses: docker/build-push-action@v6
+      id: build
       with:
         context: .
         file: architecture/arm64/v8/Dockerfile
         platforms: linux/arm64
         push: true
+        provenance: mode=max
+        sbom: true
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
+          ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
+
+    - name: Sign and attest container image
+      if: steps.build.outputs.digest != ''
+      uses: ./.github/actions/sign-and-attest-container
+      with:
+        image-name: ${{ env.USERNAME }}/nightingale
+        digest: ${{ steps.build.outputs.digest }}
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:arm64
           ${{ env.DOCKER_REGISTRY }}/${{ env.USERNAME }}/nightingale:${{ env.COMMIT_HASH }}
