@@ -92,7 +92,7 @@ jobs:
         echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
       with:
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
         driver: docker-container
@@ -248,7 +248,7 @@ jobs:
         echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
       with:
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
         driver: docker-container
@@ -384,7 +384,7 @@ jobs:
         echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
       with:
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
         driver: docker-container
@@ -538,7 +538,7 @@ jobs:
         echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
       with:
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
         driver: docker-container
@@ -663,7 +663,7 @@ jobs:
         echo "COMMIT_HASH=$COMMIT_HASH" >> "$GITHUB_ENV"
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
       with:
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage 8000000000
         driver: docker-container
