@@ -73,7 +73,7 @@ RUN set -eux; \
 ###############################################################################
 FROM base AS go-builder
 
-ARG GO_VERSION=1.26.3
+ARG GO_VERSION=1.26.4
 
 LABEL stage="go" \
       description="Go ${GO_VERSION} environment"
