@@ -148,7 +148,7 @@ jobs:
 
       - name: Open pull request
         if: ${{ steps.detect.outputs.changed == 'true' && inputs.dry_run != 'true' }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: auto-remediate/trivy-${{ steps.resolve.outputs.run_id }}
