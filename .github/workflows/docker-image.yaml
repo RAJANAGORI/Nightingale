@@ -38,7 +38,7 @@ jobs:
     outputs:
       commit_hash: ${{ github.sha }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: GHCR login and Buildx
       id: setup
@@ -91,7 +91,7 @@ jobs:
           - name: nightingale_wordlist_image
             file: wordlist.Dockerfile
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: GHCR login and Buildx
       id: setup
@@ -125,7 +125,7 @@ jobs:
         (github.event_name == 'workflow_dispatch' && inputs.build_type == 'main' && needs.build-dependent.result == 'skipped')
       )
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: GHCR login and Buildx
       id: setup
