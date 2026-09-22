@@ -30,11 +30,13 @@ docker run -it --name Nightingale -p 8080:7681 \
 
 Open `http://localhost:8080` to access the browser terminal.
 
-## Hosted GUI Access
+## Nightingale GUI
 
-To request access to [https://nightingale-security.com/](https://nightingale-security.com/), please raise a GitHub issue using the hosted GUI access template. After the request is reviewed, access details will be shared in the issue.
+The public landing page is [nightingale-security.com](https://nightingale-security.com/). After you have an account, the console is at [dashboard.nightingale-security.com/login](https://dashboard.nightingale-security.com/login).
 
-Before raising the request, you can review the GUI screenshots on [nightingale-security.com](https://nightingale-security.com/).
+The GUI source is closed. This repo is the open Docker toolkit (CLI image, Dockerfiles, and the Go helper). It does include the GUI web console but with a community version.
+
+If you want further customization, You can directly reach out to me at [raja.nagori@owasp.org](mailto:raja.nagori@owasp.org).
 
 ## Why Nightingale
 
@@ -172,7 +174,7 @@ Some of the best features are listed below; I would highly recommend going throu
 - CI/CD integration for automated vulnerability scanning.
 - Maintenance of GitHub Advisories, ensuring consumers have access to the latest images.
 - On-demand installation via a request form, allowing consumers to request specific tools.
-- GUI based solution for those who has love-hate relation with CLI.
+- Hosted GUI at [nightingale-security.com](https://nightingale-security.com/), console at [dashboard.nightingale-security.com/login](https://dashboard.nightingale-security.com/login). GUI source is closed.
 
 ### Why?
 
