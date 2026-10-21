@@ -1,0 +1,2 @@
+#!/bin/bash
+perl /home/tools_network_vapt/nikto/program/nikto.pl "$@"
