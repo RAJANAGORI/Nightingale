@@ -1,0 +1,2 @@
+#!/bin/bash
+/home/tools_web_vapt/WhatWeb/whatweb "$@"

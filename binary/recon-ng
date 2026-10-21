@@ -1,0 +1,2 @@
+#!/bin/bash
+/home/tools_osint/recon-ng/recon-ng "$@"
